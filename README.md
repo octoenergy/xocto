@@ -2,6 +2,10 @@
 
 This repo houses various shared utilities for Python services.
 
+CI status:
+
+[![CircleCI](https://circleci.com/gh/octoenergy/xocto/tree/master.svg?style=svg)](https://circleci.com/gh/octoenergy/xocto/tree/master)
+
 ## Functionality
 
 ### Event publishing
