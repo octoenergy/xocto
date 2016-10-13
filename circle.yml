@@ -1,0 +1,15 @@
+machine:
+    pre:
+        - wget https://s3.amazonaws.com/circle-downloads/circle-pyenv-python-3.5.1_1.0_amd64.deb
+        - sudo dpkg -i circle-pyenv-python-3.5.1_1.0_amd64.deb
+    python:
+        version: 3.5.1
+
+dependencies:
+    override:
+        - make
+
+test:
+    override:
+        - make test
+        - make lint

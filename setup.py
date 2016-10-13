@@ -24,20 +24,19 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
     packages=find_packages(exclude=['tests']),
-    install_requires=[],
-
-    # List additional groups of dependencies here (e.g. development
-    # dependencies). You can install these using the following syntax,
-    # for example:
-    # $ pip install -e .[dev,test]
+    install_requires=[
+        'django',
+        'structlog',
+    ],
     extras_require={
         'dev': [
             'wheel==0.29.0',
             'twine==1.8.1',
-            'flake8==3.0.4',
         ],
         'test': [
-            'pytest==3.0.2'
+            'flake8==3.0.4',
+            'pytest==3.0.2',
+            'pytest-django==3.0.0',
         ],
     },
 )
