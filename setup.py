@@ -9,7 +9,7 @@ with open(path.join(REPO_ROOT, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='xocto',
-    version='1.0',
+    version='1.0.1',
     description='Octopus Energy Python service utilities',
     long_description=long_description,
     url='https://github.com/octoenergy/xocto',
