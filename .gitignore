@@ -1,4 +1,5 @@
 *.egg-info
+build/
 
 # Pytest cache
 .cache

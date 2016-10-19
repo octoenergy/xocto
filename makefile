@@ -2,14 +2,26 @@ install:
 	pip install -e .[dev,test]
 
 clean:
+	@echo Cleaning workspace
 	-rm -rf dist/ *.egg-info/ build/
 	-find . -type d -name __pycache__ -delete
 
-package:
+build_package:
+	@echo Building package
 	python setup.py bdist_wheel
 
-publish: clean package
+upload_package:
+	@echo Uploading package to PyPI
 	twine upload dist/*
+
+VERSION=$(shell python setup.py --version)
+
+tag:
+	@echo Tagging as $(VERSION)
+	git tag $(VERSION)
+	git push --tags
+
+publish: clean build_package upload_package tag
 
 lint:
 	flake8
