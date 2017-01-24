@@ -40,8 +40,9 @@ def publish(event, params=None, meta=None, account=None, request=None):
 
     # Add static metadata
     for key, setting in METADATA.items():
-        if hasattr(settings, setting):
-            meta[key] = getattr(settings, setting)
+        value = getattr(settings, setting, '')
+        if value:
+            meta[key] = value
 
     # Add metadata from request
     if request is not None:
