@@ -70,6 +70,8 @@ Release to PyPI by:
 
 2. Updating `CHANGELOG.md`
 
+3. Committing
+
 3. Running: 
 
         $ make publish

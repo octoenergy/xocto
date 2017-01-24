@@ -4,12 +4,14 @@ from os import path
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
+VERSION = '1.0.2'
+
 with open(path.join(REPO_ROOT, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
     name='xocto',
-    version='1.0.1',
+    version=VERSION,
     description='Octopus Energy Python service utilities',
     long_description=long_description,
     url='https://github.com/octoenergy/xocto',
