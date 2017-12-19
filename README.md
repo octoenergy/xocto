@@ -64,6 +64,8 @@ and:
 
     $ make lint  
 
+## Release new version
+
 Release to PyPI by:
 
 1. Bumping the version in `setup.py`
@@ -72,6 +74,8 @@ Release to PyPI by:
 
 3. Committing
 
-3. Running: 
+        $ git commit -am "Bump version to v..."
+
+4. Running: 
 
         $ make publish
