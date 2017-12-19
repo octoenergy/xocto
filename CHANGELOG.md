@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1 - 2017-12-19
+
+Includes:
+
+- Import settlement period helpers from [octotools repo](https://github.com/octoenergy/octotools)
+
 ## v1.0.1 - 2017-01-24
 
 Includes:
