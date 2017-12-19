@@ -1,10 +1,12 @@
 # xocto - utilities for Python services
 
-This repo houses various shared utilities for Python services.
+This repo houses various shared utilities for Python services at Octopus Energy.
 
 CI status:
 
 [![CircleCI](https://circleci.com/gh/octoenergy/xocto/tree/master.svg?style=svg)](https://circleci.com/gh/octoenergy/xocto/tree/master)
+
+PyPI detail page: https://pypi.python.org/pypi/xocto
 
 ## Functionality
 
