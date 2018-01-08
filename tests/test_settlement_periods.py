@@ -2,6 +2,8 @@ import datetime
 
 import pytest
 import pytz
+
+from xocto import settlement_periods
 from xocto.settlement_periods import convert_sp_and_date_to_utc, convert_utc_to_sp_and_date
 
 
@@ -90,3 +92,23 @@ def test_convert_utc_to_sp_and_date(utc, sp, date):
     """
 
     assert convert_utc_to_sp_and_date(utc) == (sp, date)
+
+
+@pytest.mark.parametrize(
+    "start,end,periods",
+    [
+        (datetime.datetime(2016, 1, 1, 0, 0), datetime.datetime(2016, 1, 1, 0, 30), 1),
+        (datetime.datetime(2016, 1, 1, 0, 0), datetime.datetime(2016, 1, 1, 4, 0), 8),
+        (datetime.datetime(2016, 1, 1, 0, 0), datetime.datetime(2016, 1, 2, 0, 30), 49),
+        # Clocks go forward here: only 23 hours in the day
+        (datetime.datetime(2018, 3, 25, 0, 0), datetime.datetime(2018, 3, 26, 0, 0), 46),
+        # Clocks go backwards here: 25 hours in the day
+        (datetime.datetime(2018, 10, 28, 0, 0), datetime.datetime(2018, 10, 29, 0, 0), 50),
+    ]
+)
+def test_number_of_settlement_periods_in_timedelta(start, end, periods):
+    tz = pytz.timezone('Europe/London')
+    start = tz.normalize(tz.localize(start))
+    end = tz.normalize(tz.localize(end))
+    delta = end - start
+    assert settlement_periods.number_of_periods_in_timedelta(delta) == periods

@@ -56,3 +56,10 @@ def convert_utc_to_sp_and_date(utc_datetime, timezone="Europe/London"):
     minutes_delta = (delta.seconds // 60) + 30
     sp = minutes_delta // 30
     return sp, local_dt.date()
+
+
+def number_of_periods_in_timedelta(delta: datetime.timedelta):
+    """
+    Return the number of half-hourly settlement periods in the given timedelta
+    """
+    return (delta.total_seconds() / 60) / 30
