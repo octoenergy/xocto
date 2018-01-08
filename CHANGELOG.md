@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2 - 2018-01-08
+
+Includes:
+
+- New function to calculate the number of settlement periods in a given timedelta.
+
 ## v1.1 - 2017-12-19
 
 Includes:
