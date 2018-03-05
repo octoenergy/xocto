@@ -1,5 +1,22 @@
-*.egg-info
-build/
+# Byte-compiled / optimized files
+*.py[cod]
+__pycache__
 
-# Pytest cache
+# Python distribution / packaging
+build
+dist
+sdist
+eggs
+.eggs
+*.egg-info
+*.egg
+develop-eggs
+
+# Testing and local development
+.idea
 .cache
+
+# Local temporary files
+.DS_Store
+.localized
+*~

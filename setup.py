@@ -23,10 +23,11 @@ setup(
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     packages=find_packages(exclude=['tests']),
     install_requires=[
+        'pytz',
         'django',
         'structlog',
     ],
