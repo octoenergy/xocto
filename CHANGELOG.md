@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3 - 2018-03-08
+
+Includes:
+
+- New settlement period functions.
+
 ## v1.2 - 2018-01-08
 
 Includes:
