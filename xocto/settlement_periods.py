@@ -76,9 +76,9 @@ def _get_delivery_date(local_time: datetime.datetime, timezone_str: str,
 
 def _round_local_down_to_hh(local_time):
     if local_time.minute < 30:
-        return local_time.replace(minute=0)
+        return local_time - datetime.timedelta(minutes=local_time.minute)
     else:
-        return local_time.replace(minute=30)
+        return local_time - datetime.timedelta(minutes=local_time.minute - 30)
 
 
 def convert_sp_and_date_to_local(sp: int, date: datetime.date, timezone_str: str,
