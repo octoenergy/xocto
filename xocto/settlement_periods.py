@@ -74,6 +74,13 @@ def _get_delivery_date(local_time: datetime.datetime, timezone_str: str,
         raise exceptions.SettlementPeriodError("Time zone not implemented")
 
 
+def _round_local_down_to_hh(local_time):
+    if local_time.minute < 30:
+        return local_time.replace(minute=0)
+    else:
+        return local_time.replace(minute=30)
+
+
 def convert_sp_and_date_to_local(sp: int, date: datetime.date, timezone_str: str,
                                  is_wholesale: bool) -> datetime.datetime:
     """
@@ -108,10 +115,7 @@ def convert_local_to_sp_and_date(local_time: datetime.datetime,
     except AttributeError:
         raise exceptions.SettlementPeriodError("Not a tz-aware datetime")
     # Round to the nearest half hour
-    if local_time.minute < 30:
-        half_hourly_time = local_time.replace(minute=0)
-    else:
-        half_hourly_time = local_time.replace(minute=30)
+    half_hourly_time = _round_local_down_to_hh(local_time)
     # Date of the settlement period in the time zone
     delivery_date = _get_delivery_date(half_hourly_time, timezone_str, is_wholesale)
     # First settlement period in the time zone

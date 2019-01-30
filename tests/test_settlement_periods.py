@@ -1,5 +1,6 @@
 import pytz
 import datetime
+from pandas import Timestamp
 
 import pytest
 
@@ -191,3 +192,29 @@ def test_number_of_settlement_periods_in_timedelta(start, end, periods):
     delta = end - start
 
     assert settlement_periods.number_of_periods_in_timedelta(delta) == periods
+
+
+@pytest.mark.parametrize('time,is_dst,expected', [
+    (datetime.datetime(2016, 1, 1, 0, 0), None, datetime.datetime(2016, 1, 1, 0, 0)),
+    (datetime.datetime(2016, 1, 1, 0, 30), None, datetime.datetime(2016, 1, 1, 0, 30)),
+    (datetime.datetime(2016, 1, 1, 0, 15), None, datetime.datetime(2016, 1, 1, 0, 0)),
+    (datetime.datetime(2016, 1, 1, 0, 45), None, datetime.datetime(2016, 1, 1, 0, 30)),
+    # Hour before clocks change forward
+    (datetime.datetime(2016, 3, 27, 0, 0), None, datetime.datetime(2016, 3, 27, 0, 0)),
+    # Hour after clocks change forward
+    (datetime.datetime(2016, 3, 27, 2, 0), None, datetime.datetime(2016, 3, 27, 2, 0)),
+    # Hour before clocks change back
+    (datetime.datetime(2016, 10, 30, 1, 0), True, datetime.datetime(2016, 10, 30, 1, 0)),
+    # Hour after clocks change back
+    (datetime.datetime(2016, 10, 30, 1, 0), False, datetime.datetime(2016, 10, 30, 1, 0)),
+])
+def test_round_down_local_time(time, is_dst, expected):
+    # Operations within the hour stay in the same timezone & DST
+    local_time = GB_TZ.localize(time, is_dst=is_dst)
+    local_time_pd = Timestamp(local_time)
+
+    expected = GB_TZ.localize(expected, is_dst=is_dst)
+    expected_pd = Timestamp(expected)
+
+    assert settlement_periods._round_local_down_to_hh(local_time) == expected
+    assert settlement_periods._round_local_down_to_hh(local_time_pd) == expected_pd

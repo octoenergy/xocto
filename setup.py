@@ -40,6 +40,7 @@ setup(
             'flake8==3.0.4',
             'pytest==3.0.2',
             'pytest-django==3.0.0',
+            'pandas==0.23',
         ],
     },
 )
