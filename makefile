@@ -19,6 +19,7 @@ VERSION=$(shell python setup.py --version)
 tag:
 	@echo Tagging as $(VERSION)
 	git tag $(VERSION)
+	git push
 	git push --tags
 
 publish: clean build_package upload_package tag
