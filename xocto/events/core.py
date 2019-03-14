@@ -9,6 +9,7 @@ __all__ = ["publish"]
 METADATA = {
     "release": "GIT_SHA",
     "aws_private_ip": "AWS_LOCAL_IP",
+    "aws_instance_id": "AWS_INSTANCE_ID",
     "aws_availability_zone": "AWS_AVAILABILITY_ZONE",
     "aws_auto_scaling_group": "AWS_AUTO_SCALING_GROUP",
 }
@@ -38,7 +39,7 @@ def publish(event, params=None, meta=None, account=None, request=None):
     if account is not None:
         payload['account'] = account.number
 
-    # Add static metadata
+    # Add static metadata from settings.
     for key, setting in METADATA.items():
         value = getattr(settings, setting, '')
         if value:
