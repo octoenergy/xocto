@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4 - 2019-03-14
+
+Includes:
+
+- Include AWS instance ID in event metadata.
+
 ## v1.3 - 2018-03-08
 
 Includes:
