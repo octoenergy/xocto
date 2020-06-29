@@ -2,7 +2,7 @@ from django.conf import settings
 
 import structlog
 
-logger = structlog.get_logger('events')
+logger = structlog.get_logger("events")
 
 __all__ = ["publish"]
 
@@ -26,22 +26,20 @@ def publish(event, params=None, meta=None, account=None, request=None):
 
     Note, structlog will add a timestamp
     """
-    payload = {
-        'event': event,
-    }
+    payload = {"event": event}
     if params is not None:
-        payload['params'] = params
+        payload["params"] = params
     if meta is None:
         meta = {}
 
     # If the event relates to a single account, we include its number so it's easy to filter down
     # to events that affect one account in Loggly.
     if account is not None:
-        payload['account'] = account.number
+        payload["account"] = account.number
 
     # Add static metadata from settings.
     for key, setting in METADATA.items():
-        value = getattr(settings, setting, '')
+        value = getattr(settings, setting, "")
         if value:
             meta[key] = value
 
@@ -49,7 +47,7 @@ def publish(event, params=None, meta=None, account=None, request=None):
     if request is not None:
         meta.update(_request_meta(request))
 
-    payload['meta'] = meta
+    payload["meta"] = meta
 
     _log(payload)
 
@@ -59,7 +57,7 @@ def _log(event):
     Log the event
     """
     event_ = event.copy()
-    name = event_.pop('event')
+    name = event_.pop("event")
     logger.info(name, **event_)
 
 
@@ -67,11 +65,9 @@ def _request_meta(request):
     """
     Extract relevant meta information from a request instance
     """
-    meta = {
-        'ip_address': request.META['REMOTE_ADDR'],
-    }
-    if 'HTTP_USER_AGENT' in request.META:
-        meta['user_agent'] = request.META['HTTP_USER_AGENT']
+    meta = {"ip_address": request.META["REMOTE_ADDR"]}
+    if "HTTP_USER_AGENT" in request.META:
+        meta["user_agent"] = request.META["HTTP_USER_AGENT"]
     if hasattr(request, "session") and request.session.session_key:
-        meta['session'] = request.session.session_key
+        meta["session"] = request.session.session_key
     return meta

@@ -22,3 +22,8 @@ jobs:
           command: |
             . ~/venv/bin/activate
             make lint
+      - run:
+          name: Black
+          command: |
+            . ~/venv/bin/activate
+            make black

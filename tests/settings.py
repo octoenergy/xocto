@@ -1,6 +1,2 @@
-SECRET_KEY = 'x'
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3'
-    }
-}
+SECRET_KEY = "x"
+DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3"}}

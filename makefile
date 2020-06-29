@@ -29,3 +29,6 @@ lint:
 
 test:
 	py.test
+
+black:
+	black -v --check .
