@@ -27,3 +27,8 @@ jobs:
           command: |
             . ~/venv/bin/activate
             make black
+      - run:
+          name: iSort
+          command: |
+            . ~/venv/bin/activate
+            make isort

@@ -32,3 +32,6 @@ test:
 
 black:
 	black -v --check .
+
+isort:
+	isort --check-only

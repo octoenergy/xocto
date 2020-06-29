@@ -1,6 +1,7 @@
-from setuptools import setup, find_packages
 from codecs import open
 from os import path
+
+from setuptools import find_packages, setup
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
@@ -28,7 +29,7 @@ setup(
     packages=find_packages(exclude=["tests"]),
     install_requires=["pytz", "django", "structlog"],
     extras_require={
-        "dev": ["wheel==0.29.0", "twine==1.8.1", "black==19.10b0"],
+        "dev": ["wheel==0.29.0", "twine==1.8.1", "black==19.10b0", "isort==4.3.21"],
         "test": [
             "flake8==3.0.4",
             "pytest==3.0.2",

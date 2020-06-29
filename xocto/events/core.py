@@ -1,6 +1,5 @@
-from django.conf import settings
-
 import structlog
+from django.conf import settings
 
 logger = structlog.get_logger("events")
 

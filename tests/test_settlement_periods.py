@@ -1,11 +1,10 @@
-import pytz
 import datetime
-from pandas import Timestamp
 
 import pytest
+import pytz
+from pandas import Timestamp
 
 from xocto import settlement_periods
-
 
 UTC_TZ = pytz.utc
 GB_TZ = pytz.timezone("Europe/London")
