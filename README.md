@@ -58,13 +58,21 @@ Create and activate a virtualenv then:
 
     $ make
 
-Test package with:
+Test package locally with:
 
     $ make test
 
 and:
 
     $ make lint  
+
+A development docker image can be built with:
+
+    $ docker build . -t xocto
+
+and tests can be run within this container with:
+
+    $ docker run -v `pwd`:/opt/app xocto
 
 ## Release new version
 
