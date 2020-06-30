@@ -58,13 +58,23 @@ Create and activate a virtualenv then:
 
     $ make
 
-Test package with:
+Test package locally with:
 
     $ make test
 
 and:
 
     $ make lint  
+
+Development docker images can be built with:
+
+    $ make docker_images
+
+which creates separate images for pytest, isort and black. Each can be run like so:
+
+    $ docker run -v `pwd`:/opt/app xocto/pytest
+    $ docker run -v `pwd`:/opt/app xocto/isort
+    $ docker run -v `pwd`:/opt/app xocto/black
 
 ## Release new version
 

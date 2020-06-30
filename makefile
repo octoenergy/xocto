@@ -29,3 +29,15 @@ lint:
 
 test:
 	py.test
+
+black:
+	black -v --check .
+
+isort:
+	isort --check-only
+
+docker_images:
+	docker build -t xocto/pytest --target=pytest .
+	docker build -t xocto/isort --target=isort .
+	docker build -t xocto/black --target=black .
+

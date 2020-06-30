@@ -1,14 +1,14 @@
-import pytz
-import typing
 import datetime
+import typing
+
+import pytz
 
 from . import exceptions
 
-
 __all__ = [
-    'convert_sp_and_date_to_utc',
-    'convert_utc_to_sp_and_date',
-    'number_of_periods_in_timedelta'
+    "convert_sp_and_date_to_utc",
+    "convert_utc_to_sp_and_date",
+    "number_of_periods_in_timedelta",
 ]
 
 
@@ -28,8 +28,9 @@ def _to_timezone(local_time: datetime.datetime, timezone_str: str) -> datetime.d
     return timezone.normalize(rebased_local_time)
 
 
-def _get_first_delivery_time(date: datetime.date, timezone_str: str,
-                             is_wholesale: bool) -> datetime.datetime:
+def _get_first_delivery_time(
+    date: datetime.date, timezone_str: str, is_wholesale: bool
+) -> datetime.datetime:
     """
     Return an aware datetime for the start of the first settlement period on a given date.
     """
@@ -50,8 +51,9 @@ def _get_first_delivery_time(date: datetime.date, timezone_str: str,
         raise exceptions.SettlementPeriodError("Time zone not implemented")
 
 
-def _get_delivery_date(local_time: datetime.datetime, timezone_str: str,
-                       is_wholesale: bool) -> datetime.date:
+def _get_delivery_date(
+    local_time: datetime.datetime, timezone_str: str, is_wholesale: bool
+) -> datetime.date:
     """
     Return the date of the settlement period relative to a tz-aware datetime.
     """
@@ -81,8 +83,9 @@ def _round_local_down_to_hh(local_time):
         return local_time - datetime.timedelta(minutes=local_time.minute - 30)
 
 
-def convert_sp_and_date_to_local(sp: int, date: datetime.date, timezone_str: str,
-                                 is_wholesale: bool) -> datetime.datetime:
+def convert_sp_and_date_to_local(
+    sp: int, date: datetime.date, timezone_str: str, is_wholesale: bool
+) -> datetime.datetime:
     """
     Return an aware datetime for the start of a given settlement period.
     """
@@ -96,8 +99,9 @@ def convert_sp_and_date_to_local(sp: int, date: datetime.date, timezone_str: str
     return pytz.timezone(timezone_str).normalize(local_time)
 
 
-def convert_sp_and_date_to_utc(sp: int, date: datetime.date, timezone_str: str=GB_TZ,
-                               is_wholesale: bool = False) -> datetime.datetime:
+def convert_sp_and_date_to_utc(
+    sp: int, date: datetime.date, timezone_str: str = GB_TZ, is_wholesale: bool = False
+) -> datetime.datetime:
     """
     Return an UTC-aware datetime for the start of a given settlement period.
     """
@@ -105,8 +109,9 @@ def convert_sp_and_date_to_utc(sp: int, date: datetime.date, timezone_str: str=G
     return _to_timezone(local_time, UTC_TZ)
 
 
-def convert_local_to_sp_and_date(local_time: datetime.datetime,
-                                 is_wholesale: bool=False) -> typing.Tuple[int, datetime.date]:
+def convert_local_to_sp_and_date(
+    local_time: datetime.datetime, is_wholesale: bool = False
+) -> typing.Tuple[int, datetime.date]:
     """
     Return the date and settlement period from a given tz-aware datetime.
     """
@@ -126,8 +131,9 @@ def convert_local_to_sp_and_date(local_time: datetime.datetime,
     return settlement_period, delivery_date
 
 
-def convert_utc_to_sp_and_date(utc_time: datetime.datetime, timezone_str: str=GB_TZ,
-                               is_wholesale: bool=False) -> typing.Tuple[int, datetime.date]:
+def convert_utc_to_sp_and_date(
+    utc_time: datetime.datetime, timezone_str: str = GB_TZ, is_wholesale: bool = False
+) -> typing.Tuple[int, datetime.date]:
     """
     Return the local date and settlement period from a given UTC-aware datetime.
     """
