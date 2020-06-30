@@ -66,13 +66,15 @@ and:
 
     $ make lint  
 
-A development docker image can be built with:
+Development docker images can be built with:
 
-    $ docker build . -t xocto
+    $ make docker_images
 
-and tests can be run within this container with:
+which creates separate images for pytest, isort and black. Each can be run like so:
 
-    $ docker run -v `pwd`:/opt/app xocto
+    $ docker run -v `pwd`:/opt/app xocto/pytest
+    $ docker run -v `pwd`:/opt/app xocto/isort
+    $ docker run -v `pwd`:/opt/app xocto/black
 
 ## Release new version
 
