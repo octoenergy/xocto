@@ -34,7 +34,7 @@ setup(
         "python-dateutil==2.8.2",
     ],
     extras_require={
-        "dev": ["wheel==0.29.0", "twine==1.8.1", "black==22.3.0", "isort==4.3.21"],
+        "dev": ["wheel==0.29.0", "twine==1.8.1", "black==22.3.0", "isort==5.10.1"],
         "test": [
             "flake8==3.0.4",
             "pytest==3.0.2",
