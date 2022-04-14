@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
-VERSION = "1.4"
+VERSION = "1.5"
 
 with open(path.join(REPO_ROOT, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
