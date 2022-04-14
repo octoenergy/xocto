@@ -30,6 +30,12 @@ setup(
     install_requires=["pytz", "django", "structlog"],
     extras_require={
         "dev": ["wheel==0.29.0", "twine==1.8.1", "black==19.10b0", "isort==4.3.21"],
-        "test": ["flake8==3.0.4", "pytest==3.0.2", "pytest-django==3.0.0", "pandas==1.0.5"],
+        "test": [
+            "flake8==3.0.4",
+            "pytest==3.0.2",
+            "pytest-django==3.0.0",
+            "pandas==1.0.5",
+            "hypothesis==5.49.0",
+        ],
     },
 )
