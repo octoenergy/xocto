@@ -2,7 +2,6 @@ import datetime
 
 import pytest
 import pytz
-from pandas import Timestamp
 
 from xocto import settlement_periods
 
@@ -401,10 +400,7 @@ def test_number_of_settlement_periods_in_timedelta(start, end, periods):
 def test_round_down_local_time(time, is_dst, expected):
     # Operations within the hour stay in the same timezone & DST
     local_time = GB_TZ.localize(time, is_dst=is_dst)
-    local_time_pd = Timestamp(local_time)
 
     expected = GB_TZ.localize(expected, is_dst=is_dst)
-    expected_pd = Timestamp(expected)
 
     assert settlement_periods._round_local_down_to_hh(local_time) == expected
-    assert settlement_periods._round_local_down_to_hh(local_time_pd) == expected_pd
