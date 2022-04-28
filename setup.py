@@ -15,6 +15,7 @@ setup(
     version=VERSION,
     description="Octopus Energy Python service utilities",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/octoenergy/xocto",
     author="Octopus Energy",
     author_email="talent@octopus.energy",
