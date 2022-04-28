@@ -34,7 +34,7 @@ black:
 	black -v --check .
 
 isort:
-	isort --check-only
+	isort --check-only .
 
 docker_images:
 	docker build -t xocto/pytest --target=pytest .

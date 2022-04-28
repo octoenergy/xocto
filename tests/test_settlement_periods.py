@@ -2,7 +2,6 @@ import datetime
 
 import pytest
 import pytz
-from pandas import Timestamp
 
 from xocto import settlement_periods
 
@@ -14,28 +13,64 @@ GB_TZ = pytz.timezone("Europe/London")
     "sp,date,expected",
     [
         # British time is GMT
-        (1, datetime.date(2017, 1, 1), datetime.datetime(2016, 12, 31, hour=23, tzinfo=UTC_TZ),),
+        (
+            1,
+            datetime.date(2017, 1, 1),
+            datetime.datetime(2016, 12, 31, hour=23, tzinfo=UTC_TZ),
+        ),
         (
             48,
             datetime.date(2017, 1, 1),
             datetime.datetime(2017, 1, 1, hour=22, minute=30, tzinfo=UTC_TZ),
         ),
         # British time is GMT
-        (1, datetime.date(2017, 7, 1), datetime.datetime(2017, 6, 30, hour=22, tzinfo=UTC_TZ),),
+        (
+            1,
+            datetime.date(2017, 7, 1),
+            datetime.datetime(2017, 6, 30, hour=22, tzinfo=UTC_TZ),
+        ),
         (
             48,
             datetime.date(2017, 7, 1),
             datetime.datetime(2017, 7, 1, hour=21, minute=30, tzinfo=UTC_TZ),
         ),
         # Change clock forward day, from GMT to BST
-        (3, datetime.date(2017, 3, 26), datetime.datetime(2017, 3, 26, hour=0, tzinfo=UTC_TZ),),
-        (5, datetime.date(2017, 3, 26), datetime.datetime(2017, 3, 26, hour=1, tzinfo=UTC_TZ),),
-        (7, datetime.date(2017, 3, 26), datetime.datetime(2017, 3, 26, hour=2, tzinfo=UTC_TZ),),
-        (45, datetime.date(2017, 3, 26), datetime.datetime(2017, 3, 26, hour=21, tzinfo=UTC_TZ),),
+        (
+            3,
+            datetime.date(2017, 3, 26),
+            datetime.datetime(2017, 3, 26, hour=0, tzinfo=UTC_TZ),
+        ),
+        (
+            5,
+            datetime.date(2017, 3, 26),
+            datetime.datetime(2017, 3, 26, hour=1, tzinfo=UTC_TZ),
+        ),
+        (
+            7,
+            datetime.date(2017, 3, 26),
+            datetime.datetime(2017, 3, 26, hour=2, tzinfo=UTC_TZ),
+        ),
+        (
+            45,
+            datetime.date(2017, 3, 26),
+            datetime.datetime(2017, 3, 26, hour=21, tzinfo=UTC_TZ),
+        ),
         # Change clock backward day, from BST to GMT
-        (5, datetime.date(2017, 10, 29), datetime.datetime(2017, 10, 29, hour=0, tzinfo=UTC_TZ),),
-        (7, datetime.date(2017, 10, 29), datetime.datetime(2017, 10, 29, hour=1, tzinfo=UTC_TZ),),
-        (9, datetime.date(2017, 10, 29), datetime.datetime(2017, 10, 29, hour=2, tzinfo=UTC_TZ),),
+        (
+            5,
+            datetime.date(2017, 10, 29),
+            datetime.datetime(2017, 10, 29, hour=0, tzinfo=UTC_TZ),
+        ),
+        (
+            7,
+            datetime.date(2017, 10, 29),
+            datetime.datetime(2017, 10, 29, hour=1, tzinfo=UTC_TZ),
+        ),
+        (
+            9,
+            datetime.date(2017, 10, 29),
+            datetime.datetime(2017, 10, 29, hour=2, tzinfo=UTC_TZ),
+        ),
         (
             49,
             datetime.date(2017, 10, 29),
@@ -60,14 +95,22 @@ def test_convert_sp_and_date_to_utc_for_wholesale(sp, date, expected):
             2,
             datetime.date(2017, 1, 1),
         ),
-        (datetime.datetime(2017, 1, 1, hour=22, tzinfo=UTC_TZ), 47, datetime.date(2017, 1, 1),),
+        (
+            datetime.datetime(2017, 1, 1, hour=22, tzinfo=UTC_TZ),
+            47,
+            datetime.date(2017, 1, 1),
+        ),
         # British time is GMT
         (
             datetime.datetime(2017, 6, 30, hour=22, minute=30, tzinfo=UTC_TZ),
             2,
             datetime.date(2017, 7, 1),
         ),
-        (datetime.datetime(2017, 7, 1, hour=21, tzinfo=UTC_TZ), 47, datetime.date(2017, 7, 1),),
+        (
+            datetime.datetime(2017, 7, 1, hour=21, tzinfo=UTC_TZ),
+            47,
+            datetime.date(2017, 7, 1),
+        ),
         # Change clock forward day, from GMT to BST
         (
             datetime.datetime(2017, 3, 26, hour=0, minute=30, tzinfo=UTC_TZ),
@@ -117,14 +160,21 @@ def test_convert_utc_to_sp_and_date_for_wholesale(utc, sp, date):
     Test the convert_utc_to_sp_and_date function within a wholesale context
     for days where british time is the same as GMT, where british time is BST, and change days
     """
-    assert settlement_periods.convert_utc_to_sp_and_date(utc, is_wholesale=True) == (sp, date,)
+    assert settlement_periods.convert_utc_to_sp_and_date(utc, is_wholesale=True) == (
+        sp,
+        date,
+    )
 
 
 @pytest.mark.parametrize(
     "sp,date,expected",
     [
         # British time is GMT
-        (1, datetime.date(2016, 1, 1), datetime.datetime(2016, 1, 1, hour=0, tzinfo=UTC_TZ),),
+        (
+            1,
+            datetime.date(2016, 1, 1),
+            datetime.datetime(2016, 1, 1, hour=0, tzinfo=UTC_TZ),
+        ),
         (
             4,
             datetime.date(2016, 1, 1),
@@ -136,7 +186,11 @@ def test_convert_utc_to_sp_and_date_for_wholesale(utc, sp, date):
             datetime.datetime(2016, 1, 1, hour=9, minute=30, tzinfo=UTC_TZ),
         ),
         # British time is BST
-        (1, datetime.date(2016, 7, 1), datetime.datetime(2016, 6, 30, hour=23, tzinfo=UTC_TZ),),
+        (
+            1,
+            datetime.date(2016, 7, 1),
+            datetime.datetime(2016, 6, 30, hour=23, tzinfo=UTC_TZ),
+        ),
         (
             4,
             datetime.date(2016, 7, 1),
@@ -148,7 +202,11 @@ def test_convert_utc_to_sp_and_date_for_wholesale(utc, sp, date):
             datetime.datetime(2016, 7, 1, hour=8, minute=30, tzinfo=UTC_TZ),
         ),
         # Change clock forward day, from GMT to BST
-        (1, datetime.date(2016, 3, 27), datetime.datetime(2016, 3, 27, hour=0, tzinfo=UTC_TZ),),
+        (
+            1,
+            datetime.date(2016, 3, 27),
+            datetime.datetime(2016, 3, 27, hour=0, tzinfo=UTC_TZ),
+        ),
         (
             4,
             datetime.date(2016, 3, 27),
@@ -160,7 +218,11 @@ def test_convert_utc_to_sp_and_date_for_wholesale(utc, sp, date):
             datetime.datetime(2016, 3, 27, hour=9, minute=30, tzinfo=UTC_TZ),
         ),
         # Change clock backward day, from BST to GMT
-        (1, datetime.date(2015, 10, 25), datetime.datetime(2015, 10, 24, hour=23, tzinfo=UTC_TZ),),
+        (
+            1,
+            datetime.date(2015, 10, 25),
+            datetime.datetime(2015, 10, 24, hour=23, tzinfo=UTC_TZ),
+        ),
         (
             4,
             datetime.date(2015, 10, 25),
@@ -185,7 +247,11 @@ def test_convert_sp_and_date_to_utc_for_retail(sp, date, expected):
     "utc,sp,date",
     [
         # British time is GMT
-        (datetime.datetime(2016, 1, 1, hour=0, tzinfo=UTC_TZ), 1, datetime.date(2016, 1, 1),),
+        (
+            datetime.datetime(2016, 1, 1, hour=0, tzinfo=UTC_TZ),
+            1,
+            datetime.date(2016, 1, 1),
+        ),
         (
             datetime.datetime(2016, 1, 1, hour=1, minute=30, tzinfo=UTC_TZ),
             4,
@@ -197,7 +263,11 @@ def test_convert_sp_and_date_to_utc_for_retail(sp, date, expected):
             datetime.date(2016, 1, 1),
         ),
         # British time is BST
-        (datetime.datetime(2016, 6, 30, hour=23, tzinfo=UTC_TZ), 1, datetime.date(2016, 7, 1),),
+        (
+            datetime.datetime(2016, 6, 30, hour=23, tzinfo=UTC_TZ),
+            1,
+            datetime.date(2016, 7, 1),
+        ),
         (
             datetime.datetime(2016, 7, 1, hour=0, minute=30, tzinfo=UTC_TZ),
             4,
@@ -209,7 +279,11 @@ def test_convert_sp_and_date_to_utc_for_retail(sp, date, expected):
             datetime.date(2016, 7, 1),
         ),
         # Change clock forward day, From GMT to BST
-        (datetime.datetime(2016, 3, 27, hour=0, tzinfo=UTC_TZ), 1, datetime.date(2016, 3, 27),),
+        (
+            datetime.datetime(2016, 3, 27, hour=0, tzinfo=UTC_TZ),
+            1,
+            datetime.date(2016, 3, 27),
+        ),
         (
             datetime.datetime(2016, 3, 27, hour=1, minute=30, tzinfo=UTC_TZ),
             4,
@@ -221,7 +295,11 @@ def test_convert_sp_and_date_to_utc_for_retail(sp, date, expected):
             datetime.date(2016, 3, 27),
         ),
         # Change clock backward day, from BST to GMT
-        (datetime.datetime(2016, 10, 24, hour=23, tzinfo=UTC_TZ), 1, datetime.date(2016, 10, 25),),
+        (
+            datetime.datetime(2016, 10, 24, hour=23, tzinfo=UTC_TZ),
+            1,
+            datetime.date(2016, 10, 25),
+        ),
         (
             datetime.datetime(2016, 10, 25, hour=0, minute=30, tzinfo=UTC_TZ),
             4,
@@ -249,9 +327,17 @@ def test_convert_utc_to_sp_and_date_for_retail(utc, sp, date):
         (datetime.datetime(2016, 1, 1, 0, 0), datetime.datetime(2016, 1, 1, 4, 0), 8),
         (datetime.datetime(2016, 1, 1, 0, 0), datetime.datetime(2016, 1, 2, 0, 30), 49),
         # Clocks go forward here: only 23 hours in the day
-        (datetime.datetime(2018, 3, 25, 0, 0), datetime.datetime(2018, 3, 26, 0, 0), 46,),
+        (
+            datetime.datetime(2018, 3, 25, 0, 0),
+            datetime.datetime(2018, 3, 26, 0, 0),
+            46,
+        ),
         # Clocks go backwards here: 25 hours in the day
-        (datetime.datetime(2018, 10, 28, 0, 0), datetime.datetime(2018, 10, 29, 0, 0), 50,),
+        (
+            datetime.datetime(2018, 10, 28, 0, 0),
+            datetime.datetime(2018, 10, 29, 0, 0),
+            50,
+        ),
     ],
 )
 def test_number_of_settlement_periods_in_timedelta(start, end, periods):
@@ -265,27 +351,56 @@ def test_number_of_settlement_periods_in_timedelta(start, end, periods):
 @pytest.mark.parametrize(
     "time,is_dst,expected",
     [
-        (datetime.datetime(2016, 1, 1, 0, 0), None, datetime.datetime(2016, 1, 1, 0, 0),),
-        (datetime.datetime(2016, 1, 1, 0, 30), None, datetime.datetime(2016, 1, 1, 0, 30),),
-        (datetime.datetime(2016, 1, 1, 0, 15), None, datetime.datetime(2016, 1, 1, 0, 0),),
-        (datetime.datetime(2016, 1, 1, 0, 45), None, datetime.datetime(2016, 1, 1, 0, 30),),
+        (
+            datetime.datetime(2016, 1, 1, 0, 0),
+            None,
+            datetime.datetime(2016, 1, 1, 0, 0),
+        ),
+        (
+            datetime.datetime(2016, 1, 1, 0, 30),
+            None,
+            datetime.datetime(2016, 1, 1, 0, 30),
+        ),
+        (
+            datetime.datetime(2016, 1, 1, 0, 15),
+            None,
+            datetime.datetime(2016, 1, 1, 0, 0),
+        ),
+        (
+            datetime.datetime(2016, 1, 1, 0, 45),
+            None,
+            datetime.datetime(2016, 1, 1, 0, 30),
+        ),
         # Hour before clocks change forward
-        (datetime.datetime(2016, 3, 27, 0, 0), None, datetime.datetime(2016, 3, 27, 0, 0),),
+        (
+            datetime.datetime(2016, 3, 27, 0, 0),
+            None,
+            datetime.datetime(2016, 3, 27, 0, 0),
+        ),
         # Hour after clocks change forward
-        (datetime.datetime(2016, 3, 27, 2, 0), None, datetime.datetime(2016, 3, 27, 2, 0),),
+        (
+            datetime.datetime(2016, 3, 27, 2, 0),
+            None,
+            datetime.datetime(2016, 3, 27, 2, 0),
+        ),
         # Hour before clocks change back
-        (datetime.datetime(2016, 10, 30, 1, 0), True, datetime.datetime(2016, 10, 30, 1, 0),),
+        (
+            datetime.datetime(2016, 10, 30, 1, 0),
+            True,
+            datetime.datetime(2016, 10, 30, 1, 0),
+        ),
         # Hour after clocks change back
-        (datetime.datetime(2016, 10, 30, 1, 0), False, datetime.datetime(2016, 10, 30, 1, 0),),
+        (
+            datetime.datetime(2016, 10, 30, 1, 0),
+            False,
+            datetime.datetime(2016, 10, 30, 1, 0),
+        ),
     ],
 )
 def test_round_down_local_time(time, is_dst, expected):
     # Operations within the hour stay in the same timezone & DST
     local_time = GB_TZ.localize(time, is_dst=is_dst)
-    local_time_pd = Timestamp(local_time)
 
     expected = GB_TZ.localize(expected, is_dst=is_dst)
-    expected_pd = Timestamp(expected)
 
     assert settlement_periods._round_local_down_to_hh(local_time) == expected
-    assert settlement_periods._round_local_down_to_hh(local_time_pd) == expected_pd

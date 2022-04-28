@@ -52,6 +52,69 @@ events.publish(
 )
 ```
 
+### Ranges
+
+The `ranges` module is, as the name suggests, a utility for working with ranges.
+
+The most basic building block of the module is the `Range` class.
+
+A few basic examples of its usage:
+
+```python
+from xocto.ranges import Range, RangeBoundaries
+
+>>> Range(0, 2, boundaries=RangeBoundaries.EXCLUSIVE_INCLUSIVE)
+<Range: (0,2]>
+>>> Range(0, 2, boundaries="[]")
+<Range: [0,2]>
+>>> sorted([Range(1, 4), Range(0, 5)])
+[<Range: [0,5)>, <Range: [1,4)>]
+>>> sorted([Range(1, 2), Range(None, 2)])
+[<Range: [None,2)>, <Range: [1,2)>]
+>>> sorted([Range(3, 5), Range(3, 4)])
+[<Range: [3,4)>, <Range: [4,5)>]
+```
+
+See [xocto.ranges](xocto/ranges.py) for more details, including examples and in depth technical details.
+
+### Numbers
+
+The `numbers` module is intended as your one-stop shop for all things numbers.
+
+An example of rounding a number to an arbitrary integer base:
+```python
+from xocto.numbers import quantise
+
+>>> quantise(256, 5)
+255
+```
+
+See [xocto.numbers](xocto/numbers.py) for more details, including examples and in depth technical details.
+
+### The localtime module
+
+This module is a battle tested and well reviewed module for working with dates, times and timezones.
+
+It's been over the years internally in Kraken Technologies, and is used heavily internally.
+
+The main API it presents is composed of a series of functions which accept a date/datetime object, and manipulate it in one form or another.
+
+Examples of a few of those:
+
+```python
+from xocto import localtime
+>>> now = localtime.now()
+>>> now
+2022-04-20 14:57:53.045707+02:00
+>>> localtime.seconds_in_the_future(n=10, dt=now)
+2022-04-20 14:58:03.045707+02:00
+>>> localtime.nearest_half_hour(now)
+2022-04-20 15:00:00+02:00
+```
+
+See [xocto.localtime](xocto/localtime.py) for more details, including examples and in depth technical details.
+
+
 ## Contributing
 
 Create and activate a virtualenv then:

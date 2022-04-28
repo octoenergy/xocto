@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
-VERSION = "1.4"
+VERSION = "1.5"
 
 with open(path.join(REPO_ROOT, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
@@ -27,9 +27,20 @@ setup(
         "Programming Language :: Python :: 3.6",
     ],
     packages=find_packages(exclude=["tests"]),
-    install_requires=["pytz", "django", "structlog"],
+    install_requires=[
+        "pytz==2022.1",
+        "django==3.2.13",
+        "structlog==20.2.0",
+        "python-dateutil==2.8.2",
+    ],
     extras_require={
-        "dev": ["wheel==0.29.0", "twine==1.8.1", "black==19.10b0", "isort==4.3.21"],
-        "test": ["flake8==3.0.4", "pytest==3.0.2", "pytest-django==3.0.0", "pandas==1.0.5"],
+        "dev": ["wheel==0.29.0", "twine==1.8.1", "black==22.3.0", "isort==5.10.1"],
+        "test": [
+            "flake8==3.0.4",
+            "pytest==7.0.1",
+            "pytest-django==4.5.2",
+            "hypothesis==5.49.0",
+            "time-machine==2.6.0",
+        ],
     },
 )

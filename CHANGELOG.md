@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5 - 2022-04-14
+
+Includes:
+
+- Add the localtime, ranges, numbers and types modules
+- Update black and isort
+
 ## v1.4 - 2019-03-14
 
 Includes:
