@@ -26,7 +26,9 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.6",
     ],
-    packages=find_packages(exclude=["tests"]),
+    packages=["xocto", "xocto.events"],
+    package_data={"xocto": ["py.typed"]},
+    zip_safe=False,
     install_requires=[
         "pytz==2022.1",
         "django==3.2.13",
