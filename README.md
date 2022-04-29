@@ -3,6 +3,8 @@
 This repo houses various shared utilities for Python services at Kraken
 Technologies.
 
+This library works with Python 3.8 and above.
+
 CI status:
 
 [![CircleCI](https://circleci.com/gh/octoenergy/xocto/tree/master.svg?style=svg)](https://circleci.com/gh/octoenergy/xocto/tree/master)

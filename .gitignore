@@ -13,6 +13,7 @@ eggs
 develop-eggs
 
 # Testing and local development
+.python-version
 .idea
 .cache
 

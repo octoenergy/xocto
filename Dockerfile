@@ -1,4 +1,4 @@
-FROM python:3.7.7-slim AS base
+FROM python:3.8.13-slim AS base
 
 # Create virtualenv and add to path.
 ENV VIRTUAL_ENV=/opt/venv
@@ -12,8 +12,7 @@ WORKDIR /opt/app
 
 # Install Python requirements. README.md is required as the setup.py file
 # refers to it.
-COPY README.md .
-COPY setup.py .
+COPY . .
 RUN pip install -e .[dev,test]
 
 # Run subsequent commands as non-root user
