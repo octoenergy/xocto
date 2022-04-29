@@ -31,10 +31,10 @@ setup(
     package_data={"xocto": ["py.typed"]},
     zip_safe=False,
     install_requires=[
-        "pytz==2022.1",
-        "django==3.2.13",
-        "structlog==20.2.0",
-        "python-dateutil==2.8.2",
+        "pytz",
+        "django>=3.2,<4.0",
+        "structlog>=20.2.0",
+        "python-dateutil>=2.8.2",
     ],
     extras_require={
         "dev": ["wheel==0.37.1", "twine==4.0.0", "black==22.3.0", "isort==5.10.1"],
