@@ -122,31 +122,44 @@ from xocto import localtime
 
 See [xocto.localtime](xocto/localtime.py) for more details, including examples and in depth technical details.
 
-## Contributing
+## Development
 
-Create and activate a virtualenv then:
+### Installation
+
+Create and activate a Python 3.8 virtualenv then run:
 
 ```sh
-make
+make install
 ```
 
-Test package locally with:
+to install the package including development and testing dependencies
 
-    make test
+### Running tests
 
-and:
+Run the test suite with:
+
+```sh
+make test
+```
+
+### Running static analysis
+
+Use these make commands
 
 ```sh
 make lint
+make black
+make isort
 ```
 
-Development docker images can be built with:
+Docker images for these jobs can be built with:
 
 ```sh
 make docker_images
 ```
 
-which creates separate images for pytest, isort and black. Each can be run like so:
+This creates separate images for pytest, isort and black. Each can be run like
+so:
 
 ```sh
 docker run -v `pwd`:/opt/app xocto/pytest
@@ -154,7 +167,7 @@ docker run -v `pwd`:/opt/app xocto/isort
 docker run -v `pwd`:/opt/app xocto/black
 ```
 
-## Release new version
+### Publishing
 
 Release to PyPI by:
 
