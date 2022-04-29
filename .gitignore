@@ -16,6 +16,7 @@ develop-eggs
 .python-version
 .idea
 .cache
+.hypothesis
 
 # Local temporary files
 .DS_Store

@@ -37,12 +37,12 @@ setup(
         "python-dateutil==2.8.2",
     ],
     extras_require={
-        "dev": ["wheel==0.29.0", "twine==1.8.1", "black==22.3.0", "isort==5.10.1"],
+        "dev": ["wheel==0.37.1", "twine==4.0.0", "black==22.3.0", "isort==5.10.1"],
         "test": [
             "flake8==4.0.1",
-            "pytest==7.0.1",
+            "pytest==7.1.2",
             "pytest-django==4.5.2",
-            "hypothesis==5.49.0",
+            "hypothesis==6.45.1",
             "time-machine==2.6.0",
         ],
     },
