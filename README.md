@@ -7,7 +7,7 @@ CI status:
 
 [![CircleCI](https://circleci.com/gh/octoenergy/xocto/tree/master.svg?style=svg)](https://circleci.com/gh/octoenergy/xocto/tree/master)
 
-PyPI detail page: https://pypi.python.org/pypi/xocto
+PyPI detail page: <https://pypi.python.org/pypi/xocto>
 
 ## Functionality
 
@@ -76,7 +76,8 @@ from xocto.ranges import Range, RangeBoundaries
 [<Range: [3,4)>, <Range: [4,5)>]
 ```
 
-See [xocto.ranges](xocto/ranges.py) for more details, including examples and in depth technical details.
+See [`xocto.ranges`](xocto/ranges.py) for more details, including examples and in
+depth technical details.
 
 ### Numbers
 
@@ -95,11 +96,14 @@ See [xocto.numbers](xocto/numbers.py) for more details, including examples and i
 
 ### The localtime module
 
-This module is a battle tested and well reviewed module for working with dates, times and timezones.
+This module is a battle tested and well reviewed module for working with dates,
+times and timezones.
 
-It's been over the years internally in Kraken Technologies, and is used heavily internally.
+It's been over the years internally in Kraken Technologies, and is used heavily
+internally.
 
-The main API it presents is composed of a series of functions which accept a date/datetime object, and manipulate it in one form or another.
+The main API it presents is composed of a series of functions which accept a
+date/datetime object, and manipulate it in one form or another.
 
 Examples of a few of those:
 
@@ -120,38 +124,50 @@ See [xocto.localtime](xocto/localtime.py) for more details, including examples a
 
 Create and activate a virtualenv then:
 
-    $ make
+```sh
+make
+```
 
 Test package locally with:
 
-    $ make test
+    make test
 
 and:
 
-    $ make lint
+```sh
+make lint
+```
 
 Development docker images can be built with:
 
-    $ make docker_images
+```sh
+make docker_images
+```
 
 which creates separate images for pytest, isort and black. Each can be run like so:
 
-    $ docker run -v `pwd`:/opt/app xocto/pytest
-    $ docker run -v `pwd`:/opt/app xocto/isort
-    $ docker run -v `pwd`:/opt/app xocto/black
+```sh
+docker run -v `pwd`:/opt/app xocto/pytest
+docker run -v `pwd`:/opt/app xocto/isort
+docker run -v `pwd`:/opt/app xocto/black
+```
 
 ## Release new version
 
 Release to PyPI by:
 
-1.  Bumping the version in `setup.py`
+1. Bumping the version in `setup.py`
 
-2.  Updating `CHANGELOG.md`
+2. Updating `CHANGELOG.md`
 
-3.  Committing
+3. Committing:
 
-        $ git commit -am "Bump version to v..."
+   ```sh
+   git commit -am "Bump version to v..."
+   ```
 
-4.  Running:
+4. Running:
 
-        $ make publish
+   ```sh
+   make publish
+   ```
