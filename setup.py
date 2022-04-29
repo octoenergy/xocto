@@ -13,11 +13,11 @@ with open(path.join(REPO_ROOT, "README.md"), encoding="utf-8") as f:
 setup(
     name="xocto",
     version=VERSION,
-    description="Octopus Energy Python service utilities",
+    description="Kraken Technologies Python service utilities",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/octoenergy/xocto",
-    author="Octopus Energy",
+    author="Kraken Technologies",
     author_email="talent@octopus.energy",
     license="MIT",
     classifiers=[

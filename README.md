@@ -1,6 +1,7 @@
 # xocto - utilities for Python services
 
-This repo houses various shared utilities for Python services at Octopus Energy.
+This repo houses various shared utilities for Python services at Kraken
+Technologies.
 
 CI status:
 
@@ -13,7 +14,7 @@ PyPI detail page: https://pypi.python.org/pypi/xocto
 ### Event publishing
 
 Use `events.publish` to publish application events. These will be logged as JSON
-to a logger named "events". 
+to a logger named "events".
 
 Sample usage:
 
@@ -21,9 +22,9 @@ Sample usage:
 from xocto import events
 
 events.publish(
-    event="ACCOUNT.CREATED", 
+    event="ACCOUNT.CREATED",
     params={
-        'name': 'Barry Chuckle', 
+        'name': 'Barry Chuckle',
         'quote_id': 'xyz123',
     },
     meta={
@@ -47,7 +48,7 @@ with events.Timer() as t:
 events.publish(
     event="SOMETHING.HAPPENED",
     meta={
-        "duration_in_ms": t.duration_in_ms 
+        "duration_in_ms": t.duration_in_ms
     }
 )
 ```
@@ -82,6 +83,7 @@ See [xocto.ranges](xocto/ranges.py) for more details, including examples and in 
 The `numbers` module is intended as your one-stop shop for all things numbers.
 
 An example of rounding a number to an arbitrary integer base:
+
 ```python
 from xocto.numbers import quantise
 
@@ -114,7 +116,6 @@ from xocto import localtime
 
 See [xocto.localtime](xocto/localtime.py) for more details, including examples and in depth technical details.
 
-
 ## Contributing
 
 Create and activate a virtualenv then:
@@ -127,7 +128,7 @@ Test package locally with:
 
 and:
 
-    $ make lint  
+    $ make lint
 
 Development docker images can be built with:
 
@@ -143,14 +144,14 @@ which creates separate images for pytest, isort and black. Each can be run like 
 
 Release to PyPI by:
 
-1. Bumping the version in `setup.py`
+1.  Bumping the version in `setup.py`
 
-2. Updating `CHANGELOG.md`
+2.  Updating `CHANGELOG.md`
 
-3. Committing
+3.  Committing
 
         $ git commit -am "Bump version to v..."
 
-4. Running: 
+4.  Running:
 
         $ make publish
