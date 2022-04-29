@@ -1,7 +1,7 @@
 from codecs import open
 from os import path
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
@@ -39,7 +39,7 @@ setup(
     extras_require={
         "dev": ["wheel==0.29.0", "twine==1.8.1", "black==22.3.0", "isort==5.10.1"],
         "test": [
-            "flake8==3.0.4",
+            "flake8==4.0.1",
             "pytest==7.0.1",
             "pytest-django==4.5.2",
             "hypothesis==5.49.0",

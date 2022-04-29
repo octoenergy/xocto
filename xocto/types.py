@@ -6,6 +6,7 @@ from typing import Generic, NoReturn, Tuple, TypeVar, Union
 
 from django.contrib.auth import models as auth_models
 from django.db import models
+from django.db.models.expressions import Combinable
 from django.http import HttpRequest
 from typing_extensions import Protocol
 
