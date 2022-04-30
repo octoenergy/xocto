@@ -1,19 +1,22 @@
 # xocto - utilities for Python services
 
-This repo houses various shared utilities for Python services at Octopus Energy.
+This repo houses various shared utilities for Python services at Kraken
+Technologies.
+
+This library works with Python 3.8 and above.
 
 CI status:
 
 [![CircleCI](https://circleci.com/gh/octoenergy/xocto/tree/master.svg?style=svg)](https://circleci.com/gh/octoenergy/xocto/tree/master)
 
-PyPI detail page: https://pypi.python.org/pypi/xocto
+PyPI detail page: <https://pypi.python.org/pypi/xocto>
 
 ## Functionality
 
 ### Event publishing
 
 Use `events.publish` to publish application events. These will be logged as JSON
-to a logger named "events". 
+to a logger named "events".
 
 Sample usage:
 
@@ -21,9 +24,9 @@ Sample usage:
 from xocto import events
 
 events.publish(
-    event="ACCOUNT.CREATED", 
+    event="ACCOUNT.CREATED",
     params={
-        'name': 'Barry Chuckle', 
+        'name': 'Barry Chuckle',
         'quote_id': 'xyz123',
     },
     meta={
@@ -47,7 +50,7 @@ with events.Timer() as t:
 events.publish(
     event="SOMETHING.HAPPENED",
     meta={
-        "duration_in_ms": t.duration_in_ms 
+        "duration_in_ms": t.duration_in_ms
     }
 )
 ```
@@ -75,13 +78,15 @@ from xocto.ranges import Range, RangeBoundaries
 [<Range: [3,4)>, <Range: [4,5)>]
 ```
 
-See [xocto.ranges](xocto/ranges.py) for more details, including examples and in depth technical details.
+See [`xocto.ranges`](xocto/ranges.py) for more details, including examples and in
+depth technical details.
 
 ### Numbers
 
 The `numbers` module is intended as your one-stop shop for all things numbers.
 
 An example of rounding a number to an arbitrary integer base:
+
 ```python
 from xocto.numbers import quantise
 
@@ -93,11 +98,14 @@ See [xocto.numbers](xocto/numbers.py) for more details, including examples and i
 
 ### The localtime module
 
-This module is a battle tested and well reviewed module for working with dates, times and timezones.
+This module is a battle tested and well reviewed module for working with dates,
+times and timezones.
 
-It's been over the years internally in Kraken Technologies, and is used heavily internally.
+It's been over the years internally in Kraken Technologies, and is used heavily
+internally.
 
-The main API it presents is composed of a series of functions which accept a date/datetime object, and manipulate it in one form or another.
+The main API it presents is composed of a series of functions which accept a
+date/datetime object, and manipulate it in one form or another.
 
 Examples of a few of those:
 
@@ -114,32 +122,52 @@ from xocto import localtime
 
 See [xocto.localtime](xocto/localtime.py) for more details, including examples and in depth technical details.
 
+## Development
 
-## Contributing
+### Installation
 
-Create and activate a virtualenv then:
+Create and activate a Python 3.8 virtualenv then run:
 
-    $ make
+```sh
+make install
+```
 
-Test package locally with:
+to install the package including development and testing dependencies
 
-    $ make test
+### Running tests
 
-and:
+Run the test suite with:
 
-    $ make lint  
+```sh
+make test
+```
 
-Development docker images can be built with:
+### Running static analysis
 
-    $ make docker_images
+Use these make commands
 
-which creates separate images for pytest, isort and black. Each can be run like so:
+```sh
+make lint
+make black
+make isort
+```
 
-    $ docker run -v `pwd`:/opt/app xocto/pytest
-    $ docker run -v `pwd`:/opt/app xocto/isort
-    $ docker run -v `pwd`:/opt/app xocto/black
+Docker images for these jobs can be built with:
 
-## Release new version
+```sh
+make docker_images
+```
+
+This creates separate images for pytest, isort and black. Each can be run like
+so:
+
+```sh
+docker run -v `pwd`:/opt/app xocto/pytest
+docker run -v `pwd`:/opt/app xocto/isort
+docker run -v `pwd`:/opt/app xocto/black
+```
+
+### Publishing
 
 Release to PyPI by:
 
@@ -147,10 +175,14 @@ Release to PyPI by:
 
 2. Updating `CHANGELOG.md`
 
-3. Committing
+3. Committing:
 
-        $ git commit -am "Bump version to v..."
+   ```sh
+   git commit -am "Bump version to v..."
+   ```
 
-4. Running: 
+4. Running:
 
-        $ make publish
+   ```sh
+   make publish
+   ```

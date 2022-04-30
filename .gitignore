@@ -13,8 +13,10 @@ eggs
 develop-eggs
 
 # Testing and local development
+.python-version
 .idea
 .cache
+.hypothesis
 
 # Local temporary files
 .DS_Store
