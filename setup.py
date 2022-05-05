@@ -5,7 +5,7 @@ from setuptools import setup
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
-VERSION = "1.5"
+VERSION = "1.6"
 
 with open(path.join(REPO_ROOT, "README.md"), encoding="utf-8") as f:
     long_description = f.read()

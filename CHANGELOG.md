@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6 - 2022-05-05
+
+Includes:
+
+- Support for Django v4 (currently only supports `USE_DEPRECATED_PYTZ = True`)
+
 ## v1.5 - 2022-04-14
 
 Includes:
