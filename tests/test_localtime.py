@@ -326,10 +326,10 @@ class TestAsLocaltime:
 
     def test_converts_utc_to_europe_london(self):
         utc_dt = factories.utc.dt("2018-05-28T23:30")
-        assert utc_dt.tzinfo.zone == "UTC"
+        assert str(utc_dt.tzinfo) == "UTC"
 
         local_dt = localtime.as_localtime(utc_dt)
-        assert local_dt.tzinfo.zone == "Europe/London"
+        assert str(local_dt.tzinfo) == "Europe/London"
 
 
 class TestIsUTC:

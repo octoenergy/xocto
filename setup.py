@@ -32,7 +32,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "pytz",
-        "django>=3.2,<4.0",
+        "django>=3.2,<5.0",
         "structlog>=20.2.0",
         "python-dateutil>=2.8.2",
     ],
