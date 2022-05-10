@@ -363,6 +363,12 @@ class TestIsLocalime:
         local_dt = timezone.get_current_timezone().normalize(local_dt)
         assert localtime.is_local_time(local_dt)
 
+    def test_datetime_utc(self):
+        dt = datetime.datetime(2016, 8, 5, tzinfo=datetime.timezone.utc)
+        # Should not raise:
+        #     AttributeError: 'datetime.timezone' object has no attribute '_utcoffset'
+        assert not localtime.is_local_time(dt)
+
 
 # Alias to make the pytest parameters fit on one line
 ldt = localtime.datetime
