@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.1 - 2022-05-12
+
+Includes:
+
+- Fix `is_local_time()` when using Python's datetime timezone UTC
+
 ## v1.6 - 2022-05-05
 
 Includes:
