@@ -345,6 +345,8 @@ def is_local_time(dt):
     """
     Test whether a given (timezone-aware) datetime is in local time or not.
     """
+    if dt.tzinfo is datetime_.timezone.utc:
+        dt = dt.replace(tzinfo=pytz.utc)
     current_timezone = timezone.get_current_timezone()
     return current_timezone.normalize(dt).tzinfo == dt.tzinfo
 
