@@ -9,7 +9,7 @@ from django.test import override_settings
 from django.utils import timezone
 
 from tests import factories
-from xocto import localtime
+from xocto import localtime, ranges
 
 
 class TestNow:
@@ -1023,3 +1023,71 @@ class TestDatetimeFromUTCUnixTimestamp:
         assert dt.day == 25
         assert dt.hour == 1
         assert dt.minute == 30
+
+
+class TestGetMonthDatetimeRanges:
+    def test_yields_correct_ranges(self):
+        result = list(
+            localtime.get_month_datetime_ranges(
+                range=ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2021, 1, 31),
+                    end=datetime.datetime(2022, 1, 31),
+                ),
+            )
+        )
+
+        expected_result = [
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 1, 31, 0, 0),
+                datetime.datetime(2021, 2, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 2, 1, 0, 0),
+                datetime.datetime(2021, 3, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 3, 1, 0, 0),
+                datetime.datetime(2021, 4, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 4, 1, 0, 0),
+                datetime.datetime(2021, 5, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 5, 1, 0, 0),
+                datetime.datetime(2021, 6, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 6, 1, 0, 0),
+                datetime.datetime(2021, 7, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 7, 1, 0, 0),
+                datetime.datetime(2021, 8, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 8, 1, 0, 0),
+                datetime.datetime(2021, 9, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 9, 1, 0, 0),
+                datetime.datetime(2021, 10, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 10, 1, 0, 0),
+                datetime.datetime(2021, 11, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 11, 1, 0, 0),
+                datetime.datetime(2021, 12, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 12, 1, 0, 0),
+                datetime.datetime(2022, 1, 1, 0, 0),
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2022, 1, 1, 0, 0),
+                datetime.datetime(2022, 1, 31, 0, 0),
+            ),
+        ]
+        assert result == expected_result

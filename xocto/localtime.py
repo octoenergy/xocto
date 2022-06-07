@@ -1,7 +1,7 @@
 import calendar
 import datetime as datetime_
 import decimal
-from typing import Generator, Optional, Sequence, Tuple, Union
+from typing import Generator, Iterable, Optional, Sequence, Tuple, Union
 
 import pytz
 from dateutil import tz
@@ -664,3 +664,22 @@ def translate_english_month_to_spanish(month: int) -> str:
         "December": "deciembre",
     }
     return month_name_lookup[month_name]
+
+
+def get_month_datetime_ranges(
+    range: ranges.FiniteDatetimeRange,
+) -> Iterable[ranges.FiniteDatetimeRange]:
+    """
+    Generate month start and end datetimes between a date range
+    """
+    start_at, end_at = range.start, range.end
+    while True:
+        next_start = start_at + relativedelta(months=1, day=1)
+        this_end = next_start
+
+        if end_at <= this_end:
+            yield ranges.FiniteDatetimeRange(start_at, end_at)
+            return
+
+        yield ranges.FiniteDatetimeRange(start_at, this_end)
+        start_at = next_start
