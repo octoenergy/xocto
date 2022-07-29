@@ -24,7 +24,7 @@ far_future = timezone.make_aware(datetime_.datetime.max - datetime_.timedelta(da
 # Timezone aware datetime in the far past.
 far_past = timezone.make_aware(datetime_.datetime.min + datetime_.timedelta(days=2))
 
-UTC = pytz.UTC
+UTC = datetime_.timezone.utc
 LONDON = pytz.timezone("Europe/London")
 
 ONE_DAY = datetime_.timedelta(days=1)
@@ -46,7 +46,7 @@ def as_utc(dt):
     """
     Wrapper for normalizing a datetime aware object into UTC.
     """
-    return as_localtime(dt, pytz.utc)
+    return as_localtime(dt, datetime_.timezone.utc)
 
 
 def now() -> datetime_.datetime:
@@ -278,6 +278,8 @@ def latest(_date=None, tz=None):
 
 def combine(_date: datetime_.date, _time: datetime_.time, tz) -> datetime_.datetime:
     combined_dt = datetime_.datetime.combine(_date, _time)
+    if tz is datetime_.timezone.utc:
+        return combined_dt.replace(tzinfo=tz)
     return tz.localize(combined_dt)
 
 
@@ -329,7 +331,7 @@ def make_aware_assuming_utc(dt):
     """
     Return a timezone-aware datetime (in UTC) given a naive datetime.
     """
-    return pytz.utc.localize(dt)
+    return timezone.make_aware(dt, timezone=UTC)
 
 
 def is_utc(dt: datetime_.datetime) -> bool:

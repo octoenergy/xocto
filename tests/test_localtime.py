@@ -854,6 +854,12 @@ class TestCombine:
                 datetime.datetime(2020, 1, 1, tzinfo=pytz.UTC),
             ),
             (
+                factories.date("1 Jan 2020"),
+                factories.time("00:00"),
+                "UTC",
+                datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc),
+            ),
+            (
                 factories.date("1 Jun 2020"),
                 factories.time("01:00"),
                 "Europe/London",
