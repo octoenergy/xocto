@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0 - 2022-07-31
+
+Includes:
+
+- The localtime functions now return a Python datetime timezone UTC instead of a pytz UTC
+
 ## v1.6.1 - 2022-05-12
 
 Includes:
