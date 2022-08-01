@@ -71,5 +71,6 @@ module = [
   "pandas.*",
   "setuptools.*",
   "xlrd.*",
+  "zoneinfo.*",
 ]
 ignore_missing_imports = true

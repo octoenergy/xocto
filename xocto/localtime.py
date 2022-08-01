@@ -3,9 +3,9 @@ from __future__ import annotations
 import calendar
 import datetime as datetime_
 import decimal
+import zoneinfo
 from typing import Generator, Optional, Sequence, Tuple, Union
 
-import pytz
 from dateutil import tz
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
@@ -19,7 +19,7 @@ far_future = timezone.make_aware(datetime_.datetime.max - datetime_.timedelta(da
 far_past = timezone.make_aware(datetime_.datetime.min + datetime_.timedelta(days=2))
 
 UTC = datetime_.timezone.utc
-LONDON = pytz.timezone("Europe/London")
+LONDON = zoneinfo.ZoneInfo("Europe/London")
 
 ONE_DAY = datetime_.timedelta(days=1)
 ONE_HOUR = datetime_.timedelta(hours=1)
@@ -42,7 +42,7 @@ def as_utc(dt: datetime_.datetime) -> datetime_.datetime:
     """
     Wrapper for normalizing a datetime aware object into UTC.
     """
-    return as_localtime(dt, datetime_.timezone.utc)
+    return as_localtime(dt, UTC)
 
 
 def now() -> datetime_.datetime:
@@ -60,16 +60,12 @@ def datetime(
     minute: int = 0,
     second: int = 0,
     microsecond: int = 0,
-    is_dst: bool | None = None,
 ) -> datetime_.datetime:
     """
     Return a datetime in the local timezone.
-
-    A boolean value is required for is_dst to unambiguously determine the appropriate dt during the
-    window when the hour goes back.
     """
     dt = datetime_.datetime(year, month, day, hour, minute, second, microsecond)
-    return timezone.make_aware(dt, is_dst=is_dst)
+    return timezone.make_aware(dt)
 
 
 # Returning dates
@@ -308,9 +304,7 @@ def combine(_date: datetime_.date, _time: datetime_.time, tz: timezone.zone) -> 
     It's a TZ-aware wrapper around datetime.datetime.combine.
     """
     combined_dt = datetime_.datetime.combine(_date, _time)
-    if tz is datetime_.timezone.utc:
-        return combined_dt.replace(tzinfo=tz)
-    return tz.localize(combined_dt)
+    return timezone.make_aware(combined_dt, timezone=tz)
 
 
 # Converting dates into datetime pairs
@@ -341,7 +335,7 @@ def month_boundaries(month: int, year: int) -> Tuple[datetime_.datetime, datetim
     """
     start_date = datetime_.date(year, month, 1)
     end_date = start_date + relativedelta(months=1)
-    return (midnight(start_date), midnight(end_date))
+    return midnight(start_date), midnight(end_date)
 
 
 def as_range(
@@ -361,7 +355,7 @@ def make_aware_assuming_local(dt: datetime_.datetime) -> datetime_.datetime:
     aware, assuming the current timezone if none is passed (which it isn't from this wrapper
     function). It will also raise an exception if the passed datetime is already timezone-aware.
     """
-    return timezone.make_aware(dt, is_dst=True)
+    return timezone.make_aware(dt)
 
 
 def make_aware_assuming_utc(dt: datetime_.datetime) -> datetime_.datetime:
@@ -375,19 +369,15 @@ def is_utc(dt: datetime_.datetime) -> bool:
     """
     Test whether a given (timezone-aware) datetime is in UTC time or not.
     """
-    assert dt.tzinfo, "Must be an aware datetime"
-    timezone_name = dt.tzinfo.tzname(None) or str(dt.tzinfo)
-    return timezone_name.upper() == "UTC"
+    return str(dt.tzinfo) == "UTC"
 
 
 def is_local_time(dt: datetime_.datetime) -> bool:
     """
     Test whether a given (timezone-aware) datetime is in local time or not.
     """
-    if dt.tzinfo is datetime_.timezone.utc:
-        dt = dt.replace(tzinfo=pytz.utc)
     current_timezone = timezone.get_current_timezone()
-    return current_timezone.normalize(dt).tzinfo == dt.tzinfo
+    return dt.tzinfo == current_timezone
 
 
 def within_date_range(
@@ -620,16 +610,12 @@ def is_dst(local_time: datetime_.datetime) -> bool:
     Indicate whether the given time (and timezone is in daylight savings time (DST or not).
 
     Raises:
-        pytz.exceptions.NonExistentTimeError if the time doesn't exist.
-        pytz.exceptions.AmbiguousTimeError if the time exists in both DST and non-DST
-        ValueError if `local_time` doesn't have any timezone information
+        ValueError if `local_time` is a naive datetime.
     """
-    if not local_time.tzinfo:
+    if timezone.is_naive(local_time):
         raise ValueError("Can't determine DST for a naive datetime")
 
-    localised_dt = local_time.tzinfo.normalize(local_time)  # type: ignore[attr-defined]
-
-    return bool(localised_dt.dst())
+    return bool(local_time.dst())
 
 
 def is_localtime_midnight(dt: datetime_.datetime, tz: Optional[datetime_.tzinfo] = None) -> bool:

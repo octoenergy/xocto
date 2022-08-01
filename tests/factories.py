@@ -56,7 +56,7 @@ def _utc_dt(value: str) -> datetime.datetime:
     UK date format is assumed, so DD/MM/YYYY works as expected.
     """
     _datetime = date_parser.parse(value, dayfirst=("/" in value))
-    return _datetime.replace(tzinfo=timezone.utc)
+    return _datetime.replace(tzinfo=datetime.timezone.utc)
 
 
 def _local_dt(value: str) -> datetime.datetime:
