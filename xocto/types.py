@@ -2,7 +2,7 @@
 Utility types to save having to redefine the same things over and over.
 """
 
-from typing import Generic, NoReturn, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, Generic, NoReturn, Tuple, TypeVar, Union
 
 from django.contrib.auth import models as auth_models
 from django.db import models
@@ -61,6 +61,22 @@ class AuthenticatedRequest(HttpRequest, Generic[User]):
     """
 
     user: User
+
+
+# Django does not like models which inherit from Generic.
+# This is the recommended workaround (https://code.djangoproject.com/ticket/33174).
+if TYPE_CHECKING:
+
+    U = TypeVar("U")
+
+    class GenericModel(models.Model, Generic[U]):
+        pass
+
+else:
+
+    class GenericModel(models.Model):
+        def __class_getitem__(cls, _):  # noqa: K106
+            return cls
 
 
 def assert_never(value: NoReturn) -> NoReturn:
