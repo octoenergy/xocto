@@ -2,7 +2,7 @@
 Utility types to save having to redefine the same things over and over.
 """
 
-from typing import Generic, NoReturn, Protocol, Tuple, TypeVar, Union
+from typing import Generic, Protocol, Tuple, TypeVar, Union
 
 from django.contrib.auth import models as auth_models
 from django.db import models
@@ -60,12 +60,3 @@ class AuthenticatedRequest(HttpRequest, Generic[User]):
     """
 
     user: User
-
-
-def assert_never(value: NoReturn) -> NoReturn:
-    """
-    Helper to ensure checks are exhaustive.
-
-    For more information see https://hakibenita.com/python-mypy-exhaustive-checking.
-    """
-    raise TypeError(f"Unhandled value: {value} ({type(value).__name__})")
