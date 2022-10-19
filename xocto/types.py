@@ -2,13 +2,12 @@
 Utility types to save having to redefine the same things over and over.
 """
 
-from typing import Generic, NoReturn, Tuple, TypeVar, Union
+from typing import Generic, NoReturn, Protocol, Tuple, TypeVar, Union
 
 from django.contrib.auth import models as auth_models
 from django.db import models
 from django.db.models.expressions import Combinable
 from django.http import HttpRequest
-from typing_extensions import Protocol
 
 # A type variable which can be used in generic types, and represents a Django model of some
 # description
