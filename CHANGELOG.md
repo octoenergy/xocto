@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.1 - 2022-11-25
+
+Includes:
+- Add common pact testing fixture helpers.
+
 ## v2.0 - 2022-07-31
 
 Includes:
