@@ -38,7 +38,19 @@ setup(
         "pact-python>=1.6.0",
     ],
     extras_require={
-        "dev": ["wheel==0.37.1", "twine==4.0.0", "black==22.3.0", "isort==5.10.1"],
+        "dev": [
+            "wheel==0.37.1",
+            "twine==4.0.0",
+            "black==22.3.0",
+            "isort==5.10.1",
+            "boto3==1.24.94",
+            "botocore==1.27.94",
+            "mypy-boto3-s3==1.26.0.post1",
+            "openpyxl==3.0.10",
+            "pandas==1.5.1",
+            "python-magic==0.4.27",
+            "xlrd==2.0.1",
+        ],
         "test": [
             "flake8==4.0.1",
             "pytest==7.1.2",
