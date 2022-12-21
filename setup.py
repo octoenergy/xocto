@@ -57,6 +57,8 @@ setup(
             "pytest-django==4.5.2",
             "hypothesis==6.45.1",
             "time-machine==2.6.0",
+            "moto[s3,sqs]==4.0.9",
+            "pytest-mock==3.10.0",
         ],
     },
 )
