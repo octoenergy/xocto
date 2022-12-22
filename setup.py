@@ -5,7 +5,7 @@ from setuptools import setup
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
-VERSION = "2.0"
+VERSION = "3.0"
 
 with open(path.join(REPO_ROOT, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
@@ -38,13 +38,27 @@ setup(
         "pact-python>=1.6.0",
     ],
     extras_require={
-        "dev": ["wheel==0.37.1", "twine==4.0.0", "black==22.3.0", "isort==5.10.1"],
+        "dev": [
+            "wheel==0.37.1",
+            "twine==4.0.0",
+            "black==22.3.0",
+            "isort==5.10.1",
+            "boto3==1.24.94",
+            "botocore==1.27.94",
+            "mypy-boto3-s3==1.26.0.post1",
+            "openpyxl==3.0.10",
+            "pandas==1.5.1",
+            "python-magic==0.4.27",
+            "xlrd==2.0.1",
+        ],
         "test": [
             "flake8==4.0.1",
             "pytest==7.1.2",
             "pytest-django==4.5.2",
             "hypothesis==6.45.1",
             "time-machine==2.6.0",
+            "moto[s3,sqs]==4.0.9",
+            "pytest-mock==3.10.0",
         ],
     },
 )
