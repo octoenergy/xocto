@@ -1,5 +1,27 @@
 # Changelog
 
+## v2.2 - 2022-12-22
+
+Includes:
+
+- Remove the assert_never helper ([#16](https://github.com/octoenergy/xocto/pull/16))
+- Add common pact testing test fixtures #18 ([#18](https://github.com/octoenergy/xocto/pull/18))
+- Add S3 reusable code ([#19](https://github.com/octoenergy/xocto/pull/19))
+
+Starting from this release, this project will be versioned using [Semantic Versioning ](https://semver.org/):
+
+> Given a version number MAJOR.MINOR.PATCH, increment the:
+> * MAJOR version when you make incompatible API changes
+> * MINOR version when you add functionality in a backwards compatible manner
+> * PATCH version when you make backwards compatible bug fixes
+> * Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
+In practice this has been happening already, but we are now making it official.
+
+## v2.1 - 2022-11-25
+
+This is an unknown release, mentioned here for the sake of completeness.
+
 ## v2.0 - 2022-07-31
 
 Includes:
