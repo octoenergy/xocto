@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.2.1 - 2022-12-23
+
+Includes:
+
+- A small fix to publish the storage module in setup.py
+- README update
+
 ## v2.2 - 2022-12-22
 
 Includes:
