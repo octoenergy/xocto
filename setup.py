@@ -27,7 +27,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.8",
     ],
-    packages=["xocto", "xocto.events"],
+    packages=["xocto", "xocto.events", "xocto.storage"],
     package_data={"xocto": ["py.typed"]},
     zip_safe=False,
     install_requires=[
