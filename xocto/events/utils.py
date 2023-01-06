@@ -5,7 +5,7 @@ __all__ = ["Timer"]
 
 class Timer(object):
     """
-    Context manager to allow easy timing of events
+    Context manager to allow easy timing of events.
     """
 
     def __enter__(self):
