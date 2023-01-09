@@ -1,4 +1,4 @@
 class SettlementPeriodError(Exception):
     """
-    Basic exception raised while converting tz-aware datetime
+    Basic exception raised while converting tz-aware datetime.
     """

@@ -133,7 +133,7 @@ Here's and example of how to use the main functionalities, such as upload and do
 ```python
 from xocto.storage import storage
 
-def upoad_file():
+def upload_file():
     file_name = "file_name"
     contents = "contents"  # Contents can be AnyStr or ReadableBinaryFile
     storage_provider = storage.from_uri("s3-destination-uri")
@@ -145,7 +145,6 @@ def download_file():
    storage_provider = storage.S3FileStore("bucket-name")
    storage_provider.download_file("a/b/c.pdf")
 ```
-
 
 ## Development
 

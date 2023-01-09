@@ -4,14 +4,14 @@ from django.db.migrations.loader import MigrationLoader
 
 def check_migrations():
     """
-    Check if there are any migrations that haven't been applied yet
+    Check if there are any migrations that haven't been applied yet.
     """
     return _num_unapplied_migrations() == 0
 
 
 def _num_unapplied_migrations():
     """
-    Return the number of unapplied migrations
+    Return the number of unapplied migrations.
     """
     connection = connections[DEFAULT_DB_ALIAS]
     loader = MigrationLoader(connection)

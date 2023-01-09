@@ -16,14 +16,14 @@ METADATA = {
 
 def publish(event, params=None, meta=None, account=None, request=None):
     """
-    Publish an event
+    Publish an event.
 
     - `params` are values that were used to create the event (eg the path of a
       request)
     - `meta` are contextual values around the event (eg the IP address of the
       person making the request)
 
-    Note, structlog will add a timestamp
+    Note, structlog will add a timestamp.
     """
     payload = {"event": event}
     if params is not None:
@@ -53,7 +53,7 @@ def publish(event, params=None, meta=None, account=None, request=None):
 
 def _log(event):
     """
-    Log the event
+    Log the event.
     """
     event_ = event.copy()
     name = event_.pop("event")
@@ -62,7 +62,7 @@ def _log(event):
 
 def _request_meta(request):
     """
-    Extract relevant meta information from a request instance
+    Extract relevant meta information from a request instance.
     """
     meta = {"ip_address": request.META["REMOTE_ADDR"]}
     if "HTTP_USER_AGENT" in request.META:
