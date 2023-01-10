@@ -126,24 +126,27 @@ See [xocto.localtime](xocto/localtime.py) for more details, including examples a
 
 This module is used to communicate with AWS S3. It also includes a helper for file-like objects.
 
-It's been over the years internally in Kraken Technologies, and is heavily used internally.
+It's been used for years internally in Kraken Technologies.
 
-Here's and example of how to use the main functionalities, such as upload and download a file:
+Here's examples of how to use the main functionalities, such as uploading and downloading a file:
 
 ```python
+import typing
 from xocto.storage import storage
 
-def upload_file():
-    file_name = "file_name"
-    contents = "contents"  # Contents can be AnyStr or ReadableBinaryFile
-    storage_provider = storage.from_uri("s3-destination-uri")
-    storage_provider.store_file(
-        namespace="namespace", filename=file_name, contents=contents
-    )
 
-def download_file():
-   storage_provider = storage.S3FileStore("bucket-name")
-   storage_provider.download_file("a/b/c.pdf")
+def upload_file(bucket: str, namespace: str, filename: str, contents: str|typing.IO) -> None:
+    """Files can either be string or IO file buffers"""
+    file_store = storage.store(bucket, use_date_in_key_path=False)
+    file_store.store_file(
+        namespace=namespace, filename=filename, contents=contents
+    )
+    return
+
+
+def download_file(bucket: str, namespace: str, filename: str) -> bytes:
+    file_store = storage.store(bucket, use_date_in_key_path=False)
+    return file_store.fetch_file_contents(key_path=f"{namespace}/{filename}")
 ```
 
 ## Development
