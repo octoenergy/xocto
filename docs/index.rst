@@ -6,7 +6,7 @@
 xocto - utilities for Python services
 =====================================
 
-Various utilities used on Python services at Kraken Technologies. This library works with Python 3.8 and above.
+Proven utilities used on Python services at Kraken Technologies. This library works with Python 3.8 and above.
 
 PyPI detail page: https://pypi.python.org/pypi/xocto
 
@@ -14,14 +14,18 @@ PyPI detail page: https://pypi.python.org/pypi/xocto
    :maxdepth: 2
    :caption: Contents:
 
-   storage
-   development
+   xocto/events
+   xocto/localtime
+   xocto/numbers
+   xocto/ranges
+   xocto/storage
+   xocto/development
 
 
 Indices and tables
 ==================
 
-   * :ref:`genindex`
    * :ref:`search`
 
+.. * :ref:`genindex`
 .. * :ref:`modindex`

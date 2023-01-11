@@ -1,6 +1,6 @@
 # Development
 
-## Installation
+## Installation of development environment
 
 Create and activate a Python 3.8 virtualenv then run:
 

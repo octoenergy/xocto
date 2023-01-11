@@ -1,8 +1,10 @@
 # Storage
 
+## AWS S3 communication utility
+
 Storage is an AWS S3 communication utility. It also includes a helper for file-like objects. It's been used for years at Kraken Tech, comes extensive tests, and a growing set of documentation.
 
-## Basic Usage
+## Usage
 
 ```python
 import typing
