@@ -22,3 +22,6 @@ develop-eggs
 .DS_Store
 .localized
 *~
+
+# Sphinx docs
+docs/_build
