@@ -2,7 +2,7 @@
 
 ## One-stop shop for all things numbers
 
-The `numbers` module is intended as your one-stop shop for all things numbers.
+The `numbers` module is used to manipulate numbers, typically by rounding and simplifying them, in utilities-industry-standard ways.
 
 ## Usage
 
