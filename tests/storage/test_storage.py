@@ -1,5 +1,6 @@
 import builtins
 import os
+import datetime
 import shutil
 import tempfile
 from unittest import mock
@@ -747,6 +748,29 @@ class TestLocalFileStore:
         store = storage.LocalFileStore("bucket-name")
         fetch_url = store.fetch_url("some/key", version_id="some-version")
         assert fetch_url == "/media-url/bucket-name/some/some-version/key"
+
+
+    @mock.patch.object(storage.S3FileStore, "_get_boto_object")
+    def test_get_last_modified_given_path(self, get_boto_object):
+        """Fetch file should act on the given path.
+
+        It should not add the subdirectory to the start of the key.
+        """
+        bucket_name = "some-bucket"
+        directory = "folder"
+        store = storage.S3SubdirectoryFileStore(f"s3://{bucket_name}/{directory}")
+        base_key = "my/file.txt"
+
+        _last_modified = get_boto_object().last_modified
+
+        full_key = store.get_key(base_key).key
+        assert full_key == os.path.join(directory, base_key)
+
+        s3object = storage.S3Object(bucket_name, full_key)
+
+        store.get_last_modified(s3_object=s3object)
+
+        assert store.get_last_modified(s3_object=s3object) == _last_modified
 
 
 class TestFromUri:
