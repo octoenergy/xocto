@@ -1185,9 +1185,8 @@ class LocalFileStore(BaseS3FileStore):
         return file_stats.st_size
 
     def get_last_modified(self, *, s3_object: S3Object) -> datetime.datetime:
-        filepath = os.path.join(self.storage_root, s3_object.bucket_name, s3_object.key)
-        file_stats = os.stat(filepath)
-        return datetime.datetime.fromtimestamp(file_stats.st_mtime)
+        boto_object = self._get_boto_object(s3_object=s3_object)
+        return boto_object.last_modified
 
     def copy(self, *, s3_object: S3Object, destination: str) -> S3Object:
         shutil.copyfile(src=self._filepath("", s3_object.key), dst=self._filepath("", destination))

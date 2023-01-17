@@ -1,6 +1,5 @@
 import builtins
 import os
-import datetime
 import shutil
 import tempfile
 from unittest import mock
@@ -748,7 +747,6 @@ class TestLocalFileStore:
         store = storage.LocalFileStore("bucket-name")
         fetch_url = store.fetch_url("some/key", version_id="some-version")
         assert fetch_url == "/media-url/bucket-name/some/some-version/key"
-
 
     @mock.patch.object(storage.S3FileStore, "_get_boto_object")
     def test_get_last_modified_given_path(self, get_boto_object):
