@@ -701,7 +701,7 @@ class S3FileStore(BaseS3FileStore):
         boto_object = self._get_boto_object(s3_object=s3_object)
         return boto_object.content_length
 
-    def get_last_modified(self, *, s3_object: S3Object) -> datetime:
+    def get_last_modified(self, *, s3_object: S3Object) -> datetime.datetime:
         boto_object = self._get_boto_object(s3_object=s3_object)
         return boto_object.last_modified
 
@@ -1184,10 +1184,10 @@ class LocalFileStore(BaseS3FileStore):
         file_stats = os.stat(filepath)
         return file_stats.st_size
 
-    def get_last_modified(self, *, s3_object: S3Object) -> datetime:
+    def get_last_modified(self, *, s3_object: S3Object) -> datetime.datetime:
         filepath = os.path.join(self.storage_root, s3_object.bucket_name, s3_object.key)
         file_stats = os.stat(filepath)
-        return datetime.datetime(file_stats.st_mtime)
+        return datetime.datetime.fromtimestamp(file_stats.st_mtime)
 
     def copy(self, *, s3_object: S3Object, destination: str) -> S3Object:
         shutil.copyfile(src=self._filepath("", s3_object.key), dst=self._filepath("", destination))
