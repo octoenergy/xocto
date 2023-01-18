@@ -18,7 +18,9 @@ PyPI detail page: https://pypi.python.org/pypi/xocto
    xocto/localtime
    xocto/numbers
    xocto/ranges
+   xocto/pact_testing   
    xocto/storage
+   xocto/types
    xocto/development
 
 
