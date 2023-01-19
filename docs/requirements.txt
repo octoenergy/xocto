@@ -8,3 +8,4 @@ boto3==1.24.94
 botocore==1.27.94
 mypy-boto3-s3==1.26.0.post1
 openpyxl==3.0.10
+structlog==22.3
