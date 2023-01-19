@@ -8,9 +8,8 @@ The basic building block of the module is the `Range` class.
 
 A few examples:
 
-from xocto.ranges import Range, RangeBoundaries
-
 ```python
+from xocto.ranges import Range, RangeBoundaries
 > > > Range(0, 2, boundaries=RangeBoundaries.EXCLUSIVE_INCLUSIVE)
 > > > <Range: (0,2]>
 > > > 0 in Range(0, 2)
@@ -24,3 +23,12 @@ from xocto.ranges import Range, RangeBoundaries
 ```
 
 See [xocto.ranges](https://github.com/octoenergy/xocto/blob/master/xocto/ranges.py) for more details, including examples and in depth technical details.
+
+## API Reference
+
+```{eval-rst}
+.. automodule:: xocto.ranges
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```

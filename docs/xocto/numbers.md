@@ -14,3 +14,12 @@ from xocto.numbers import quantise
 ```
 
 See [xocto.numbers](https://github.com/octoenergy/xocto/blob/master/xocto/numbers.py) for more details, including examples and in depth technical details.
+
+## API Reference
+
+```{eval-rst}
+.. automodule:: xocto.numbers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```

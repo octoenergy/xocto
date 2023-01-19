@@ -18,3 +18,12 @@ from xocto import localtime
 ```
 
 See [xocto.localtime](https://github.com/octoenergy/xocto/blob/master/xocto/localtime.py) for more details, including examples and in depth technical details.
+
+## API Reference
+
+```{eval-rst}
+.. automodule:: xocto.localtime
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
