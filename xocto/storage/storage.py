@@ -3,6 +3,7 @@ from __future__ import annotations
 import abc
 import base64
 import dataclasses
+import datetime
 import hashlib
 import io
 import os
@@ -361,6 +362,10 @@ class BaseS3FileStore(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def get_last_modified(self, key_path: str) -> datetime.datetime:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def copy(self, *, s3_object: S3Object, destination: str) -> S3Object:
         raise NotImplementedError()
 
@@ -699,6 +704,10 @@ class S3FileStore(BaseS3FileStore):
     def get_size_in_bytes(self, *, s3_object: S3Object) -> int:
         boto_object = self._get_boto_object(s3_object=s3_object)
         return boto_object.content_length
+
+    def get_last_modified(self, key_path: str) -> datetime.datetime:
+        boto_object = self._get_boto_object_for_key(key=key_path)
+        return boto_object.last_modified
 
     def copy(self, *, s3_object: S3Object, destination: str) -> S3Object:
         extra_args = {}
@@ -1178,6 +1187,14 @@ class LocalFileStore(BaseS3FileStore):
         filepath = os.path.join(self.storage_root, s3_object.bucket_name, s3_object.key)
         file_stats = os.stat(filepath)
         return file_stats.st_size
+
+    def get_last_modified(self, key_path: str) -> datetime.datetime:
+        file_path = os.path.join(self.storage_root, self.bucket_name, key_path)
+        if not os.path.exists(file_path):
+            raise KeyDoesNotExist(f"Key {key_path} was not found at {file_path}")
+
+        file_stats = os.stat(file_path)
+        return datetime.datetime.fromtimestamp(file_stats.st_mtime)
 
     def copy(self, *, s3_object: S3Object, destination: str) -> S3Object:
         shutil.copyfile(src=self._filepath("", s3_object.key), dst=self._filepath("", destination))
