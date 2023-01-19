@@ -46,3 +46,11 @@ events.publish(
     account=account
 )
 ```
+
+## API Reference
+
+```{eval-rst}
+.. autofunction:: xocto.events.publish
+
+.. autofunction:: xocto.events.Timer
+```

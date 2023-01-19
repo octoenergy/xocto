@@ -4,7 +4,7 @@
 
 Storage is an AWS S3 communication utility. It also includes a helper for file-like objects. It's been used for years at Kraken Tech, comes with extensive tests, and a growing set of documentation.
 
-## Usage
+## Basic Usage
 
 ```python
 import typing
@@ -34,4 +34,13 @@ def download_file(
     return file_store.fetch_file_contents(
         key_path=f"{namespace}/{filename}"
     )
+```
+
+## API Reference
+
+```{eval-rst}
+.. automodule:: xocto.storage.storage
+   :members:
+   :undoc-members:
+   :show-inheritance:
 ```
