@@ -15,7 +15,7 @@ import sys
 
 import django
 
-sys.path.insert(0, os.path.abspath(".")) # for discovery of doc_settings.py
+sys.path.insert(0, os.path.abspath("."))  # for discovery of doc_settings.py
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "doc_settings"
 django.setup()
