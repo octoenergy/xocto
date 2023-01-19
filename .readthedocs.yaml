@@ -8,6 +8,8 @@ version: 2
 # Set the version of Python
 build:
   os: ubuntu-22.04
+  apt_packages:
+    - libmagic1
   tools:
     python: "3.10"
 
