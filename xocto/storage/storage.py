@@ -1440,6 +1440,12 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
         assert s3_object.bucket_name == self.bucket_name
         return len(self.fetch_file_contents(s3_object.key))
 
+    def get_last_modified(self, key_path: str) -> datetime.datetime:
+        """
+        Given this is used for testing purposes, it's not as relevant.  Just return current time.
+        """
+        return datetime.datetime.now()
+
 
 def store(
     bucket_name: str, use_date_in_key_path: bool = True, set_acl_bucket_owner: bool = False
