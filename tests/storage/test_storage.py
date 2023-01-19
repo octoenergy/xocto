@@ -440,7 +440,7 @@ class TestS3FileStore:
     @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
     def test_get_last_modified(self, get_boto_object_for_key):
         k = mock.Mock()
-        k.last_modified = datetime.datetime(2023,1,1,8,0,0,0)
+        k.last_modified = datetime.datetime(2023, 1, 1, 8, 0, 0, 0)
         get_boto_object_for_key.return_value = k
         store = storage.S3FileStore("bucket")
 
