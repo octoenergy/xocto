@@ -1,4 +1,5 @@
 import builtins
+import datetime
 import os
 import shutil
 import tempfile
@@ -436,6 +437,18 @@ class TestS3FileStore:
             OutputSerialization={"CSV": {"FieldDelimiter": ",", "RecordDelimiter": "\n"}},
         )
 
+    @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
+    def test_get_last_modified(self, get_boto_object_for_key):
+        k = mock.Mock()
+        k.last_modified = datetime.datetime(2023, 1, 1, 8, 0, 0, 0)
+        get_boto_object_for_key.return_value = k
+        store = storage.S3FileStore("bucket")
+
+        last_modified = store.get_last_modified("a/b/c.pdf")
+        assert get_boto_object_for_key.called
+        assert last_modified == k.last_modified
+        assert type(last_modified) == datetime.datetime
+
     def test_fetch_file_contents_using_s3_select_and_expect_output_in_json_format(self):
         store = storage.S3FileStore("some-bucket")
 
@@ -658,6 +671,16 @@ class TestLocalFileStore:
             # Test that fetching with the key path returned from `make_key_path` works as expected
             path = store.make_key_path(namespace="x", filepath="test.pdf")
             assert store.fetch_file_contents(path) == b"hello"
+
+    def test_get_last_modified(self):
+        with tempfile.TemporaryDirectory() as tdir:
+            store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=True)
+
+            __, path = store.store_file(namespace="x", filename="test.pdf", contents="hello")
+
+            last_modified = store.get_last_modified(path)
+            assert last_modified is not None
+            assert type(last_modified) == datetime.datetime
 
     @mock.patch.object(shutil, "copyfile")
     @mock.patch.object(os.path, "exists", return_value=False)
