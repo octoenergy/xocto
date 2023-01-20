@@ -50,6 +50,11 @@ setup(
             "pandas==1.5.1",
             "python-magic==0.4.27",
             "xlrd==2.0.1",
+            "mypy==0.991",
+            "types-python-dateutil==2.8.19.6",
+            "types-requests==2.28.11.8",
+            "types-pytz==2022.7.1.0",
+            "types-openpyxl==3.0.4.5",
         ],
         "test": [
             "flake8==4.0.1",

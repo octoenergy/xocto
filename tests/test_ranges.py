@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import re
 
@@ -245,6 +247,7 @@ def test_union_and_intersection_are_commutative(a: ranges.Range, b: ranges.Range
 def test_union_and_intersection_are_idempotent(a: ranges.Range, b: ranges.Range):
     union = a | b
     assume(union is not None)
+    assert union is not None
     assert union & a == a
     assert union & b == b
 
@@ -289,7 +292,7 @@ def test_range_difference_and_intersection_form_partition(a: ranges.Range, b: ra
             assert a_difference & b_difference is None
             assert a_difference.is_disjoint(b_difference)
             assert b_difference.is_disjoint(a_difference)
-            assert (a_difference | intersection | b_difference) == (a | b)
+            assert (a_difference | intersection | b_difference) == (a | b)  # type: ignore[operator]
 
 
 def _range_from_string(range_str: str) -> ranges.Range[int]:
@@ -323,7 +326,7 @@ def _range_from_string(range_str: str) -> ranges.Range[int]:
     return ranges.Range(start, end, boundaries=boundaries)
 
 
-def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[ranges.Range]:
+def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[int]:
     """
     Convenience method to make test declarations clearer.
 

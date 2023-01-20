@@ -36,6 +36,9 @@ black:
 isort:
 	isort --check-only .
 
+mypy:
+	mypy
+
 docker_images:
 	docker build -t xocto/pytest --target=pytest .
 	docker build -t xocto/isort --target=isort .

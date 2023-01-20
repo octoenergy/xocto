@@ -23,6 +23,11 @@ jobs:
             . ~/venv/bin/activate
             make lint
       - run:
+          name: Mypy
+          command: |
+            . ~/venv/bin/activate
+            make mypy
+      - run:
           name: Black
           command: |
             . ~/venv/bin/activate

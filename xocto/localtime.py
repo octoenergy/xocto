@@ -37,7 +37,7 @@ def as_localtime(dt, tz=None):
     """
     Convert a tz aware datetime to localtime.
 
-    Wrapper for the django.utils.timezone function, taking the same arguments.
+    Wrapper for the `django.utils.timezone` function, taking the same arguments.
     """
     return timezone.localtime(dt, timezone=tz)
 
