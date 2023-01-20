@@ -6,7 +6,7 @@
 xocto - utilities for Python services
 =====================================
 
-Proven utilities used on Python services at [Kraken Technologies](https://octopus.energy/kraken-tech-careers/). This library works with Python 3.8 and above.
+Proven utilities used on Python services at `Kraken Technologies <https://octopus.energy/kraken-tech-careers/>`_. This library works with Python 3.8 and above.
 
 PyPI detail page: https://pypi.python.org/pypi/xocto
 
