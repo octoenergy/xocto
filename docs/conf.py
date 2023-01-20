@@ -29,7 +29,7 @@ copyright = "2023, Kraken Tech"
 author = "Kraken Tech"
 
 # The full version, including alpha/beta/rc tags
-release = "2.2.2"
+release = "2.3.0"
 
 # -- General configuration ---------------------------------------------------
 
