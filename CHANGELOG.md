@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.2.2 - 2023-01-20
+
+Includes:
+
+- Addition of get_last_modified function ([#32](https://github.com/octoenergy/xocto/pull/32))
+
 ## v2.2.1 - 2022-12-23
 
 Includes:
