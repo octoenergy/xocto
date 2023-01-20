@@ -1,10 +1,11 @@
 # Changelog
 
-## v2.2.2 - 2023-01-20
+## v2.3.0 - 2023-01-20
 
 Includes:
 
 - Addition of get_last_modified function ([#32](https://github.com/octoenergy/xocto/pull/32))
+- Update project dependencies ([#34](https://github.com/octoenergy/xocto/pull/34))
 
 ## v2.2.1 - 2022-12-23
 
@@ -24,10 +25,11 @@ Includes:
 Starting from this release, this project will be versioned using [Semantic Versioning ](https://semver.org/):
 
 > Given a version number MAJOR.MINOR.PATCH, increment the:
-> * MAJOR version when you make incompatible API changes
-> * MINOR version when you add functionality in a backwards compatible manner
-> * PATCH version when you make backwards compatible bug fixes
-> * Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+>
+> - MAJOR version when you make incompatible API changes
+> - MINOR version when you add functionality in a backwards compatible manner
+> - PATCH version when you make backwards compatible bug fixes
+> - Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
 
 In practice this has been happening already, but we are now making it official.
 
