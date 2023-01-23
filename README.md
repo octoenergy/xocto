@@ -4,7 +4,7 @@ Proven utilities used on Python services at Kraken Technologies. This library wo
 
 CI status:
 
-[![CircleCI](https://circleci.com/gh/octoenergy/xocto/tree/master.svg?style=svg)](https://circleci.com/gh/octoenergy/xocto/tree/master)
+[![CircleCI](https://circleci.com/gh/octoenergy/xocto/tree/main.svg?style=svg)](https://circleci.com/gh/octoenergy/xocto/tree/main)
 
-PyPI detail page: <https://pypi.python.org/pypi/xocto>
-Documentation: <https://xocto.readthedocs.io/>
+- PyPI detail page: <https://pypi.python.org/pypi/xocto>
+- Documentation: <https://xocto.readthedocs.io/>
