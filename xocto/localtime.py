@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import calendar
 import datetime as datetime_
 import decimal
@@ -33,7 +35,9 @@ ONE_HOUR = datetime_.timedelta(hours=1)
 MIDNIGHT_TIME = datetime_.time(0, 0)
 
 
-def as_localtime(dt, tz=None):
+def as_localtime(
+    dt: datetime_.datetime, tz: timezone.zoneinfo.ZoneInfo | None = None
+) -> datetime_.datetime:
     """
     Convert a tz aware datetime to localtime.
 
@@ -42,7 +46,7 @@ def as_localtime(dt, tz=None):
     return timezone.localtime(dt, timezone=tz)
 
 
-def as_utc(dt):
+def as_utc(dt: datetime_.datetime) -> datetime_.datetime:
     """
     Wrapper for normalizing a datetime aware object into UTC.
     """
@@ -56,7 +60,16 @@ def now() -> datetime_.datetime:
     return as_localtime(timezone.now())
 
 
-def datetime(year, month, day, hour=0, minute=0, second=0, microsecond=0, is_dst=None):
+def datetime(
+    year: int,
+    month: int,
+    day: int,
+    hour: int = 0,
+    minute: int = 0,
+    second: int = 0,
+    microsecond: int = 0,
+    is_dst: bool | None = None,
+) -> datetime_.datetime:
     """
     Return a datetime in the local timezone.
 
@@ -70,7 +83,7 @@ def datetime(year, month, day, hour=0, minute=0, second=0, microsecond=0, is_dst
 # Returning dates
 
 
-def date(dt: datetime_.datetime, tz=None) -> datetime_.date:
+def date(dt: datetime_.datetime, tz: timezone.zoneinfo.ZoneInfo | None = None) -> datetime_.date:
     """
     Return the date of the given datetime in the given timezone, defaulting to local time.
 
@@ -87,56 +100,58 @@ def date(dt: datetime_.datetime, tz=None) -> datetime_.date:
     return as_localtime(dt, tz=tz).date()
 
 
-def today(tz=None) -> datetime_.date:
+def today(tz: timezone.zoneinfo.ZoneInfo | None = None) -> datetime_.date:
     """
     Return the current date in the provided timezone (or the local timezone if none is supplied).
     """
-    return date(timezone.now(), tz=tz)
+    return date(timezone.now(), tz)
 
 
-def yesterday(tz=None) -> datetime_.date:
+def yesterday(tz: timezone.zoneinfo.ZoneInfo | None = None) -> datetime_.date:
     """
     Return the previous date in the provided timezone (or the local timezone if none is supplied).
     """
-    return days_in_the_past(1, tz=tz)
+    return days_in_the_past(1, tz)
 
 
-def tomorrow(tz=None) -> datetime_.date:
+def tomorrow(tz: timezone.zoneinfo.ZoneInfo | None = None) -> datetime_.date:
     """
     Return the next date in the provided timezone (or the local timezone if none is supplied).
     """
-    return days_in_the_future(1, tz=tz)
+    return days_in_the_future(1, tz)
 
 
-def days_in_the_past(n: int, tz=None) -> datetime_.date:
+def days_in_the_past(n: int, tz: timezone.zoneinfo.ZoneInfo | None = None) -> datetime_.date:
     """
     Return n days before the current date (in the provided or local timezone).
     """
-    return today(tz=tz) - relativedelta(days=n)
+    return today(tz) - relativedelta(days=n)
 
 
-def days_in_the_future(n: int, tz=None) -> datetime_.date:
+def days_in_the_future(n: int, tz: timezone.zoneinfo.ZoneInfo | None = None) -> datetime_.date:
     """
     Return n days after the current date (in the provided or local timezone).
     """
-    return today(tz=tz) + relativedelta(days=n)
+    return today(tz) + relativedelta(days=n)
 
 
-def months_in_the_past(n: int, tz=None) -> datetime_.date:
+def months_in_the_past(n: int, tz: timezone.zoneinfo.ZoneInfo | None = None) -> datetime_.date:
     """
     Return n months before the current date (in the provided or local timezone).
     """
-    return today(tz=tz) - relativedelta(months=n)
+    return today(tz) - relativedelta(months=n)
 
 
-def months_in_the_future(n: int, tz=None) -> datetime_.date:
+def months_in_the_future(n: int, tz: timezone.zoneinfo.ZoneInfo | None = None) -> datetime_.date:
     """
     Return n months after the current date (in the provided or local timezone).
     """
-    return today(tz=tz) + relativedelta(months=n)
+    return today(tz) + relativedelta(months=n)
 
 
-def date_of_day_before(dt: datetime_.datetime, tz=None) -> datetime_.date:
+def date_of_day_before(
+    dt: datetime_.datetime, tz: timezone.zoneinfo.ZoneInfo | None = None
+) -> datetime_.date:
     """
     Return the date of the day before the datetime passed in.
 
@@ -151,7 +166,7 @@ def date_of_day_before(dt: datetime_.datetime, tz=None) -> datetime_.date:
     calling `.date()` on it and subtracting a day. If `tz` is not provided, the function will
     return the date before `dt` in the local time zone.
     """
-    return day_before(date(dt, tz=tz))
+    return day_before(date(dt, tz))
 
 
 def day_before(d: datetime_.date) -> datetime_.date:
@@ -175,7 +190,7 @@ def seconds_in_the_future(n: int, dt: Optional[datetime_.datetime] = None) -> da
     return dt + relativedelta(seconds=n)
 
 
-def seconds_in_the_past(n) -> datetime_.datetime:
+def seconds_in_the_past(n: int) -> datetime_.datetime:
     """
     Return a datetime of the number of specifed seconds in the past.
     """
@@ -195,16 +210,16 @@ def midnight(
     supplied then we use the local timezone).
     """
     if date_or_datetime is None:
-        date_: Date = today(tz=tz)
+        date_: Date = today(tz)
     elif isinstance(date_or_datetime, datetime_.datetime):
         # Although this function is meant to be used on dates, we want to handle datetimes
         # properly as well, as these are frequently passed in as a way of 'truncating' them to
         # midnight on that date.
         if timezone.is_naive(date_or_datetime):
             # Default to localtime if no tz provided, as_localtime takes tz aware args
-            date_ = date(timezone.make_aware(date_or_datetime), tz=tz)
+            date_ = date(timezone.make_aware(date_or_datetime), tz)
         else:
-            date_ = date(date_or_datetime, tz=tz)
+            date_ = date(date_or_datetime, tz)
     else:
         date_ = date_or_datetime
 
@@ -221,22 +236,24 @@ def next_midnight(
     This is intuitively what people think of as midnight.
     """
     if date_or_datetime is None:
-        date_: Date = today(tz=tz)
+        date_: Date = today(tz)
     elif isinstance(date_or_datetime, datetime_.datetime):
         # Although this function is meant to be used on dates, we want to handle datetimes
         # properly as well
         if timezone.is_naive(date_or_datetime):
             # Default to localtime if no tz provided, as_localtime takes tz aware args
-            date_ = date(timezone.make_aware(date_or_datetime), tz=tz)
+            date_ = date(timezone.make_aware(date_or_datetime), tz)
         else:
-            date_ = date(date_or_datetime, tz=tz)
+            date_ = date(date_or_datetime, tz)
     else:
         date_ = date_or_datetime
 
-    return midnight(date_ + datetime_.timedelta(days=1), tz=tz)
+    return midnight(date_ + datetime_.timedelta(days=1), tz)
 
 
-def midday(_date=None, tz=None) -> datetime_.datetime:
+def midday(
+    _date: datetime_.date | None = None, tz: timezone.zoneinfo.ZoneInfo | None = None
+) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for midday of the passed date.
 
@@ -244,12 +261,14 @@ def midday(_date=None, tz=None) -> datetime_.datetime:
     supplied then we use the local timezone).
     """
     if _date is None:
-        _date = today(tz=tz)
+        _date = today(tz)
 
     return datetime_from_date(_date, hour=12, tz=tz)
 
 
-def datetime_from_date(_date, hour, tz=None):
+def datetime_from_date(
+    _date: datetime_.date, hour: int, tz: timezone.zoneinfo.ZoneInfo | None = None
+) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for the hour of the passed date.
     """
@@ -257,14 +276,17 @@ def datetime_from_date(_date, hour, tz=None):
     return timezone.make_aware(naive_datetime, timezone=tz)
 
 
-def datetime_from_epoch_timestamp(timestamp, tz=None):
+def datetime_from_epoch_timestamp(
+    timestamp: int | float, tz: timezone.zoneinfo.ZoneInfo | None = None
+) -> datetime_.datetime:
     naive_datetime_in_utc = datetime_.datetime.utcfromtimestamp(timestamp)
     utc_dt = timezone.make_aware(naive_datetime_in_utc, timezone=UTC)
-    dt = timezone.localtime(utc_dt, timezone=tz)
-    return dt
+    return timezone.localtime(utc_dt, timezone=tz)
 
 
-def latest(_date=None, tz=None):
+def latest(
+    _date: datetime_.date | None = None, tz: timezone.zoneinfo.ZoneInfo | None = None
+) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for the latest representable datetime of the passed date.
 
@@ -276,7 +298,7 @@ def latest(_date=None, tz=None):
     return timezone.make_aware(naive_midnight, timezone=tz)
 
 
-def combine(_date: datetime_.date, _time: datetime_.time, tz) -> datetime_.datetime:
+def combine(_date: datetime_.date, _time: datetime_.time, tz: timezone.zone) -> datetime_.datetime:
     combined_dt = datetime_.datetime.combine(_date, _time)
     if tz is datetime_.timezone.utc:
         return combined_dt.replace(tzinfo=tz)
@@ -295,7 +317,7 @@ def date_boundaries(
     Note, be careful of using this with __range ORM queries as such queries are INCLUSIVE on the
     boundaries.
     """
-    return midnight(_date, tz=tz), next_midnight(_date, tz=tz)
+    return midnight(_date, tz), next_midnight(_date, tz)
 
 
 def month_boundaries(month: int, year: int) -> Tuple[datetime_.datetime, datetime_.datetime]:
@@ -315,10 +337,10 @@ def as_range(
 
     This gives values that can be passed to the ORM __range filter.
     """
-    return midnight(_date, tz=tz), latest(_date, tz=tz)
+    return midnight(_date, tz), latest(_date, tz)
 
 
-def make_aware_assuming_local(dt):
+def make_aware_assuming_local(dt: datetime_.datetime) -> datetime_.datetime:
     """
     Just a wrapper for Django's method, which will takes a naive datetime, and makes it timezone
     aware, assuming the current timezone if none is passed (which it isn't from this wrapper
@@ -327,7 +349,7 @@ def make_aware_assuming_local(dt):
     return timezone.make_aware(dt, is_dst=True)
 
 
-def make_aware_assuming_utc(dt):
+def make_aware_assuming_utc(dt: datetime_.datetime) -> datetime_.datetime:
     """
     Return a timezone-aware datetime (in UTC) given a naive datetime.
     """
@@ -343,7 +365,7 @@ def is_utc(dt: datetime_.datetime) -> bool:
     return timezone_name.upper() == "UTC"
 
 
-def is_local_time(dt):
+def is_local_time(dt: datetime_.datetime) -> bool:
     """
     Test whether a given (timezone-aware) datetime is in local time or not.
     """
@@ -353,7 +375,9 @@ def is_local_time(dt):
     return current_timezone.normalize(dt).tzinfo == dt.tzinfo
 
 
-def within_date_range(first_date, second_date, days=3):
+def within_date_range(
+    first_date: datetime_.date, second_date: datetime_.date, days: int = 3
+) -> bool:
     """
     Check if two dates are within a range from each other.
     """
@@ -362,7 +386,7 @@ def within_date_range(first_date, second_date, days=3):
 
 
 def quantise(
-    dt: datetime_.datetime, timedelta: datetime_.timedelta, rounding=decimal.ROUND_HALF_EVEN
+    dt: datetime_.datetime, timedelta: datetime_.timedelta, rounding: str = decimal.ROUND_HALF_EVEN
 ) -> datetime_.datetime:
     """
     'Round' a datetime to the nearest interval given by the `timedelta` argument.
@@ -385,18 +409,18 @@ def quantise(
     return as_localtime(quantised_dt)
 
 
-def nearest_half_hour(dt):
+def nearest_half_hour(dt: datetime_.datetime) -> datetime_.datetime:
     return quantise(dt, datetime_.timedelta(minutes=30))
 
 
-def is_last_day_of_month(_date):
+def is_last_day_of_month(_date: datetime_.date) -> bool:
     next_day = _date + datetime_.timedelta(days=1)
     if _date.month != next_day.month:
         return True
     return False
 
 
-def start_of_month(dt=None):
+def start_of_month(dt: datetime_.datetime | None = None) -> datetime_.datetime:
     """
     Return the start datetime of the month for dt passed - or of current month.
     """
@@ -405,7 +429,7 @@ def start_of_month(dt=None):
     return midnight(dt + relativedelta(day=1))
 
 
-def end_of_month(dt=None):
+def end_of_month(dt: datetime_.datetime | None = None) -> datetime_.datetime:
     """
     Return the start datetime of the month for dt passed - or of current month.
     """
@@ -414,7 +438,7 @@ def end_of_month(dt=None):
     return midnight(dt + relativedelta(day=1, months=1))
 
 
-def first_day_of_month(dt=None):
+def first_day_of_month(dt: datetime_.datetime | None = None) -> datetime_.date:
     """
     Return the start date of the month for dt passed - or of current month.
     """
@@ -423,7 +447,7 @@ def first_day_of_month(dt=None):
     return (dt + relativedelta(day=1)).date()
 
 
-def last_day_of_month(dt=None):
+def last_day_of_month(dt: datetime_.datetime | None = None) -> datetime_.date:
     """
     Return the last date of the month for dt passed - or of current month.
     """
@@ -440,7 +464,9 @@ def is_n_days_until_end_of_month(n_days: int) -> bool:
     return n_days_from_now.day == 1
 
 
-def is_date_within_date_range(date_in_question, start, end) -> bool:
+def is_date_within_date_range(
+    date_in_question: datetime_.date, start: datetime_.date, end: datetime_.date
+) -> bool:
     """
     Return whether a given date falls within the range of two other dates. This function assumes
     start < end.
@@ -448,7 +474,7 @@ def is_date_within_date_range(date_in_question, start, end) -> bool:
     return start <= date_in_question <= end
 
 
-def is_in_the_past(dt) -> bool:
+def is_in_the_past(dt: datetime_.datetime) -> bool:
     """
     Test whether a datetime is in the past.
 
@@ -461,7 +487,7 @@ def is_in_the_past(dt) -> bool:
     return dt <= now()
 
 
-def is_in_the_future(dt) -> bool:
+def is_in_the_future(dt: datetime_.datetime) -> bool:
     """
     Test whether a datetime is in the future.
     """
@@ -470,7 +496,7 @@ def is_in_the_future(dt) -> bool:
     return dt > now()
 
 
-def is_future_date(_date) -> bool:
+def is_future_date(_date: datetime_.date) -> bool:
     """
     Test whether a date is in the future.
     """
@@ -561,7 +587,7 @@ def date_iterator(
         date = date + datetime_.timedelta(days=1)
 
 
-def system_timezone():
+def system_timezone() -> tz.tzlocal:
     """
     Get the current system timezone.
     """
@@ -592,16 +618,16 @@ def is_localtime_midnight(dt: datetime_.datetime, tz: Optional[datetime_.tzinfo]
     Note, the supplied datetime, which should be timezone aware, may be in any timezone,
     providing it corresponds to the moment of midnight in the site's local time zone.
     """
-    return as_localtime(dt, tz=tz).time() == datetime_.time(0)
+    return as_localtime(dt, tz).time() == datetime_.time(0)
 
 
-def is_aligned_to_midnight(range: ranges.FiniteDatetimeRange, tz=None) -> bool:
+def is_aligned_to_midnight(
+    range: ranges.FiniteDatetimeRange, tz: timezone.zoneinfo.ZoneInfo | None = None
+) -> bool:
     """
     Return whether this range is aligned to localtime midnight.
     """
-    return all(
-        [is_localtime_midnight(range.start, tz=tz), is_localtime_midnight(range.end, tz=tz)]
-    )
+    return all([is_localtime_midnight(range.start, tz), is_localtime_midnight(range.end, tz)])
 
 
 def consolidate_into_intervals(dates: Sequence[Date]) -> Sequence[Tuple[Date, Date]]:

@@ -1,4 +1,9 @@
+from __future__ import annotations
+
+from typing import Any, Protocol
+
 import structlog
+from django import http
 from django.conf import settings
 
 logger = structlog.get_logger("events")
@@ -14,7 +19,17 @@ METADATA = {
 }
 
 
-def publish(event, params=None, meta=None, account=None, request=None):
+class Account(Protocol):
+    number: str
+
+
+def publish(
+    event: str,
+    params: dict | None = None,
+    meta: dict | None = None,
+    account: Account | None = None,
+    request: http.HttpRequest | None = None,
+) -> None:
     """
     Publish an event.
 
@@ -25,7 +40,7 @@ def publish(event, params=None, meta=None, account=None, request=None):
 
     Note, structlog will add a timestamp.
     """
-    payload = {"event": event}
+    payload: dict[str, Any] = {"event": event}
     if params is not None:
         payload["params"] = params
     if meta is None:
@@ -51,7 +66,7 @@ def publish(event, params=None, meta=None, account=None, request=None):
     _log(payload)
 
 
-def _log(event):
+def _log(event: dict) -> None:
     """
     Log the event.
     """
@@ -60,7 +75,7 @@ def _log(event):
     logger.info(name, **event_)
 
 
-def _request_meta(request):
+def _request_meta(request: http.HttpRequest) -> dict:
     """
     Extract relevant meta information from a request instance.
     """

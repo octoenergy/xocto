@@ -9,15 +9,15 @@ import requests
 
 
 class PactConsumerClient:
-    def __init__(self, base_url):
+    def __init__(self, base_url: str) -> None:
         self.base_url = base_url
 
     def post(
         self,
-        path,
-        data,
-        token=None,
-    ):
+        path: str,
+        data: dict,
+        token: str | None = None,
+    ) -> dict:
         url = self.base_url + path
         headers = {"Content-Type": "application/json"}
         if token:
@@ -35,7 +35,7 @@ def pact_service(
     pact_version: str,
     publish_to_broker: bool,
     pact_log_path: str = "pact_logs",
-):
+) -> pact.Pact:
     service = pact.Consumer(
         name=pact_consumer_name, tag_with_git_branch=True, version=pact_version
     ).has_pact_with(
@@ -64,7 +64,7 @@ def get_unique_version_hash() -> str | None:
     return version
 
 
-def _git_revision_hash():
+def _git_revision_hash() -> str:
     """
     Return the git revision hash for the current branch.
     """

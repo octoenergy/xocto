@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import decimal
 import random
 from typing import TypeVar
@@ -5,7 +7,7 @@ from typing import TypeVar
 from . import types
 
 
-def quantise(number, base, rounding=decimal.ROUND_HALF_EVEN):
+def quantise(number: int | float | str, base: int, rounding: str = decimal.ROUND_HALF_EVEN) -> int:
     """
     Round a number to an arbitrary integer base. For example:
     >>> quantise(256, 5)
@@ -50,7 +52,7 @@ def truncate_decimal_places(value: decimal.Decimal, places: int = 1) -> float:
 
 
 def round_decimal_places(
-    value: decimal.Decimal, places: int = 1, rounding=decimal.ROUND_HALF_UP
+    value: decimal.Decimal, places: int = 1, rounding: str = decimal.ROUND_HALF_UP
 ) -> decimal.Decimal:
     """
     Round a decimal to a given number of decimal places using a given rounding method.
@@ -77,7 +79,7 @@ def round_decimal_places(
     return value.quantize(decimal.Decimal(quantize_string), rounding=rounding)
 
 
-def round_to_integer(value: decimal.Decimal, rounding=decimal.ROUND_HALF_UP) -> int:
+def round_to_integer(value: decimal.Decimal, rounding: str = decimal.ROUND_HALF_UP) -> int:
     """
     Round a decimal to the nearest integer, using a given rounding method.
 

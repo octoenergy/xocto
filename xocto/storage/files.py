@@ -9,7 +9,7 @@ import hashlib
 import io
 import os
 import tempfile
-from typing import IO, Any
+from typing import IO, Any, Callable
 
 import openpyxl
 import pandas as pd
@@ -29,18 +29,22 @@ def size(file: IO) -> int:
     return size_
 
 
-def hashfile(file_handle, hasher=hashlib.sha256, blocksize=65536):
+def hashfile(
+    file_handle: IO,
+    hasher: Callable[..., hashlib._Hash] = hashlib.sha256,
+    blocksize: int = 65536,
+) -> str:
     """
     Get contents of file as hash. Use like so:
     >>> hashfile(open(myfile, 'rb'))
     ... 40c33eec0a307e7726992d3786f11a8c30309489455c33cfc14b36e6fbf7347b
     """
-    hasher = hasher()
+    hash_ = hasher()
     _buffer = file_handle.read(blocksize)
     while len(_buffer) > 0:
-        hasher.update(_buffer)
+        hash_.update(_buffer)
         _buffer = file_handle.read(blocksize)
-    return hasher.hexdigest()
+    return hash_.hexdigest()
 
 
 def convert_xlsx_to_csv(
@@ -141,7 +145,7 @@ def _get_csv_file_and_writer(
     return csv_file, csv.writer(csv_file, quoting=quoting, delimiter=delimiter)
 
 
-def remove_bom(string):
+def remove_bom(string: str) -> str:
     """
     Remove the BOM mark from the beginning of a string if it exists.
 

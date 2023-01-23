@@ -2,14 +2,14 @@ from django.db import DEFAULT_DB_ALIAS, connections
 from django.db.migrations.loader import MigrationLoader
 
 
-def check_migrations():
+def check_migrations() -> bool:
     """
     Check if there are any migrations that haven't been applied yet.
     """
     return _num_unapplied_migrations() == 0
 
 
-def _num_unapplied_migrations():
+def _num_unapplied_migrations() -> int:
     """
     Return the number of unapplied migrations.
     """

@@ -5,7 +5,7 @@ import enum
 import functools
 import itertools
 import operator
-from typing import Generic, Iterable, Iterator, List, Optional, Sequence, TypeVar, Union, cast
+from typing import Any, Generic, Iterable, Iterator, List, Optional, Sequence, TypeVar, Union, cast
 
 from . import types
 
@@ -209,7 +209,7 @@ class Range(Generic[T]):
     def __hash__(self) -> int:
         return hash((self.start, self.end, self.boundaries))
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Range):
             return False
 
@@ -492,13 +492,13 @@ class RangeSet(Generic[T]):
     def __repr__(self) -> str:
         return f"<RangeSet: {str(self)}>"
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, RangeSet):
             return False
 
         return self._ranges == other._ranges
 
-    def add(self, item: Range[T]):
+    def add(self, item: Range[T]) -> None:
         self._ranges = self._condense_range_list(itertools.chain(self._ranges, [item]))
 
     def _condense_range_list(self, source_ranges: Iterable[Range[T]]) -> List[Range[T]]:
@@ -526,7 +526,7 @@ class RangeSet(Generic[T]):
 
         return ranges
 
-    def discard(self, item: Range[T]):
+    def discard(self, item: Range[T]) -> None:
         """
         Discarding a range from a range set is equivalent to "cutting away" all the intersections
         of that range with the rangeset.
@@ -628,7 +628,7 @@ class RangeSet(Generic[T]):
         Get a rangeset representing the ranges between the ranges in this rangeset and infinite
         left and right bounds.
         """
-        complement = []
+        complement: list[Range] = []
 
         if not self:
             infinite_range: Range = Range(
@@ -795,7 +795,7 @@ class FiniteDateRange(FiniteRange[datetime.date]):
 
 def get_finite_datetime_ranges_from_timestamps(
     finite_datetime_range: FiniteDatetimeRange,
-    timestamps,
+    timestamps: list[datetime.datetime],
 ) -> Sequence[FiniteDatetimeRange]:
     """
     Given a datetime range and some timestamps, cut that period into
