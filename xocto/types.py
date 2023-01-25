@@ -2,7 +2,7 @@
 Utility types to save having to redefine the same things over and over.
 """
 
-from typing import Generic, Protocol, Tuple, TypeVar, Union
+from typing import Any, Generic, Protocol, Tuple, TypeVar, Union
 
 from django.contrib.auth import models as auth_models
 from django.db import models
@@ -37,19 +37,19 @@ class Comparable(Protocol[T]):
     basic operations.
     """
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         ...
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: Any) -> bool:
         ...
 
-    def __le__(self, other) -> bool:
+    def __le__(self, other: Any) -> bool:
         ...
 
-    def __gt__(self, other) -> bool:
+    def __gt__(self, other: Any) -> bool:
         ...
 
-    def __ge__(self, other) -> bool:
+    def __ge__(self, other: Any) -> bool:
         ...
 
 

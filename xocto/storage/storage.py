@@ -44,8 +44,6 @@ if TYPE_CHECKING:
     from mypy_boto3_s3.client import S3Client
 
 
-StorageFile = StreamingBody
-
 # This URL is returned from `fetch_url()` in cases where a legitimate URL
 # cannot be returned. For example, a legitimate URL cannot be returned
 # for files stored in the `MemoryFileStore` during testing.
@@ -157,7 +155,7 @@ class StreamingBodyIOAdapter(io.RawIOBase):
         # classes in the Union, like pickle.PickleBuffer.
         # See https://github.com/python/typeshed/blob/master/stdlib/_typeshed/__init__.pyi for the
         # definition of WriteableBuffer.
-        assert isinstance(buffer, bytearray | memoryview)
+        assert isinstance(buffer, (bytearray, memoryview))
 
         requested_size = len(buffer)
         data = self.streaming_body.read(requested_size)
@@ -292,7 +290,7 @@ class BaseS3FileStore(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def fetch_file(self, key_path: str, version_id: str | None = None) -> StorageFile:
+    def fetch_file(self, key_path: str, version_id: str | None = None) -> StreamingBody:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -541,7 +539,7 @@ class S3FileStore(BaseS3FileStore):
     def get_file_type(self, key_path: str) -> str:
         return self._get_boto_object_for_key(key=key_path).content_type
 
-    def fetch_file(self, key_path: str, version_id: str | None = None) -> StorageFile:
+    def fetch_file(self, key_path: str, version_id: str | None = None) -> StreamingBody:
         boto_object = self._get_boto_object_for_key(key=key_path, version_id=version_id)
         return boto_object.get()["Body"]
 
@@ -1086,7 +1084,7 @@ class LocalFileStore(BaseS3FileStore):
         mime = magic.Magic(mime=True)
         return mime.from_buffer(self.fetch_file_contents(key_path))
 
-    def fetch_file(self, key_path: str, version_id: str | None = None) -> StorageFile:
+    def fetch_file(self, key_path: str, version_id: str | None = None) -> StreamingBody:
         # If given an absolute path, use that, otherwise combine with the root and bucket. When
         # fetching an object from a path, we don't need to interpolate the date or namespace.
         if version_id:
@@ -1363,7 +1361,7 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
         mime = magic.Magic(mime=True)
         return mime.from_buffer(self.fetch_file_contents(key_path))
 
-    def fetch_file(self, key_path: str, version_id: str | None = None) -> StorageFile:
+    def fetch_file(self, key_path: str, version_id: str | None = None) -> StreamingBody:
         raw_stream = io.BytesIO(self.fetch_file_contents(key_path, version_id))
         return StreamingBody(raw_stream=raw_stream, content_length=files.size(raw_stream))
 

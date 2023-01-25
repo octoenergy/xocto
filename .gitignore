@@ -26,3 +26,6 @@ develop-eggs
 # Sphinx docs
 docs/_build
 docs/_static
+
+# Ctags
+tags

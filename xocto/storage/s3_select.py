@@ -133,7 +133,7 @@ def get_serializers_for_csv_file(
     compression_type: CompressionType,
     output_serializer: CSVOutputSerializer | JSONOutputSerializer,
     scan_range: ScanRange | None = None,
-) -> dict:
+) -> dict[str, dict[str, Any]]:
     """
     Returns input and output serialization dictionaries that should be used to perform a select_object_content query.
 
@@ -142,13 +142,6 @@ def get_serializers_for_csv_file(
     using byte range, you can expect the JSON output format to at least return one single row in each iteration. With
     CSV output format, there is a high chance of receiving output that has been chunked to a certain byte.
     """
-
-    compression_type_value = (
-        compression_type.value
-        if isinstance(compression_type, CompressionType)
-        else compression_type
-    )
-
     output_format = output_serializer.to_dict()
 
     if isinstance(output_serializer, CSVOutputSerializer):
@@ -156,10 +149,10 @@ def get_serializers_for_csv_file(
     else:
         output_serialization_format = {"JSON": output_format}
 
-    temp_dict = {
+    temp_dict: dict[str, dict[str, Any]] = {
         "input_serialization": {
             "CSV": input_serializer.to_dict(),
-            "CompressionType": compression_type_value,
+            "CompressionType": compression_type.value,
         },
         "output_serialization": output_serialization_format,
     }

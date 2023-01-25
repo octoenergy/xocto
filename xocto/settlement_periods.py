@@ -76,7 +76,7 @@ def _get_delivery_date(
         raise exceptions.SettlementPeriodError("Time zone not implemented")
 
 
-def _round_local_down_to_hh(local_time):
+def _round_local_down_to_hh(local_time: datetime.datetime) -> datetime.datetime:
     if local_time.minute < 30:
         return local_time - datetime.timedelta(minutes=local_time.minute)
     else:
@@ -141,7 +141,7 @@ def convert_utc_to_sp_and_date(
     return convert_local_to_sp_and_date(local_time, is_wholesale)
 
 
-def number_of_periods_in_timedelta(delta: datetime.timedelta):
+def number_of_periods_in_timedelta(delta: datetime.timedelta) -> float:
     """
     Return the number of half-hourly settlement periods in the given timedelta
     """

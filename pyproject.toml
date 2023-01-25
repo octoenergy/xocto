@@ -8,3 +8,68 @@ force_grid_wrap = 0
 use_parentheses = "True"
 line_length = 99
 skip_glob = "venv/*"
+
+[tool.mypy]
+# Specify which files to check.
+files = [
+  "xocto",
+  "tests",
+  "*.py",
+]
+
+# Output.
+show_error_codes = true
+
+# Strict mode; enables the following flags: 
+#   --check-untyped-defs
+#   --disallow-any-generics,
+#   --disallow-incomplete-defs
+#   --disallow-subclassing-any 
+#   --disallow-untyped-calls 
+#   --disallow-untyped-decorators,
+#   --disallow-untyped-defs,
+#   --no-implicit-reexport
+#   --strict-concatenate
+#   --strict-equality
+#   --warn-redundant-casts
+#   --warn-return-any
+#   --warn-unused-configs 
+#   --warn-unused-ignores
+strict = true
+
+# These flags enabled by `strict` are ones we're overriding.
+disallow_subclassing_any = false
+warn_return_any = false
+
+# Enable the following optional checks.
+enable_error_code = [
+  "ignore-without-code",
+  "redundant-expr",
+  "truthy-bool",
+  "unused-awaitable",
+]
+
+# Warnings.
+warn_unreachable = true
+
+# Don't force test functions to include types.
+[[tool.mypy.overrides]]
+module = [
+  "tests.*",
+]
+disallow_untyped_defs = false
+check_untyped_defs = false
+
+# Ignore errors from packages that don't have type annotations.
+[[tool.mypy.overrides]]
+module = [
+  "boto3.*",
+  "botocore.*",
+  "django.*",
+  "moto.*",
+  "pact.*",
+  "pandas.*",
+  "setuptools.*",
+  "xlrd.*",
+]
+ignore_missing_imports = true

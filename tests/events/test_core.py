@@ -15,7 +15,7 @@ def test_request_meta_includes_user_agent_if_set(rf):
     assert meta["user_agent"] == "xxx"
 
 
-Session = collections.namedtuple("session", "session_key")
+Session = collections.namedtuple("Session", "session_key")
 
 
 def test_request_meta_includes_session_key_if_set(rf):
