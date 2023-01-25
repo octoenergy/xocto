@@ -44,6 +44,7 @@ warn_return_any = false
 # Enable the following optional checks.
 enable_error_code = [
   "ignore-without-code",
+  "redundant-expr",
 ]
 
 # Warnings.
