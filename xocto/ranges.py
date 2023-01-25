@@ -794,7 +794,7 @@ class FiniteDateRange(FiniteRange[datetime.date]):
 
 
 def get_finite_datetime_ranges_from_timestamps(
-    finite_datetime_range: FiniteDatetimeRange,
+    finite_datetime_range: FiniteRange[datetime.datetime],
     timestamps: list[datetime.datetime],
 ) -> Sequence[FiniteDatetimeRange]:
     """
