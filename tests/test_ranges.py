@@ -297,6 +297,7 @@ def test_range_difference_and_intersection_form_partition(
             assert a_difference & b_difference is None
             assert a_difference.is_disjoint(b_difference)
             assert b_difference.is_disjoint(a_difference)
+            # Ignore types here as structuring this to appease mypy would make it v ugly.
             assert (a_difference | intersection | b_difference) == (a | b)  # type: ignore[operator]
 
 
