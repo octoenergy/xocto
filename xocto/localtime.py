@@ -606,7 +606,7 @@ def is_dst(local_time: datetime_.datetime) -> bool:
     if not local_time.tzinfo:
         raise ValueError("Can't determine DST for a naive datetime")
 
-    localised_dt = local_time.tzinfo.normalize(local_time)  # type: ignore
+    localised_dt = local_time.tzinfo.normalize(local_time)  # type: ignore[attr-defined]
 
     return bool(localised_dt.dst())
 

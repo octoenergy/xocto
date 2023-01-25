@@ -41,6 +41,11 @@ strict = true
 disallow_subclassing_any = false
 warn_return_any = false
 
+# Enable the following optional checks.
+enable_error_code = [
+  "ignore-without-code",
+]
+
 # Warnings.
 warn_unreachable = true
 
