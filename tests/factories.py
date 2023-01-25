@@ -1,4 +1,5 @@
 import datetime
+from typing import Any, Callable
 
 from dateutil import parser as date_parser
 from dateutil import relativedelta
@@ -12,7 +13,11 @@ class DateTimeFactory(object):
     A class for generating datetimes in a certain timezone.
     """
 
-    def __init__(self, str_to_dt_fn, now_fn):
+    def __init__(
+        self,
+        str_to_dt_fn: Callable[[str], datetime.datetime],
+        now_fn: Callable[[], datetime.datetime],
+    ):
         self._str_to_dt_fn = str_to_dt_fn
         self._now_fn = now_fn
 
@@ -25,12 +30,12 @@ class DateTimeFactory(object):
     def now(self) -> datetime.datetime:
         return self._now_fn()
 
-    def in_the_past(self, **kwargs) -> datetime.datetime:
+    def in_the_past(self, **kwargs: Any) -> datetime.datetime:
         if not kwargs:
             kwargs = {"days": 90}
         return self.now() - relativedelta.relativedelta(**kwargs)
 
-    def in_the_future(self, **kwargs) -> datetime.datetime:
+    def in_the_future(self, **kwargs: Any) -> datetime.datetime:
         if not kwargs:
             kwargs = {"days": 90}
         return self.now() + relativedelta.relativedelta(**kwargs)

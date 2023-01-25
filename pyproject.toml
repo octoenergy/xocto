@@ -20,14 +20,29 @@ files = [
 # Output.
 show_error_codes = true
 
-# Strictness.
-disallow_untyped_defs = true
+# Strict mode; enables the following flags: 
+#   --check-untyped-defs
+#   --disallow-any-generics,
+#   --disallow-incomplete-defs
+#   --disallow-subclassing-any 
+#   --disallow-untyped-calls 
+#   --disallow-untyped-decorators,
+#   --disallow-untyped-defs,
+#   --no-implicit-reexport
+#   --strict-concatenate
+#   --strict-equality
+#   --warn-redundant-casts
+#   --warn-return-any
+#   --warn-unused-configs 
+#   --warn-unused-ignores
+strict = true
+
+# These flags enabled by `strict` are ones we're overriding.
+disallow_subclassing_any = false
+warn_return_any = false
 
 # Warnings.
-warn_unused_ignores = true
 warn_unreachable = true
-warn_unused_configs = true
-warn_redundant_casts = true
 
 # Don't force test functions to include types.
 [[tool.mypy.overrides]]
@@ -35,6 +50,7 @@ module = [
   "tests.*",
 ]
 disallow_untyped_defs = false
+check_untyped_defs = false
 
 # Ignore errors from packages that don't have type annotations.
 [[tool.mypy.overrides]]

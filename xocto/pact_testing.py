@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+from typing import Any
 
 import pact
 import requests
@@ -15,9 +16,9 @@ class PactConsumerClient:
     def post(
         self,
         path: str,
-        data: dict,
+        data: dict[str, Any],
         token: str | None = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         url = self.base_url + path
         headers = {"Content-Type": "application/json"}
         if token:

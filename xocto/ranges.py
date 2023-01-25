@@ -30,7 +30,7 @@ class RangeBoundaries(enum.Enum):
         }[(left_exclusive, right_exclusive)]
 
 
-T = TypeVar("T", bound=types.Comparable)
+T = TypeVar("T", bound=types.Comparable)  # type: ignore[type-arg]
 
 
 @functools.total_ordering
@@ -184,7 +184,7 @@ class Range(Generic[T]):
                 raise ValueError("Invalid boundaries for range")
 
     @classmethod
-    def continuum(cls) -> Range:
+    def continuum(cls) -> Range[T]:
         """
         Return a range representing the continnum.
         """
@@ -628,10 +628,10 @@ class RangeSet(Generic[T]):
         Get a rangeset representing the ranges between the ranges in this rangeset and infinite
         left and right bounds.
         """
-        complement: list[Range] = []
+        complement: list[Range[T]] = []
 
         if not self:
-            infinite_range: Range = Range(
+            infinite_range: Range[T] = Range(
                 None, None, boundaries=RangeBoundaries.EXCLUSIVE_EXCLUSIVE
             )
             return RangeSet([infinite_range])
