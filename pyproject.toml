@@ -8,3 +8,44 @@ force_grid_wrap = 0
 use_parentheses = "True"
 line_length = 99
 skip_glob = "venv/*"
+
+[tool.mypy]
+# Specify which files to check.
+files = [
+  "xocto",
+  "tests",
+  "*.py",
+]
+
+# Output.
+show_error_codes = true
+
+# Strictness.
+disallow_untyped_defs = true
+
+# Warnings.
+warn_unused_ignores = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_redundant_casts = true
+
+# Don't force test functions to include types.
+[[tool.mypy.overrides]]
+module = [
+  "tests.*",
+]
+disallow_untyped_defs = false
+
+# Ignore errors from packages that don't have type annotations.
+[[tool.mypy.overrides]]
+module = [
+  "boto3.*",
+  "botocore.*",
+  "django.*",
+  "moto.*",
+  "pact.*",
+  "pandas.*",
+  "setuptools.*",
+  "xlrd.*",
+]
+ignore_missing_imports = true
