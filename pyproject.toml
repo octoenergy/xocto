@@ -45,6 +45,8 @@ warn_return_any = false
 enable_error_code = [
   "ignore-without-code",
   "redundant-expr",
+  "truthy-bool",
+  "unused-awaitable",
 ]
 
 # Warnings.
