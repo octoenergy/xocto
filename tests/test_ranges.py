@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 import re
+from typing import Any
 
 import pytest
 from hypothesis import assume, given
@@ -142,7 +143,7 @@ def test_default_boundaries():
 
 
 @given(valid_integer_range(), valid_integer_range())
-def test_range_is_disjoint(a: ranges.Range, b: ranges.Range):
+def test_range_is_disjoint(a: ranges.Range[Any], b: ranges.Range[Any]) -> None:
     assert a.intersection(b) is not None or a.is_disjoint(b)
 
 
@@ -238,13 +239,15 @@ def test_range_union(a_str, b_str, expected_str):
 
 
 @given(valid_integer_range(), valid_integer_range())
-def test_union_and_intersection_are_commutative(a: ranges.Range, b: ranges.Range):
+def test_union_and_intersection_are_commutative(
+    a: ranges.Range[Any], b: ranges.Range[Any]
+) -> None:
     assert a | b == b | a
     assert a & b == b & a
 
 
 @given(valid_integer_range(), valid_integer_range())
-def test_union_and_intersection_are_idempotent(a: ranges.Range, b: ranges.Range):
+def test_union_and_intersection_are_idempotent(a: ranges.Range[Any], b: ranges.Range[Any]) -> None:
     union = a | b
     assume(union is not None)
     assert union is not None
@@ -253,7 +256,9 @@ def test_union_and_intersection_are_idempotent(a: ranges.Range, b: ranges.Range)
 
 
 @given(valid_integer_range(), valid_integer_range())
-def test_range_difference_and_intersection_form_partition(a: ranges.Range, b: ranges.Range):
+def test_range_difference_and_intersection_form_partition(
+    a: ranges.Range[Any], b: ranges.Range[Any]
+) -> None:
     a_difference = a - b
     b_difference = b - a
     intersection = a & b
@@ -379,12 +384,12 @@ def test_finite_range():
         (ranges.RangeSet([ranges.Range(1, 3), ranges.Range(0, 2)]), "{[0,3)}"),
     ],
 )
-def test_rangeset_construction(rangeset, expected_string):
+def test_rangeset_construction(rangeset: ranges.RangeSet[Any], expected_string: str) -> None:
     assert str(rangeset) == expected_string
 
 
 @given(valid_integer_range(), valid_integer_range())
-def test_rangeset_addition(a: ranges.Range, b: ranges.Range):
+def test_rangeset_addition(a: ranges.Range[Any], b: ranges.Range[Any]) -> None:
     a_set = ranges.RangeSet([a])
     b_set = ranges.RangeSet([b])
 

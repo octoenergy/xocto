@@ -9,7 +9,7 @@ import hashlib
 import io
 import os
 import tempfile
-from typing import IO, Any, Callable
+from typing import IO, Any, AnyStr, Callable
 
 import openpyxl
 import pandas as pd
@@ -18,7 +18,7 @@ import xlrd
 XLRD_FLOAT_TYPE = 2
 
 
-def size(file: IO) -> int:
+def size(file: IO[AnyStr]) -> int:
     """
     Return the size of the file in bytes.
     """
@@ -30,7 +30,7 @@ def size(file: IO) -> int:
 
 
 def hashfile(
-    file_handle: IO,
+    file_handle: IO[bytes],
     hasher: Callable[..., hashlib._Hash] = hashlib.sha256,
     blocksize: int = 65536,
 ) -> str:
@@ -54,7 +54,7 @@ def convert_xlsx_to_csv(
     errors: str | None = None,
     quoting: int | None = csv.QUOTE_ALL,
     delimiter: str | None = ",",
-) -> IO:
+) -> IO[str]:
     """
     Convert .xlsx files to CSV format using `openpyxl` and return a handle to the output file.
 
@@ -89,7 +89,7 @@ def convert_xls_to_csv(
     errors: str | None = None,
     quoting: int | None = csv.QUOTE_ALL,
     delimiter: str | None = ",",
-) -> IO:
+) -> IO[str]:
     """
     Convert .xls files to CSV format using `xlrd` and return a handle to the output file.
 
@@ -130,17 +130,17 @@ def _get_csv_file_and_writer(
     errors: str | None,
     quoting: int | None = csv.QUOTE_ALL,
     delimiter: str | None = ",",
-) -> tuple[IO, Any]:
+) -> tuple[IO[str], Any]:
     if quoting is None:
         quoting = csv.QUOTE_ALL
     if delimiter is None:
         delimiter = ","
 
     if csv_filepath:
-        csv_file = open(csv_filepath, mode="w+", encoding=encoding, errors=errors)
+        csv_file: IO[str] = open(csv_filepath, mode="w+", encoding=encoding, errors=errors)
     else:
         # `error' argument added in 3.8
-        csv_file = tempfile.NamedTemporaryFile(mode="w+", encoding=encoding)  # type: ignore
+        csv_file = tempfile.NamedTemporaryFile(mode="w+", encoding=encoding)
 
     return csv_file, csv.writer(csv_file, quoting=quoting, delimiter=delimiter)
 
@@ -154,7 +154,7 @@ def remove_bom(string: str) -> str:
     return string[3:] if string.startswith(str(codecs.BOM_UTF8)) else string
 
 
-def generate_csv_bytes(data: list, headers: list) -> bytes:
+def generate_csv_bytes(data: list[list[Any]], headers: list[Any]) -> bytes:
     """
     Generates a csv file and transforms it to bytes.
     reference: https://okhlopkov.medium.com/dont-save-a-file-on-disk-to-send-it-with-telegram-bot-d7cd591fec2d
@@ -177,8 +177,8 @@ def generate_csv_bytes(data: list, headers: list) -> bytes:
 
 def convert_csv_to_parquet(
     data: bytes,
-    na_values: str | dict | None = None,
-    data_type: str | dict | None = None,
+    na_values: str | dict[str, Any] | None = None,
+    data_type: str | dict[str, Any] | None = None,
     parse_dates: list[str] | None = None,
 ) -> bytes:
     """

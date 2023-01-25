@@ -25,8 +25,8 @@ class Account(Protocol):
 
 def publish(
     event: str,
-    params: dict | None = None,
-    meta: dict | None = None,
+    params: dict[str, Any] | None = None,
+    meta: dict[str, Any] | None = None,
     account: Account | None = None,
     request: http.HttpRequest | None = None,
 ) -> None:
@@ -66,7 +66,7 @@ def publish(
     _log(payload)
 
 
-def _log(event: dict) -> None:
+def _log(event: dict[str, Any]) -> None:
     """
     Log the event.
     """
@@ -75,7 +75,7 @@ def _log(event: dict) -> None:
     logger.info(name, **event_)
 
 
-def _request_meta(request: http.HttpRequest) -> dict:
+def _request_meta(request: http.HttpRequest) -> dict[str, Any]:
     """
     Extract relevant meta information from a request instance.
     """

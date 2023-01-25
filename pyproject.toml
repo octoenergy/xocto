@@ -21,13 +21,19 @@ files = [
 show_error_codes = true
 
 # Strictness.
-disallow_untyped_defs = true
+# Strict mode; enables the following flags: --warn-unused-configs, --disallow-any-generics,
+# --disallow-subclassing-any, --disallow-untyped-calls, --disallow-untyped-defs,
+# --disallow-incomplete-defs, --check-untyped-defs, --disallow-untyped-decorators,
+# --warn-redundant-casts, --warn-unused-ignores, --warn-return-any, --no-implicit-reexport,
+# --strict-equality, --strict-concatenate
+strict = true
+# These flags enabled by `strict` are ones we're overriding.
+check_untyped_defs = false
+disallow_subclassing_any = false
+warn_return_any = false
 
 # Warnings.
-warn_unused_ignores = true
 warn_unreachable = true
-warn_unused_configs = true
-warn_redundant_casts = true
 
 # Don't force test functions to include types.
 [[tool.mypy.overrides]]

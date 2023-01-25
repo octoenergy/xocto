@@ -133,7 +133,7 @@ def get_serializers_for_csv_file(
     compression_type: CompressionType,
     output_serializer: CSVOutputSerializer | JSONOutputSerializer,
     scan_range: ScanRange | None = None,
-) -> dict:
+) -> dict[str, dict[str, Any]]:
     """
     Returns input and output serialization dictionaries that should be used to perform a select_object_content query.
 
@@ -156,7 +156,7 @@ def get_serializers_for_csv_file(
     else:
         output_serialization_format = {"JSON": output_format}
 
-    temp_dict = {
+    temp_dict: dict[str, dict[str, Any]] = {
         "input_serialization": {
             "CSV": input_serializer.to_dict(),
             "CompressionType": compression_type_value,

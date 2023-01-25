@@ -13,7 +13,7 @@ def _get_fixture_filepath(filepath: str) -> str:
     return str(fixture_helpers.fixture_filepath(filepath))
 
 
-def _load_fixture(filepath: str, root: str | None = None, **kwargs: Any):
+def _load_fixture(filepath: str, root: str | None = None, **kwargs: Any) -> Any:
     """
     Return the contents of a fixture file.
 
