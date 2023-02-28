@@ -1,12 +1,21 @@
 # Changelog
 
+## v3.0.0 - 2023-02-28
+
+Includes:
+
+- Many type annotations added ([#33](https://github.com/octoenergy/xocto/pull/33)), breaking changes for some users means releasing this as a major version upgrade.
+- Type annotation for `get_finite_datetime_ranges_from_timestamps` updated ([#37](https://github.com/octoenergy/xocto/pull/37)).
+- Added the `localtime` function `period_exceeds_one_year` for determining whether a datetime period
+  exceeds one year ([#41](https://github.com/octoenergy/xocto/pull/41)).
+
 ## v2.4.0 - 2023-02-28
 
 Includes:
 
 - Many type annotations added ([#33](https://github.com/octoenergy/xocto/pull/33)).
 - Type annotation for `get_finite_datetime_ranges_from_timestamps` updated ([#37](https://github.com/octoenergy/xocto/pull/37)).
-- Added the `localtime` function `period_exceeds_one_year` for determining whether a datetime period 
+- Added the `localtime` function `period_exceeds_one_year` for determining whether a datetime period
   exceeds one year ([#41](https://github.com/octoenergy/xocto/pull/41)).
 
 ## v2.3.0 - 2023-01-20
