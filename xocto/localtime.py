@@ -692,3 +692,31 @@ def translate_english_month_to_spanish(month: int) -> str:
         "December": "deciembre",
     }
     return month_name_lookup[month_name]
+
+
+def period_exceeds_one_year(start_at: DateTime, end_at: DateTime) -> bool:
+    """
+    Returns true if the passed period exceeds one year.
+
+    Edge cases such as leap years and daylight savings time are handled, where a simple approach
+    using only relativedelta would not be sufficient.
+    """
+
+    # We take everything as localtime, and then remove the timezone information. This is to
+    # avoid false results when the period starts or ends on a leap day, or when an uneven
+    # number of DST changes happen in the year covered by the invoice.
+
+    start_at = as_localtime(start_at)
+    end_at = as_localtime(end_at)
+
+    tz_unaware_start_at = start_at.replace(tzinfo=None)
+    tz_unaware_end_at = end_at.replace(tzinfo=None)
+
+    one_year_after_start_at = tz_unaware_start_at + relativedelta(years=1)
+
+    if tz_unaware_start_at.month == 2 and tz_unaware_start_at.day == 29:
+        # Leap year case, on 29th Feb.
+        # One year after 29th Feb is 1st March (not 28th Feb).
+        one_year_after_start_at = one_year_after_start_at.replace(month=3, day=1)
+
+    return tz_unaware_end_at > one_year_after_start_at

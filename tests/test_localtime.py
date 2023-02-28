@@ -4,6 +4,7 @@ import decimal
 import pytest
 import pytz
 import time_machine
+from dateutil import relativedelta
 from django.conf import settings
 from django.test import override_settings
 from django.utils import timezone
@@ -1029,3 +1030,60 @@ class TestDatetimeFromUTCUnixTimestamp:
         assert dt.day == 25
         assert dt.hour == 1
         assert dt.minute == 30
+
+
+@pytest.mark.parametrize(
+    ("period_start_at", "first_dt_exceeding_one_year"),
+    [
+        (
+            # Basic case.
+            localtime.datetime(2021, 1, 1),
+            localtime.datetime(2022, 1, 1, microsecond=1),
+        ),
+        (
+            # A leap year.
+            localtime.datetime(2020, 1, 1),
+            localtime.datetime(2021, 1, 1, microsecond=1),
+        ),
+        (
+            # Start on a leap year, Feb 28th.
+            localtime.datetime(2020, 2, 28),
+            localtime.datetime(2021, 2, 28, microsecond=1),
+        ),
+        (
+            # Start on a leap year, Feb 29th.
+            localtime.datetime(2020, 2, 29),
+            localtime.datetime(2021, 3, 1, microsecond=1),  # !important
+        ),
+        (
+            # Start on a leap year, March 1st.
+            localtime.datetime(2020, 3, 1),
+            localtime.datetime(2021, 3, 1, microsecond=1),
+        ),
+        (
+            # End on a leap year, Feb 28th.
+            localtime.datetime(2019, 2, 28),
+            localtime.datetime(2020, 2, 28, microsecond=1),
+        ),
+        (
+            # End on a leap year, March 1st.
+            localtime.datetime(2019, 3, 1),
+            localtime.datetime(2020, 3, 1, microsecond=1),
+        ),
+        (
+            # Clock moves backward twice.
+            localtime.datetime(2021, 10, 31),
+            localtime.datetime(2022, 10, 31, microsecond=1),
+        ),
+        (
+            # Clock moves forward twice.
+            localtime.datetime(2021, 3, 28),
+            localtime.datetime(2022, 3, 28, microsecond=1),
+        ),
+    ],
+)
+def test_period_exceeds_one_year(period_start_at, first_dt_exceeding_one_year):
+    assert localtime.period_exceeds_one_year(period_start_at, first_dt_exceeding_one_year)
+    assert not localtime.period_exceeds_one_year(
+        period_start_at, first_dt_exceeding_one_year - relativedelta.relativedelta(microseconds=1)
+    )
