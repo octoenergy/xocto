@@ -36,6 +36,7 @@ setup(
         "structlog>=20.2.0",
         "python-dateutil>=2.8.2",
         "pact-python>=1.6.0",
+        "pyarrow>=11.0.0",
     ],
     extras_require={
         "dev": [
