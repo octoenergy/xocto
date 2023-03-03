@@ -56,6 +56,7 @@ setup(
             "types-requests==2.28.11.8",
             "types-pytz==2022.7.1.0",
             "types-openpyxl==3.0.4.5",
+            "ddtrace==1.9.0",
         ],
         "test": [
             "flake8==6.0.0",
