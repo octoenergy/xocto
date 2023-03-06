@@ -48,6 +48,7 @@ setup(
             "boto3==1.26.53",
             "botocore==1.29.53",
             "ddtrace==1.9.0",
+            "djangorestframework==3.14.0",
             "isort==5.11.4",
             "mypy-boto3-s3==1.26.0.post1",
             "mypy==0.991",
