@@ -32,11 +32,15 @@ setup(
     zip_safe=False,
     install_requires=[
         "django>=3.2,<5.0",
+        "openpyxl>=3.1.0",
         "pact-python>=1.6.0",
+        "pandas>=1.5.3",
         "pyarrow>=11.0.0",
         "python-dateutil>=2.8.2",
+        "python-magic>=0.4.27",
         "pytz",
         "structlog>=20.2.0",
+        "xlrd==2.0.1",
     ],
     extras_require={
         "dev": [
@@ -47,16 +51,12 @@ setup(
             "isort==5.11.4",
             "mypy-boto3-s3==1.26.0.post1",
             "mypy==0.991",
-            "openpyxl==3.0.10",
-            "pandas==1.5.3",
-            "python-magic==0.4.27",
             "twine==4.0.2",
             "types-openpyxl==3.0.4.5",
             "types-python-dateutil==2.8.19.6",
             "types-pytz==2022.7.1.0",
             "types-requests==2.28.11.8",
             "wheel==0.38.4",
-            "xlrd==2.0.1",
         ],
         "test": [
             "flake8==6.0.0",
