@@ -73,3 +73,31 @@ def _git_revision_hash() -> str:
     git_hash = subprocess.check_output(["git", "rev-parse", "HEAD"])
 
     return git_hash.decode("utf8").rstrip()
+
+
+def get_git_branch_name() -> str | None:
+    """
+    Get the current git branch name.
+    """
+    branch_name = _git_branch_name()
+
+    if "fatal: not a git repository" in branch_name:
+        return None
+
+    return branch_name
+
+
+def _git_branch_name() -> str:
+    """
+    This runs git rev-parse --abbrev-ref HEAD to get the current branch name.
+    """
+    git_branch = subprocess.check_output(
+        [
+            "git",
+            "rev-parse",
+            "--abbrev-ref",
+            "HEAD",
+        ]
+    )
+
+    return git_branch.decode("utf8").rstrip()
