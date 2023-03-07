@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.1.0 - 2023-03-07
+
+Includes:
+
+- Addition of get_git_branch_name function for PACT testing ([#40](https://github.com/octoenergy/xocto/pull/40))
+
 ## v3.0.0 - 2023-02-28
 
 Includes:
