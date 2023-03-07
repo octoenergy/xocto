@@ -1,5 +1,12 @@
 # Changelog
 
+## v3.1.0 - 2023-03-07
+
+- New function `pact_testing.get_git_branch_name()` for getting current git branch name [#40](https://github.com/octoenergy/xocto/pull/40)
+- New tracing module [#46](https://github.com/octoenergy/xocto/pull/46)
+- Updated dependencies so openpyxl, pandas, python-dateutil, python-magic, pytz, structlog, and xlrd are installed not just in dev [#48](https://github.com/octoenergy/xocto/pull/48)
+- Add pyarrow dependency [#44](https://github.com/octoenergy/xocto/pull/44)
+
 ## v3.0.0 - 2023-02-28
 
 Includes:
