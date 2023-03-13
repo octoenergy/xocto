@@ -5,7 +5,7 @@ from setuptools import setup
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
-VERSION = "3.1.0"
+VERSION = "3.1.1"
 
 with open(path.join(REPO_ROOT, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
@@ -51,6 +51,7 @@ setup(
             "isort==5.11.4",
             "mypy-boto3-s3==1.26.0.post1",
             "mypy==0.991",
+            "numpy==1.22.2",
             "twine==4.0.2",
             "types-openpyxl==3.0.4.5",
             "types-python-dateutil==2.8.19.6",
