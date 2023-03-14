@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.1.1 - 2023-03-13
+
+- Add numpy dependency [#52](https://github.com/octoenergy/xocto/pull/52)
+
 ## v3.1.0 - 2023-03-07
 
 - New function `pact_testing.get_git_branch_name()` for getting current git branch name [#40](https://github.com/octoenergy/xocto/pull/40)
