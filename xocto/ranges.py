@@ -795,7 +795,7 @@ class FiniteDateRange(FiniteRange[datetime.date]):
 
 def get_finite_datetime_ranges_from_timestamps(
     finite_datetime_range: FiniteRange[datetime.datetime],
-    timestamps: list[datetime.datetime],
+    timestamps: Iterable[datetime.datetime],
 ) -> Sequence[FiniteDatetimeRange]:
     """
     Given a datetime range and some timestamps, cut that period into
