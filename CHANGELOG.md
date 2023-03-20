@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.1.2 - 2023-03-20
+
+- `get_finite_datetime_ranges_from_timestamps()` now accepts an Iterable rather than a list. [#54](https://github.com/octoenergy/xocto/pull/54)
+
+## v3.1.1 - 2023-03-13
+
+- Added numpy as a dependency [#52](https://github.com/octoenergy/xocto/pull/52)
+
 ## v3.1.0 - 2023-03-07
 
 - New function `pact_testing.get_git_branch_name()` for getting current git branch name [#40](https://github.com/octoenergy/xocto/pull/40)
