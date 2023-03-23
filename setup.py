@@ -31,6 +31,7 @@ setup(
     package_data={"xocto": ["py.typed"]},
     zip_safe=False,
     install_requires=[
+        "ddtrace>=1.9.0",
         "django>=3.2,<5.0",
         "openpyxl>=3.1.0",
         "pact-python>=1.6.0",
@@ -47,7 +48,6 @@ setup(
             "black==22.12.0",
             "boto3==1.26.53",
             "botocore==1.29.53",
-            "ddtrace==1.9.0",
             "isort==5.11.4",
             "mypy-boto3-s3==1.26.0.post1",
             "mypy==0.991",
