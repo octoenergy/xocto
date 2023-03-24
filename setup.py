@@ -52,6 +52,7 @@ setup(
             "mypy-boto3-s3==1.26.0.post1",
             "mypy==0.991",
             "numpy==1.22.2",
+            "pre-commit>=3.2.0",
             "twine==4.0.2",
             "types-openpyxl==3.0.4.5",
             "types-python-dateutil==2.8.19.6",
