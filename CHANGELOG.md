@@ -1,4 +1,6 @@
 # Changelog
+## v3.1.3 - 2023-03-24
+- Added ddtrace as a dependency [#56](https://github.com/octoenergy/xocto/pull/56)
 
 ## v3.1.2 - 2023-03-20
 
