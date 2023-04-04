@@ -34,7 +34,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "ddtrace>=1.9.0",
-        "django>=4.0,<5.0",
+        "django>=4.0",
         "openpyxl>=3.1.0",
         "pact-python>=1.6.0",
         "pandas>=1.5.3",
