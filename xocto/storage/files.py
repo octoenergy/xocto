@@ -11,7 +11,6 @@ import os
 import tempfile
 from typing import IO, Any, AnyStr, Callable
 
-import openpyxl
 import pandas as pd
 import xlrd
 
@@ -69,6 +68,8 @@ def convert_xlsx_to_csv(
 
     """
     # data_only to extract values from formulae and not formulas themselves
+    import openpyxl
+
     workbook = openpyxl.load_workbook(xlsx_filepath, data_only=True, read_only=True)
     sheet = workbook.active
 
