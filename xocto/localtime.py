@@ -694,6 +694,25 @@ def translate_english_month_to_spanish(month: int) -> str:
     return month_name_lookup[month_name]
 
 
+def translate_english_month_to_german(month: int) -> str:
+    english_month_name = calendar.month_name[month]
+    month_name_lookup = {
+        "January": "Januar",
+        "February": "Februar",
+        "March": "März",
+        "April": "April",
+        "May": "Mai",
+        "June": "Juni",
+        "July": "Juli",
+        "August": "August",
+        "September": "September",
+        "October": "Oktober",
+        "November": "November",
+        "December": "Dezember",
+    }
+    return month_name_lookup[english_month_name]
+
+
 def period_exceeds_one_year(start_at: DateTime, end_at: DateTime) -> bool:
     """
     Returns true if the passed period exceeds one year.
