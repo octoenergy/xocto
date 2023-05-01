@@ -106,7 +106,7 @@ class Range(Generic[T]):
         True
 
     * The `union` function (which is aliased to the or (|) operator), will return a range which
-      covers two overlapping (or adjacent) ranges, or None if they are disjoint.
+      covers two overlapping (or touching) ranges, or None if they are disjoint.
         >>> Range(0, 2).union(Range(1, 3))
         <Range: [0,3)>
         >>> Range(0, 2) | Range(2, 4)
@@ -114,6 +114,8 @@ class Range(Generic[T]):
         >>> Range(0, 2) | Range(3, 4)
         None
         >>> Range(0, 2) | Range(2, 4, boundaries="(]")
+        None
+        >>> Range(0, 2, boundaries="[]") | Range(3, 4)  # Since Range doesn't understand that 2 and 3 are adjacent.
         None
 
     * The `difference` function (which is aliased to the subtraction (-) operator), will return a
