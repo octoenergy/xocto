@@ -1396,8 +1396,9 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
         return [self.get_key(path) for path in self.list_files(namespace=namespace)]
 
     def copy(self, *, s3_object: S3Object, destination: str) -> S3Object:
+        source_bucket = self.buffers[s3_object.bucket_name]
         bucket = self.buffers[self.bucket_name]
-        bucket[destination] = bucket[s3_object.key]
+        bucket[destination] = source_bucket[s3_object.key]
         return S3Object(bucket_name=self.bucket_name, key=destination)
 
     def rename(self, *, s3_object: S3Object, destination: str) -> S3Object:
