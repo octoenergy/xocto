@@ -565,6 +565,69 @@ class TestEndOfMonth:
         assert localtime.end_of_month(dt) == result
 
 
+def test_first_day_of_month():
+    assert localtime.first_day_of_month(datetime.datetime(2019, 10, 10)) == datetime.date(
+        2019, 10, 1
+    )
+
+
+def test_last_day_of_month():
+    assert localtime.last_day_of_month(datetime.datetime(2019, 10, 10)) == datetime.date(
+        2019, 10, 31
+    )
+
+
+@pytest.mark.parametrize(
+    "date, start, end, expected",
+    [
+        (
+            datetime.date(2019, 10, 12),
+            datetime.date(2019, 10, 12),
+            datetime.date(2019, 10, 12),
+            True,
+        ),
+        (
+            datetime.date(2019, 10, 12),
+            datetime.date(2019, 10, 12),
+            datetime.date(2019, 10, 14),
+            True,
+        ),
+        (
+            datetime.date(2019, 10, 12),
+            datetime.date(2019, 10, 8),
+            datetime.date(2019, 10, 12),
+            True,
+        ),
+        (
+            datetime.date(2019, 10, 12),
+            datetime.date(2019, 10, 8),
+            datetime.date(2019, 10, 14),
+            True,
+        ),
+        (
+            datetime.date(2019, 10, 7),
+            datetime.date(2019, 10, 8),
+            datetime.date(2019, 10, 14),
+            False,
+        ),
+        (
+            datetime.date(2019, 10, 15),
+            datetime.date(2019, 10, 8),
+            datetime.date(2019, 10, 14),
+            False,
+        ),
+        (
+            datetime.date(2019, 10, 15),
+            datetime.date(2019, 10, 20),
+            datetime.date(2019, 10, 6),
+            False,
+        ),
+    ],
+)
+def test_is_date_within_date_range(date, start, end, expected):
+    assert localtime.is_date_within_date_range(date, start, end) == expected
+
+
 class TestAsRange:
     def test_converts_date_to_correct_values(self):
         min_dt, max_dt = localtime.as_range(factories.date("2017-10-01"))
@@ -661,6 +724,16 @@ class TestDaysInTheFuture:
         assert localtime.days_in_the_future(0) == datetime.date.today()
         assert localtime.days_in_the_future(1) == localtime.tomorrow()
         assert localtime.days_in_the_future(-1) == localtime.yesterday()
+
+
+@time_machine.travel("2020-01-01 12:00:00.000", tick=False)
+def test_months_in_the_past():
+    assert localtime.months_in_the_past(3) == datetime.date(2019, 10, 1)
+
+
+@time_machine.travel("2020-01-01 12:00:00.000", tick=False)
+def test_months_in_the_future():
+    assert localtime.months_in_the_future(3) == datetime.date(2020, 4, 1)
 
 
 @pytest.mark.parametrize(
