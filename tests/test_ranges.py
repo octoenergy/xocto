@@ -561,3 +561,40 @@ class TestBreakPeriodsOnTimestamp:
             ranges.FiniteDatetimeRange(splits[1], splits[0]),
             ranges.FiniteDatetimeRange(splits[0], period.end),
         ]
+
+
+class TestAnyOverlapping:
+    @pytest.mark.parametrize(
+        "ranges_",
+        [
+            [
+                ranges.Range(0, 2),
+                ranges.Range(1, 3),
+            ],
+            [
+                ranges.Range(0, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE),
+                ranges.Range(2, 4),
+            ],
+        ],
+    )
+    def test_returns_true_if_and_ranges_overlap(self, ranges_):
+        assert ranges.any_overlapping(ranges_)
+
+    @pytest.mark.parametrize(
+        "ranges_",
+        [
+            [
+                ranges.Range(0, 2),
+                ranges.Range(2, 4),
+            ],
+            [
+                ranges.Range(0, 2),
+                ranges.Range(2, 4, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE),
+            ],
+        ],
+    )
+    def test_returns_false_if_no_ranges_overlap(self, ranges_):
+        assert not ranges.any_overlapping(ranges_)
+
+    def test_returns_false_for_empty_set_of_ranges(self):
+        assert not ranges.any_overlapping([])

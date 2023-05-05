@@ -832,3 +832,15 @@ def get_finite_datetime_ranges_from_timestamps(
         # or end of the period.
         if start != end
     ]
+
+
+def any_overlapping(ranges: Sequence[Range[T]]) -> bool:
+    """Return true if any of the passed Ranges are overlapping."""
+    if not ranges:
+        return False
+    range_set = RangeSet[T]([ranges[0]])
+    for range in ranges[1:]:
+        if range_set.intersection(range):
+            return True
+        range_set.add(range)
+    return False
