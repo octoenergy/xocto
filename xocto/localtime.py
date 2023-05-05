@@ -461,7 +461,7 @@ def is_n_days_until_end_of_month(n_days: int) -> bool:
     Return whether today + n days is the first of the next month.
     """
     n_days_from_now = today() + relativedelta(days=n_days)
-    return n_days_from_now.day == 1
+    return n_days_from_now == first_day_of_month(now() + relativedelta(months=1))
 
 
 def is_date_within_date_range(

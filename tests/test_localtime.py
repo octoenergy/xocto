@@ -1087,3 +1087,12 @@ def test_period_exceeds_one_year(period_start_at, first_dt_exceeding_one_year):
     assert not localtime.period_exceeds_one_year(
         period_start_at, first_dt_exceeding_one_year - relativedelta.relativedelta(microseconds=1)
     )
+
+
+@time_machine.travel("2020-03-15", tick=False)
+@pytest.mark.parametrize(
+    "n_days, expected_result",
+    [(17, True), (-14, False), (47, False)],
+)
+def test_is_n_days_until_end_of_month(n_days, expected_result):
+    assert localtime.is_n_days_until_end_of_month(n_days) == expected_result
