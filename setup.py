@@ -64,6 +64,7 @@ setup(
             "flake8==6.0.0",
             "hypothesis==6.62.1",
             "moto[s3,sqs]==4.1",
+            "pytest-cov>=4.0.0"
             "pytest-django==4.5.2",
             "pytest-mock==3.10.0",
             "pytest==7.2.1",
