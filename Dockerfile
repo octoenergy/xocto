@@ -1,4 +1,4 @@
-FROM python:3.8.13-slim AS base
+FROM python:3.9.16-slim AS base
 
 # Create virtualenv and add to path.
 ENV VIRTUAL_ENV=/opt/venv
