@@ -20,12 +20,13 @@ make test
 
 ## Running static analysis
 
-Use these make commands
+Use these make commands:
 
 ```sh
 make lint
 make black
 make isort
+make mypy
 ```
 
 Docker images for these jobs can be built with:
