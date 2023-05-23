@@ -1,4 +1,5 @@
 install: 
+	pip install pip==23.1.2
 	pip install -e .[dev,test]
 
 clean:
