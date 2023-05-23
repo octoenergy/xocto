@@ -46,20 +46,21 @@ docker run -v `pwd`:/opt/app xocto/black
 
 ## Publishing
 
-Release to PyPI by:
+Release to PyPI by creating a pull request that:
 
-1. Bumping the version in `setup.py`
+1. Adds release notes to `CHANGELOG.md`.
 
-2. Updating `CHANGELOG.md`
+2. Updates the `VERSION` constant in `setup.py`.
 
-3. Committing:
+3. Updates the `__version__` constant in `xocto/__init__.py`.
 
-   ```sh
-   git commit -am "Bump version to v..."
-   ```
+Commit these changes in a single commit with subject matching
+`Bump version to v...`.
 
-4. Running:
+After merging the pull request, push an annotated tag to Github with:
 
-   ```sh
-   make publish
-   ```
+```sh
+make tag
+```
+
+This will trigger a Github action to publish the package to PyPI.
