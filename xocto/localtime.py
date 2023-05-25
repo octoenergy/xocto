@@ -170,10 +170,16 @@ def date_of_day_before(
 
 
 def day_before(d: datetime_.date) -> datetime_.date:
+    """
+    Return the date of the day before the passed date.
+    """
     return d - datetime_.timedelta(days=1)
 
 
 def day_after(d: datetime_.date) -> datetime_.date:
+    """
+    Return the date of the day after the passed date.
+    """
     return d + datetime_.timedelta(days=1)
 
 
@@ -216,7 +222,7 @@ def midnight(
         # properly as well, as these are frequently passed in as a way of 'truncating' them to
         # midnight on that date.
         if timezone.is_naive(date_or_datetime):
-            # Default to localtime if no tz provided, as_localtime takes tz aware args
+            # Default to localtime if no tz provided, as_localtime takes tz aware args.
             date_ = date(timezone.make_aware(date_or_datetime), tz)
         else:
             date_ = date(date_or_datetime, tz)
@@ -279,6 +285,9 @@ def datetime_from_date(
 def datetime_from_epoch_timestamp(
     timestamp: int | float, tz: timezone.zoneinfo.ZoneInfo | None = None
 ) -> datetime_.datetime:
+    """
+    Return a TZ-aware datetime for the passed epoch timestamp.
+    """
     naive_datetime_in_utc = datetime_.datetime.utcfromtimestamp(timestamp)
     utc_dt = timezone.make_aware(naive_datetime_in_utc, timezone=UTC)
     return timezone.localtime(utc_dt, timezone=tz)
@@ -299,6 +308,11 @@ def latest(
 
 
 def combine(_date: datetime_.date, _time: datetime_.time, tz: timezone.zone) -> datetime_.datetime:
+    """
+    Return a TZ-aware datetime obtained by combining the given date and time.
+
+    It's a TZ-aware wrapper around datetime.datetime.combine.
+    """
     combined_dt = datetime_.datetime.combine(_date, _time)
     if tz is datetime_.timezone.utc:
         return combined_dt.replace(tzinfo=tz)
@@ -323,6 +337,13 @@ def date_boundaries(
 def month_boundaries(month: int, year: int) -> Tuple[datetime_.datetime, datetime_.datetime]:
     """
     Return the boundary datetimes of a given month.
+
+    The boundary consists of a 2-tuple of: midnight of the first day of the month and midnight of the first day of the next month.
+
+    For example:
+
+        >>> month_boundaries(1, 2020)
+        ((datetime.datetime(2020, 1, 1, 0, 0), datetime.datetime(2020, 2, 1, 0, 0))
     """
     start_date = datetime_.date(year, month, 1)
     end_date = start_date + relativedelta(months=1)
@@ -410,10 +431,16 @@ def quantise(
 
 
 def nearest_half_hour(dt: datetime_.datetime) -> datetime_.datetime:
+    """
+    Return the nearest half-hour datetime to the passed datetime.
+    """
     return quantise(dt, datetime_.timedelta(minutes=30))
 
 
 def is_last_day_of_month(_date: datetime_.date) -> bool:
+    """
+    Return True if the given date is the last day of the month.
+    """
     next_day = _date + datetime_.timedelta(days=1)
     if _date.month != next_day.month:
         return True
@@ -431,7 +458,7 @@ def start_of_month(dt: datetime_.datetime | None = None) -> datetime_.datetime:
 
 def end_of_month(dt: datetime_.datetime | None = None) -> datetime_.datetime:
     """
-    Return the start datetime of the month for dt passed - or of current month.
+    Return the start datetime of the next month for dt passed - or of next month.
     """
     if not dt:
         dt = now()
