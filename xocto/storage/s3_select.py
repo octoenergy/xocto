@@ -58,12 +58,9 @@ class BaseSerializer:
         temp_dict = {k: v for k, v in dataclasses.asdict(self).items() if v}
 
         for k, v in temp_dict.items():
-            if (
-                isinstance(v, FileHeaderInfo)
-                or isinstance(v, QuoteFields)
-                or isinstance(v, CompressionType)
-            ):
+            if type(v) in [FileHeaderInfo, QuoteFields, CompressionType]:
                 temp_dict[k] = v.value
+
         return temp_dict
 
 
