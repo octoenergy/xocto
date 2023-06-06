@@ -1,5 +1,15 @@
 # Changelog
-## v3.1.3 - 2023-03-24
+
+## v3.2.0 - 2023-06-07
+
+- Bump min supported Python version to 3.9 [#74](https://github.com/octoenergy/xocto/pull/74), prompting a minor version change from 3.1.4 to 3.2.0
+- Update error message for ranges with unbounded end [#75](https://github.com/octoenergy/xocto/pull/75)
+- Ranges: add utils to check period covering [#69](https://github.com/octoenergy/xocto/pull/69)
+- Add an extra example to ranges.Range.union [#67](https://github.com/octoenergy/xocto/pull/67)
+- Improve localtime module docstrings [#65](https://github.com/octoenergy/xocto/pull/65)
+- Defer openpyxl import [#62](https://github.com/octoenergy/xocto/pull/62)
+
+## v3.1.4 - 2023-03-24
 - Added ddtrace as a dependency [#56](https://github.com/octoenergy/xocto/pull/56)
 
 ## v3.1.2 - 2023-03-20
