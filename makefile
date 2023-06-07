@@ -31,10 +31,9 @@ docker_images:
 
 # Releases
 
-VERSION=$(shell python setup.py --version)
+VERSION=v$(shell python setup.py --version)
 
 tag:
 	@echo Tagging as $(VERSION)
 	git tag -a $(VERSION) -m "Creating version $(VERSION)"
 	git push origin $(VERSION)
-
