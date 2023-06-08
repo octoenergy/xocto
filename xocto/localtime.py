@@ -12,14 +12,6 @@ from django.utils import timezone
 
 from . import numbers, ranges
 
-# Convenience type aliases for referencing from other modules. The 'Union` is redundant and just
-# to help mypy realise that these are type aliases, not assignments.
-Date = Union[datetime_.date]
-DateTime = Union[datetime_.datetime]
-DateOrDatetime = Union[Date, DateTime]
-Time = Union[datetime_.time]
-TimeDelta = Union[datetime_.timedelta]
-
 # Timezone aware datetime in the far future.
 far_future = timezone.make_aware(datetime_.datetime.max - datetime_.timedelta(days=2))
 
@@ -207,7 +199,8 @@ def seconds_in_the_past(n: int) -> datetime_.datetime:
 
 
 def midnight(
-    date_or_datetime: Optional[DateOrDatetime] = None, tz: Optional[datetime_.tzinfo] = None
+    date_or_datetime: Optional[Union[datetime_.date, datetime_.datetime]] = None,
+    tz: Optional[datetime_.tzinfo] = None,
 ) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for midnight of the passed date.
@@ -216,7 +209,7 @@ def midnight(
     supplied then we use the local timezone).
     """
     if date_or_datetime is None:
-        date_: Date = today(tz)
+        date_: datetime_.date = today(tz)
     elif isinstance(date_or_datetime, datetime_.datetime):
         # Although this function is meant to be used on dates, we want to handle datetimes
         # properly as well, as these are frequently passed in as a way of 'truncating' them to
@@ -234,7 +227,8 @@ def midnight(
 
 
 def next_midnight(
-    date_or_datetime: Optional[DateOrDatetime] = None, tz: Optional[datetime_.tzinfo] = None
+    date_or_datetime: Optional[Union[datetime_.date, datetime_.datetime]] = None,
+    tz: Optional[datetime_.tzinfo] = None,
 ) -> datetime_.datetime:
     """
     Return the datetime for midnight of the following day to the date passed in.
@@ -242,7 +236,7 @@ def next_midnight(
     This is intuitively what people think of as midnight.
     """
     if date_or_datetime is None:
-        date_: Date = today(tz)
+        date_: datetime_.date = today(tz)
     elif isinstance(date_or_datetime, datetime_.datetime):
         # Although this function is meant to be used on dates, we want to handle datetimes
         # properly as well
@@ -323,8 +317,8 @@ def combine(_date: datetime_.date, _time: datetime_.time, tz: timezone.zone) -> 
 
 
 def date_boundaries(
-    _date: Optional[Date], tz: Optional[datetime_.tzinfo] = None
-) -> Tuple[DateTime, DateTime]:
+    _date: Optional[datetime_.date], tz: Optional[datetime_.tzinfo] = None
+) -> Tuple[datetime_.datetime, datetime_.datetime]:
     """
     Return a 2-tuple with the start and ending dt for the given date in the local timezone.
 
@@ -351,8 +345,8 @@ def month_boundaries(month: int, year: int) -> Tuple[datetime_.datetime, datetim
 
 
 def as_range(
-    _date: Optional[Date], tz: Optional[datetime_.tzinfo] = None
-) -> Tuple[DateTime, DateTime]:
+    _date: Optional[datetime_.date], tz: Optional[datetime_.tzinfo] = None
+) -> Tuple[datetime_.datetime, datetime_.datetime]:
     """
     Return a 2-tuple of the min and max datetimes for the given date.
 
@@ -657,7 +651,9 @@ def is_aligned_to_midnight(
     return all([is_localtime_midnight(range.start, tz), is_localtime_midnight(range.end, tz)])
 
 
-def consolidate_into_intervals(dates: Sequence[Date]) -> Sequence[Tuple[Date, Date]]:
+def consolidate_into_intervals(
+    dates: Sequence[datetime_.date],
+) -> Sequence[Tuple[datetime_.date, datetime_.date]]:
     """
     Given a sequence of dates, return tuples of (inclusive) boundaries of the sub-sequences where
     the dates are consecutive.
@@ -721,7 +717,7 @@ def translate_english_month_to_spanish(month: int) -> str:
     return month_name_lookup[month_name]
 
 
-def period_exceeds_one_year(start_at: DateTime, end_at: DateTime) -> bool:
+def period_exceeds_one_year(start_at: datetime_.datetime, end_at: datetime_.datetime) -> bool:
     """
     Returns true if the passed period exceeds one year.
 
