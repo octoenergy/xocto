@@ -11,9 +11,6 @@ import os
 import tempfile
 from typing import IO, Any, AnyStr, Callable
 
-import pandas as pd
-import xlrd
-
 XLRD_FLOAT_TYPE = 2
 
 
@@ -104,6 +101,8 @@ def convert_xls_to_csv(
         delimiter:          The delimiter the output CSV file should have
 
     """
+    import xlrd
+
     workbook = xlrd.open_workbook(xls_filepath)
     sheet = workbook.sheet_by_index(0)
 
@@ -192,6 +191,8 @@ def convert_csv_to_parquet(
     the column names and types. E.g. {‘a’: np.float64, ‘b’: np.int32, ‘c’: ‘Int64’}
     :return: bytes for a Parquet file
     """
+    import pandas as pd
+
     dataframe = pd.read_csv(
         io.BytesIO(data),
         dtype=data_type,
