@@ -290,8 +290,8 @@ class TestDateTime:
         assert utc_dt.hour == 23
 
     def test_dst_ambiguity(self):
-        # 2020-10-25T01:30 is an ambiguous dt as its in the period when clocks go back (so it
-        # occurs twice).
+        # 2020-10-25T01:30 is an ambiguous dt in Europe/London as its in the period when clocks go
+        # back (so it occurs twice).
         dt_dst = localtime.datetime(2020, 10, 25, 1, 30)
         assert dt_dst.hour == 1
         assert dt_dst.minute == 30
