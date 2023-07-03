@@ -292,11 +292,11 @@ class TestDateTime:
     def test_dst_ambiguity(self):
         # 2020-10-25T01:30 is an ambiguous dt in Europe/London as its in the period when clocks go
         # back (so it occurs twice).
-        dt_dst = localtime.datetime(2020, 10, 25, 1, 30)
-        assert dt_dst.hour == 1
-        assert dt_dst.minute == 30
-        assert dt_dst.dst() == datetime.timedelta(seconds=3600)
-        utc_dt = dt_dst.astimezone(localtime.UTC)
+        dt = localtime.datetime(2020, 10, 25, 1, 30)
+        assert dt.hour == 1
+        assert dt.minute == 30
+        assert dt.dst() == datetime.timedelta(seconds=3600)
+        utc_dt = dt.astimezone(localtime.UTC)
         assert utc_dt.hour == 0
 
 
