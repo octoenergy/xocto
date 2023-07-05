@@ -106,7 +106,7 @@ def convert_sp_and_date_to_utc(
     Return an UTC-aware datetime for the start of a given settlement period.
     """
     local_time = convert_sp_and_date_to_local(sp, date, timezone_str, is_wholesale)
-    return _to_timezone(local_time, UTC_TZ)
+    return _to_timezone(local_time, UTC_TZ).replace(tzinfo=datetime.timezone.utc)
 
 
 def convert_local_to_sp_and_date(

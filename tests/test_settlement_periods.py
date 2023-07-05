@@ -5,7 +5,7 @@ import pytz
 
 from xocto import settlement_periods
 
-UTC_TZ = pytz.utc
+UTC_TZ = datetime.timezone.utc
 GB_TZ = pytz.timezone("Europe/London")
 
 
