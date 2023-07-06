@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.0.0 - 2023-07-05
+
+- Remove pytz in favour of Python's builtin ZoneInfo [#61](https://github.com/octoenergy/xocto/pull/61)
+- Bump min supported Django version to 4.0 [#61](https://github.com/octoenergy/xocto/pull/61)
+
 ## v3.2.0 - 2023-06-07
 
 - Bump min supported Python version to 3.9 [#74](https://github.com/octoenergy/xocto/pull/74), prompting a minor version change from 3.1.4 to 3.2.0
@@ -10,6 +15,7 @@
 - Defer openpyxl import [#62](https://github.com/octoenergy/xocto/pull/62)
 
 ## v3.1.4 - 2023-03-24
+
 - Added ddtrace as a dependency [#56](https://github.com/octoenergy/xocto/pull/56)
 
 ## v3.1.2 - 2023-03-20
