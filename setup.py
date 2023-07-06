@@ -5,7 +5,7 @@ from setuptools import setup
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
-VERSION = "3.2.0"
+VERSION = "4.0b0"
 
 with open(path.join(REPO_ROOT, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
@@ -34,7 +34,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "ddtrace>=1.9.0",
-        "django>=3.2,<5.0",
+        "django>=4.0",
         "openpyxl>=3.1.0",
         "pact-python>=1.6.0",
         "pandas>=1.5.3",

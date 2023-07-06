@@ -1,8 +1,8 @@
 import datetime
 import decimal
+import zoneinfo
 
 import pytest
-import pytz
 import time_machine
 from dateutil import relativedelta
 from django.conf import settings
@@ -16,8 +16,10 @@ from xocto import localtime
 class TestNow:
     def test_now_is_in_correct_timezone(self):
         now = localtime.now()
-        assert now.tzinfo.zone == settings.TIME_ZONE
+        assert str(now.tzinfo) == settings.TIME_ZONE
 
+
+class TestSecondsInTheFuture:
     def test_seconds_in_future(self):
         with time_machine.travel("2020-01-01 12:00:00.000", tick=False):
             assert localtime.seconds_in_the_future(1) == localtime.as_localtime(
@@ -27,6 +29,8 @@ class TestNow:
                 localtime.datetime_.datetime(2020, 1, 1, 12, 0, 1, 500000, tzinfo=localtime.UTC)
             )
 
+
+class TestSecondsInThePast:
     def test_seconds_in_past(self):
         with time_machine.travel("2020-01-01 12:00:00.000", tick=False):
             assert localtime.seconds_in_the_past(1) == localtime.as_localtime(
@@ -39,16 +43,16 @@ class TestNow:
 
 class TestDate:
     def test_date_calculation_near_midnight_during_bst(self):
-        near_midnight_in_utc = datetime.datetime(2016, 6, 1, 23, 50, 0, tzinfo=pytz.utc)
+        near_midnight_in_utc = datetime.datetime(2016, 6, 1, 23, 50, 0, tzinfo=localtime.UTC)
         assert localtime.date(near_midnight_in_utc) == (
             near_midnight_in_utc.date() + datetime.timedelta(days=1)
         )
 
     def test_date_calculation_near_midnight_outside_of_bst(self):
-        near_midnight_in_utc = datetime.datetime(2016, 11, 1, 23, 50, 0, tzinfo=pytz.utc)
+        near_midnight_in_utc = datetime.datetime(2016, 11, 1, 23, 50, 0, tzinfo=localtime.UTC)
         assert localtime.date(near_midnight_in_utc) == near_midnight_in_utc.date()
 
-    @pytest.mark.parametrize("tz", (pytz.timezone("Etc/GMT-10"), pytz.utc))
+    @pytest.mark.parametrize("tz", (zoneinfo.ZoneInfo("Etc/GMT-10"), localtime.UTC))
     def test_date_calculation_specifying_other_timezone(self, tz):
         near_midnight = datetime.datetime(2016, 6, 1, 23, 50, 0, tzinfo=tz)
         assert localtime.date(near_midnight, tz=tz) == (near_midnight.date())
@@ -88,7 +92,7 @@ class TestMidnight:
         assert midnight.tzinfo is not None
         assert midnight.hour == 0
 
-        midnight_utc = midnight.astimezone(pytz.utc)
+        midnight_utc = midnight.astimezone(localtime.UTC)
         assert midnight_utc.hour == 23
 
     def test_midnight_calculation_for_utc_dt(self):
@@ -105,11 +109,11 @@ class TestMidnight:
     def test_convert_date_to_midnight_and_back(self):
         date = datetime.date(2016, 7, 2)
         midnight = localtime.midnight(date)
-        midnight_utc = midnight.astimezone(pytz.utc)
+        midnight_utc = midnight.astimezone(localtime.UTC)
         assert localtime.date(midnight_utc) == date
 
     def test_midnight_in_different_timezone(self):
-        aus_time = pytz.timezone("Etc/GMT-10")
+        aus_time = zoneinfo.ZoneInfo("Etc/GMT-10")
 
         with time_machine.travel(datetime.datetime(2020, 2, 2, 1, tzinfo=aus_time), tick=False):
             result = localtime.midnight(tz=aus_time)
@@ -157,7 +161,7 @@ class TestMidnight:
         actual_midnight = localtime.midnight(naive_datetime)
 
         assert actual_midnight == expected_midnight
-        assert actual_midnight.tzinfo.zone == "Australia/Sydney"
+        assert str(actual_midnight.tzinfo) == "Australia/Sydney"
 
     @override_settings(TIME_ZONE="Australia/Sydney")  # set the django default/current timezone
     @pytest.mark.parametrize(
@@ -224,14 +228,14 @@ class TestMidnight:
         3. get the date of that datetime
         3. return midnight at the start of that date, in the specified timezone.
         """
-        specified_timezone_obj = pytz.timezone(specified_timezone)
+        specified_timezone_obj = zoneinfo.ZoneInfo(specified_timezone)
         # attach the specified timezone to the expected midnight
         expected_midnight = timezone.make_aware(expected_midnight, timezone=specified_timezone_obj)
 
         actual_midnight = localtime.midnight(naive_datetime, tz=specified_timezone_obj)
 
         assert actual_midnight == expected_midnight
-        assert actual_midnight.tzinfo.zone == specified_timezone
+        assert str(actual_midnight.tzinfo) == specified_timezone
 
 
 class TestMidday:
@@ -250,7 +254,7 @@ class TestMidday:
         assert midday.minute == 0
 
     def test_midday_in_different_timezone(self):
-        aus_time = pytz.timezone("Etc/GMT-10")
+        aus_time = zoneinfo.ZoneInfo("Etc/GMT-10")
 
         with time_machine.travel(datetime.datetime(2020, 2, 2, 1, tzinfo=aus_time), tick=False):
             result = localtime.midday(tz=aus_time)
@@ -282,33 +286,23 @@ class TestDateTime:
     def test_datetime_creation(self):
         dt = localtime.datetime(2016, 8, 5)
         assert dt.hour == 0
-        utc_dt = dt.astimezone(pytz.utc)
+        utc_dt = dt.astimezone(localtime.UTC)
         assert utc_dt.hour == 23
 
-    # 2020-10-25T01:30 is an ambiguous dt as its in the period when clocks go back (so it
-    # occurs twice).
-
     def test_dst_ambiguity(self):
-        with pytest.raises(pytz.AmbiguousTimeError):
-            localtime.datetime(2020, 10, 25, 1, 30)
-
-    def test_passing_dst_value_resolves_ambiguity(self):
-        dt_dst = localtime.datetime(2020, 10, 25, 1, 30, is_dst=True)
-        assert dt_dst.hour == 1
-        assert dt_dst.minute == 30
-        assert dt_dst.dst()
-
-        dt_gmt = localtime.datetime(2020, 10, 25, 1, 30, is_dst=False)
-        assert dt_gmt.hour == 1
-        assert dt_gmt.minute == 30
-        assert not dt_gmt.dst()
-
-        assert dt_dst < dt_gmt
+        # 2020-10-25T01:30 is an ambiguous dt in Europe/London as its in the period when clocks go
+        # back (so it occurs twice).
+        dt = localtime.datetime(2020, 10, 25, 1, 30)
+        assert dt.hour == 1
+        assert dt.minute == 30
+        assert dt.dst() == datetime.timedelta(seconds=3600)
+        utc_dt = dt.astimezone(localtime.UTC)
+        assert utc_dt.hour == 0
 
 
 class TestAsLocaltime:
     def test_conversion_of_gmt_dt(self):
-        non_dst_datetime = datetime.datetime(2016, 1, 1, 23, 1, tzinfo=pytz.UTC)
+        non_dst_datetime = datetime.datetime(2016, 1, 1, 23, 1, tzinfo=localtime.UTC)
         converted_non_dst_datetime = localtime.as_localtime(non_dst_datetime)
 
         # The two dates are 'equal' and their day and hour attributes differ
@@ -317,7 +311,7 @@ class TestAsLocaltime:
         assert converted_non_dst_datetime.hour == non_dst_datetime.hour
 
     def test_conversion_of_bst_dt(self):
-        dst_datetime = datetime.datetime(2016, 5, 1, 23, 1, tzinfo=pytz.UTC)
+        dst_datetime = datetime.datetime(2016, 5, 1, 23, 1, tzinfo=localtime.UTC)
         converted_dst_datetime = localtime.as_localtime(dst_datetime)
 
         # The two dates are 'equal' but their day and hour attributes differ
@@ -334,45 +328,23 @@ class TestAsLocaltime:
 
 
 class TestIsUTC:
-    def test_is_utc(self):
-        # <UTC>
-        assert localtime.is_utc(timezone.now())
-
-    def test_is_utc_non_pytz_time_zone(self):
-        # datetime.timezone.utc
-        now = datetime.datetime.fromisoformat(timezone.now().isoformat())
+    @pytest.mark.parametrize("tzinfo", [datetime.timezone.utc, localtime.UTC])
+    def test_is_utc(self, tzinfo):
+        now = datetime.datetime(2020, 1, 1, tzinfo=tzinfo)
         assert localtime.is_utc(now)
 
     def test_is_not_utc(self):
-        # <DstTzInfo 'Europe/London' GMT0:00:00 STD>
-        assert not localtime.is_utc(localtime.now())
+        now = datetime.datetime(2020, 1, 1, tzinfo=localtime.LONDON)
+        assert not localtime.is_utc(now)
 
 
 class TestIsLocalime:
     def test_is_local_time(self):
-        dt = localtime.datetime(2016, 8, 5)
-        utc_dt = dt.astimezone(pytz.utc)
-        assert not localtime.is_local_time(utc_dt)
         assert localtime.is_local_time(localtime.now())
-        # Now for a tricky one: create a local datetime, and check that it passes `is_local_time`
-        local_dt = localtime.datetime(2016, 6, 2, 5, 1)
-        assert localtime.is_local_time(local_dt)
-        # Now take it back six months into a different timezone. It will fail:
-        local_dt -= datetime.timedelta(days=180)
-        assert not localtime.is_local_time(local_dt)
-        # Now `normalize` it, and it will pass again
-        local_dt = timezone.get_current_timezone().normalize(local_dt)
-        assert localtime.is_local_time(local_dt)
 
-    def test_datetime_utc(self):
+    def test_is_not_local_time(self):
         dt = datetime.datetime(2016, 8, 5, tzinfo=datetime.timezone.utc)
-        # Should not raise:
-        #     AttributeError: 'datetime.timezone' object has no attribute '_utcoffset'
         assert not localtime.is_local_time(dt)
-
-
-# Alias to make the pytest parameters fit on one line
-ldt = localtime.datetime
 
 
 class TestQuantise:
@@ -380,102 +352,102 @@ class TestQuantise:
         ("dt", "timedelta", "rounding_strategy", "result"),
         [
             (
-                ldt(2016, 12, 5, 11, 34, 59),
+                localtime.datetime(2016, 12, 5, 11, 34, 59),
                 datetime.timedelta(minutes=30),
                 None,
-                ldt(2016, 12, 5, 11, 30, 0),
+                localtime.datetime(2016, 12, 5, 11, 30, 0),
             ),
             (
-                ldt(2016, 12, 5, 11, 29, 59),
+                localtime.datetime(2016, 12, 5, 11, 29, 59),
                 datetime.timedelta(minutes=30),
                 None,
-                ldt(2016, 12, 5, 11, 30, 0),
+                localtime.datetime(2016, 12, 5, 11, 30, 0),
             ),
             (
-                ldt(2016, 12, 5, 11, 14, 59),
+                localtime.datetime(2016, 12, 5, 11, 14, 59),
                 datetime.timedelta(minutes=30),
                 None,
-                ldt(2016, 12, 5, 11, 0, 0),
+                localtime.datetime(2016, 12, 5, 11, 0, 0),
             ),
             (
-                ldt(2016, 12, 5, 11, 15, 59),
+                localtime.datetime(2016, 12, 5, 11, 15, 59),
                 datetime.timedelta(minutes=30),
                 None,
-                ldt(2016, 12, 5, 11, 30, 0),
+                localtime.datetime(2016, 12, 5, 11, 30, 0),
             ),
             (
-                ldt(2016, 12, 5, 11, 16, 0),
+                localtime.datetime(2016, 12, 5, 11, 16, 0),
                 datetime.timedelta(minutes=30),
                 None,
-                ldt(2016, 12, 5, 11, 30, 0),
+                localtime.datetime(2016, 12, 5, 11, 30, 0),
             ),
             (
-                ldt(2016, 12, 5, 10, 59, 59),
+                localtime.datetime(2016, 12, 5, 10, 59, 59),
                 datetime.timedelta(hours=2),
                 None,
-                ldt(2016, 12, 5, 10, 0, 0),
+                localtime.datetime(2016, 12, 5, 10, 0, 0),
             ),
             (
-                ldt(2016, 12, 5, 11, 0, 0),
+                localtime.datetime(2016, 12, 5, 11, 0, 0),
                 datetime.timedelta(hours=2),
                 None,
-                ldt(2016, 12, 5, 12, 0, 0),
+                localtime.datetime(2016, 12, 5, 12, 0, 0),
             ),
             (
-                ldt(2016, 12, 31, 13, 34, 59),
+                localtime.datetime(2016, 12, 31, 13, 34, 59),
                 datetime.timedelta(hours=24),
                 None,
-                ldt(2017, 1, 1, 0, 0, 0),
+                localtime.datetime(2017, 1, 1, 0, 0, 0),
             ),
             (
-                ldt(2016, 12, 31, 0, 0, 1),
+                localtime.datetime(2016, 12, 31, 0, 0, 1),
                 datetime.timedelta(days=1),
                 None,
-                ldt(2016, 12, 31, 0, 0, 0),
+                localtime.datetime(2016, 12, 31, 0, 0, 0),
             ),
             # CUSTOM ROUNDING STRATEGIES
             (
-                ldt(2016, 2, 2, 12, 30, 1),
+                localtime.datetime(2016, 2, 2, 12, 30, 1),
                 datetime.timedelta(minutes=30),
                 decimal.ROUND_UP,
-                ldt(2016, 2, 2, 13, 0, 0),
+                localtime.datetime(2016, 2, 2, 13, 0, 0),
             ),
             (
-                ldt(2016, 2, 2, 12, 45, 0),
+                localtime.datetime(2016, 2, 2, 12, 45, 0),
                 datetime.timedelta(minutes=30),
                 decimal.ROUND_HALF_UP,
-                ldt(2016, 2, 2, 13, 0, 0),
+                localtime.datetime(2016, 2, 2, 13, 0, 0),
             ),
             (
-                ldt(2016, 2, 2, 12, 45, 0),
+                localtime.datetime(2016, 2, 2, 12, 45, 0),
                 datetime.timedelta(minutes=30),
                 decimal.ROUND_HALF_DOWN,
-                ldt(2016, 2, 2, 12, 30, 0),
+                localtime.datetime(2016, 2, 2, 12, 30, 0),
             ),
             (
-                ldt(2016, 2, 2, 12, 0, 0),
+                localtime.datetime(2016, 2, 2, 12, 0, 0),
                 datetime.timedelta(days=1),
                 decimal.ROUND_HALF_DOWN,
-                ldt(2016, 2, 2, 0, 0, 0),
+                localtime.datetime(2016, 2, 2, 0, 0, 0),
             ),
             (
-                ldt(2016, 2, 2, 22, 0),
+                localtime.datetime(2016, 2, 2, 22, 0),
                 datetime.timedelta(days=1),
                 decimal.ROUND_HALF_UP,
-                ldt(2016, 2, 3, 0, 0, 0),
+                localtime.datetime(2016, 2, 3, 0, 0, 0),
             ),
             # Test doesn't round beyond limits
             (
-                ldt(2016, 2, 2, 12, 30, 0),
+                localtime.datetime(2016, 2, 2, 12, 30, 0),
                 datetime.timedelta(minutes=30),
                 decimal.ROUND_UP,
-                ldt(2016, 2, 2, 12, 30, 0),
+                localtime.datetime(2016, 2, 2, 12, 30, 0),
             ),
             (
-                ldt(2016, 2, 2, 12, 30, 0),
+                localtime.datetime(2016, 2, 2, 12, 30, 0),
                 datetime.timedelta(minutes=30),
                 decimal.ROUND_DOWN,
-                ldt(2016, 2, 2, 12, 30, 0),
+                localtime.datetime(2016, 2, 2, 12, 30, 0),
             ),
         ],
     )
@@ -486,9 +458,7 @@ class TestQuantise:
 
 
 class TestDateBoundaries:
-    def test_date_boundaries_for_gmt_date(
-        self,
-    ):
+    def test_date_boundaries_for_gmt_date(self):
         date = datetime.date(2017, 1, 1)
 
         start, end = localtime.date_boundaries(date)
@@ -517,7 +487,8 @@ class TestDateBoundaries:
 
         assert localtime.is_local_time(start)
         assert localtime.is_local_time(end)
-        assert (end - start) == datetime.timedelta(seconds=23 * 60 * 60)
+        delta = datetime.timedelta(seconds=(end.timestamp() - start.timestamp()))
+        assert delta == datetime.timedelta(seconds=23 * 60 * 60)
         assert localtime.datetime(2017, 3, 26) == start
         assert localtime.datetime(2017, 3, 27) == end
 
@@ -528,7 +499,8 @@ class TestDateBoundaries:
 
         assert localtime.is_local_time(start)
         assert localtime.is_local_time(end)
-        assert (end - start) == datetime.timedelta(days=1, seconds=60 * 60)
+        delta = datetime.timedelta(seconds=(end.timestamp() - start.timestamp()))
+        assert delta == datetime.timedelta(seconds=25 * 60 * 60)
         assert localtime.datetime(2017, 10, 29) == start
         assert localtime.datetime(2017, 10, 30) == end
 
@@ -545,8 +517,11 @@ class TestStartOfMonth:
     @pytest.mark.parametrize(
         ("dt", "result"),
         [
-            (ldt(2016, 12, 5, 11, 34, 59), ldt(2016, 12, 1, 0, 0, 0)),
-            (ldt(2017, 3, 31, 11, 29, 59), ldt(2017, 3, 1, 0, 0, 0)),
+            (
+                localtime.datetime(2016, 12, 5, 11, 34, 59),
+                localtime.datetime(2016, 12, 1, 0, 0, 0),
+            ),
+            (localtime.datetime(2017, 3, 31, 11, 29, 59), localtime.datetime(2017, 3, 1, 0, 0, 0)),
         ],
     )
     def test_start_of_month(self, dt, result):
@@ -557,8 +532,8 @@ class TestEndOfMonth:
     @pytest.mark.parametrize(
         ("dt", "result"),
         [
-            (ldt(2016, 12, 5, 11, 34, 59), ldt(2017, 1, 1, 0, 0, 0)),
-            (ldt(2017, 3, 31, 11, 29, 59), ldt(2017, 4, 1, 0, 0, 0)),
+            (localtime.datetime(2016, 12, 5, 11, 34, 59), localtime.datetime(2017, 1, 1, 0, 0, 0)),
+            (localtime.datetime(2017, 3, 31, 11, 29, 59), localtime.datetime(2017, 4, 1, 0, 0, 0)),
         ],
     )
     def test_end_of_month(self, dt, result):
@@ -596,23 +571,23 @@ class TestNextMidnight:
     def test_utc_date(self):
         dt = localtime.next_midnight(factories.date("2017-01-01"))
 
-        assert dt.tzinfo.zone == "Europe/London"
+        assert str(dt.tzinfo) == "Europe/London"
         assert dt == localtime.datetime(2017, 1, 2)
 
     def test_dst_start(self):
         dt = localtime.next_midnight(factories.date("2018-03-25"))
 
-        assert dt.tzinfo.zone == "Europe/London"
+        assert str(dt.tzinfo) == "Europe/London"
         assert dt == localtime.datetime(2018, 3, 26)
 
     def test_dst_end(self):
         dt = localtime.next_midnight(factories.date("2018-10-28"))
 
-        assert dt.tzinfo.zone == "Europe/London"
+        assert str(dt.tzinfo) == "Europe/London"
         assert dt == localtime.datetime(2018, 10, 29)
 
     def test_default_in_different_timezone(self):
-        aus_time = pytz.timezone("Etc/GMT-10")
+        aus_time = zoneinfo.ZoneInfo("Etc/GMT-10")
 
         with time_machine.travel(datetime.datetime(2020, 2, 2, 1, tzinfo=aus_time), tick=False):
             result = localtime.next_midnight(tz=aus_time)
@@ -636,7 +611,7 @@ class TestNextMidnight:
         result = localtime.next_midnight(dt)
 
         assert result == expected
-        assert result.tzinfo.zone == "Europe/London"
+        assert str(result.tzinfo) == "Europe/London"
 
 
 class TestDaysInThePast:
@@ -765,46 +740,32 @@ class TestWithinLastWeek:
 
 class TestIsDST:
     @pytest.mark.parametrize(
-        "naive_datetime,tz_name,expected",
+        "naive_datetime,tz,expected",
         (
             # Test London timezone
-            (datetime.datetime(2019, 1, 1), "Europe/London", False),
-            (datetime.datetime(2019, 6, 1), "Europe/London", True),
+            (datetime.datetime(2019, 1, 1), zoneinfo.ZoneInfo("Europe/London"), False),
+            (datetime.datetime(2019, 6, 1), zoneinfo.ZoneInfo("Europe/London"), True),
             # Test London boundaries
-            (datetime.datetime(2017, 3, 26, 0, 0), "Europe/London", False),
-            (datetime.datetime(2017, 3, 26, 2, 0), "Europe/London", True),
-            (datetime.datetime(2017, 10, 29, 0, 0), "Europe/London", True),
-            (datetime.datetime(2017, 10, 29, 2, 0), "Europe/London", False),
+            (datetime.datetime(2017, 3, 26, 0, 0), zoneinfo.ZoneInfo("Europe/London"), False),
+            (datetime.datetime(2017, 3, 26, 2, 0), zoneinfo.ZoneInfo("Europe/London"), True),
+            (datetime.datetime(2017, 10, 29, 0, 0), zoneinfo.ZoneInfo("Europe/London"), True),
+            (datetime.datetime(2017, 10, 29, 2, 0), zoneinfo.ZoneInfo("Europe/London"), False),
             # UTC should never be DST
-            (datetime.datetime(2019, 1, 1), "UTC", False),
-            (datetime.datetime(2019, 6, 1), "UTC", False),
+            (datetime.datetime(2019, 1, 1), zoneinfo.ZoneInfo("UTC"), False),
+            (datetime.datetime(2019, 6, 1), zoneinfo.ZoneInfo("UTC"), False),
+            (datetime.datetime(2019, 1, 1), datetime.timezone.utc, False),
+            (datetime.datetime(2019, 6, 1), datetime.timezone.utc, False),
             # Test Eastern Australia timezone
-            (datetime.datetime(2019, 1, 1), "Australia/Sydney", True),
-            (datetime.datetime(2019, 6, 1), "Australia/Sydney", False),
+            (datetime.datetime(2019, 1, 1), zoneinfo.ZoneInfo("Australia/Sydney"), True),
+            (datetime.datetime(2019, 6, 1), zoneinfo.ZoneInfo("Australia/Sydney"), False),
             # Test Western Australia timezone (they don't have DST)
-            (datetime.datetime(2019, 1, 1), "Australia/Perth", False),
-            (datetime.datetime(2019, 6, 1), "Australia/Perth", False),
+            (datetime.datetime(2019, 1, 1), zoneinfo.ZoneInfo("Australia/Perth"), False),
+            (datetime.datetime(2019, 6, 1), zoneinfo.ZoneInfo("Australia/Perth"), False),
         ),
     )
-    def test_returns_correct_values(self, naive_datetime, tz_name, expected):
-        local_dt = timezone.make_aware(naive_datetime, timezone=pytz.timezone(tz_name))
+    def test_returns_correct_values(self, naive_datetime, tz, expected):
+        local_dt = timezone.make_aware(naive_datetime, timezone=tz)
         assert localtime.is_dst(local_dt) == expected
-
-    @pytest.mark.parametrize(
-        "naive_datetime,tz_name", ((datetime.datetime(2017, 3, 26, 1, 0), "Europe/London"),)
-    )
-    def test_non_existent_time_error(self, naive_datetime, tz_name):
-        with pytest.raises(pytz.exceptions.NonExistentTimeError):
-            local_dt = timezone.make_aware(naive_datetime, timezone=pytz.timezone(tz_name))
-            localtime.is_dst(local_dt)
-
-    @pytest.mark.parametrize(
-        "naive_datetime,tz_name", ((datetime.datetime(2017, 10, 29, 1, 0), "Europe/London"),)
-    )
-    def test_raises_ambiguous_time_error(self, naive_datetime, tz_name):
-        with pytest.raises(pytz.exceptions.AmbiguousTimeError):
-            local_dt = timezone.make_aware(naive_datetime, timezone=pytz.timezone(tz_name))
-            localtime.is_dst(local_dt)
 
     def test_raises_value_error_for_naive_dt(self):
         with pytest.raises(ValueError):
@@ -840,7 +801,7 @@ class TestIsLocaltimeMidnight:
     def test_returns_false_if_timezone_differs(self):
         assert not localtime.is_localtime_midnight(
             factories.utc.dt("2020-12-01 00:00"),
-            tz=pytz.timezone("Europe/Paris"),
+            tz=zoneinfo.ZoneInfo("Europe/Paris"),
         )
 
 
@@ -852,7 +813,7 @@ class TestCombine:
                 factories.date("1 Jan 2020"),
                 factories.time("00:00"),
                 "UTC",
-                datetime.datetime(2020, 1, 1, tzinfo=pytz.UTC),
+                datetime.datetime(2020, 1, 1, tzinfo=localtime.UTC),
             ),
             (
                 factories.date("1 Jan 2020"),
@@ -864,18 +825,20 @@ class TestCombine:
                 factories.date("1 Jun 2020"),
                 factories.time("01:00"),
                 "Europe/London",
-                datetime.datetime(2020, 6, 1, 1, 0).astimezone(pytz.timezone("Europe/London")),
+                datetime.datetime(2020, 6, 1, 1, 0).astimezone(zoneinfo.ZoneInfo("Europe/London")),
             ),
             (
                 factories.date("1 Jul 2021"),
                 factories.time("02:30"),
                 "Europe/London",
-                datetime.datetime(2021, 7, 1, 2, 30).astimezone(pytz.timezone("Europe/London")),
+                datetime.datetime(2021, 7, 1, 2, 30).astimezone(
+                    zoneinfo.ZoneInfo("Europe/London")
+                ),
             ),
         ),
     )
     def test_combines_as_expected(self, date, time, tz_name, expected):
-        tz = pytz.timezone(tz_name)
+        tz = zoneinfo.ZoneInfo(tz_name)
         assert localtime.combine(date, time, tz) == expected
 
 
@@ -941,7 +904,7 @@ class TestDatetimeFromUTCUnixTimestamp:
         assert dt == localtime.datetime(2020, 11, 20, 2, 55)
 
     def test_timestamp_with_timestamp_argument(self):
-        aus_time = pytz.timezone("Etc/GMT-10")
+        aus_time = zoneinfo.ZoneInfo("Etc/GMT-10")
         timestamp = 1605804900
 
         dt = localtime.datetime_from_epoch_timestamp(timestamp, tz=aus_time)

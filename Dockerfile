@@ -1,11 +1,11 @@
 FROM python:3.9.16-slim AS base
 
-# Create virtualenv and add to path.
+# Create virtualenv and add to path.
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# System dependencies
+# System dependencies
 RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/app
