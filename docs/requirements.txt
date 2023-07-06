@@ -1,6 +1,6 @@
 Sphinx==4.5.0
 myst-parser==0.18.1
-django==4.1.7
+django==4.1.10
 xlrd==2.0.1
 python-magic==0.4.27
 pandas==1.5.1
