@@ -172,10 +172,10 @@ class Range(Generic[T]):
         if self.start is None:
             if self._is_left_inclusive:
                 raise ValueError("Range with unbounded start must be left-exclusive")
-        elif self.end is None:
+        if self.end is None:
             if self._is_right_inclusive:
                 raise ValueError("Range with unbounded end must be right-exclusive")
-        else:
+        elif self.start is not None:
             check_op = {
                 RangeBoundaries.EXCLUSIVE_EXCLUSIVE: operator.lt,
                 RangeBoundaries.EXCLUSIVE_INCLUSIVE: operator.lt,

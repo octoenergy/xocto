@@ -56,8 +56,10 @@ def test_creation():
         (0, 0, ranges.RangeBoundaries.EXCLUSIVE_EXCLUSIVE),
         (None, 0, ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE),
         (None, 0, ranges.RangeBoundaries.INCLUSIVE_EXCLUSIVE),
+        (None, None, ranges.RangeBoundaries.INCLUSIVE_EXCLUSIVE),
         (0, None, ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE),
         (0, None, ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE),
+        (None, None, ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE),
     ],
 )
 def test_validation(start, end, boundaries):
