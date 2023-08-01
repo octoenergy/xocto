@@ -72,4 +72,9 @@ setup(
             "time-machine==2.9.0",
         ],
     },
+    project_urls={
+        "Documentation": "https://xocto.readthedocs.io",
+        "Changelog": "https://github.com/octoenergy/xocto/blob/main/CHANGELOG.md",
+        "Issues": "https://github.com/octoenergy/xocto/issues",
+    },
 )
