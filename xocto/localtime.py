@@ -60,12 +60,15 @@ def datetime(
     minute: int = 0,
     second: int = 0,
     microsecond: int = 0,
+    tz: timezone.zoneinfo.ZoneInfo | None = None,
 ) -> datetime_.datetime:
     """
-    Return a datetime in the local timezone.
+    Return a datetime in the local timezone, or in the desired timezone if tz is provided.
     """
+    if tz is None:
+        tz = timezone.get_current_timezone()
     dt = datetime_.datetime(year, month, day, hour, minute, second, microsecond)
-    return timezone.make_aware(dt)
+    return timezone.make_aware(dt, timezone=tz)
 
 
 # Returning dates

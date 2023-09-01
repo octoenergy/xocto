@@ -316,6 +316,13 @@ class TestDateTime:
         utc_dt = dt.astimezone(localtime.UTC)
         assert utc_dt.hour == 0
 
+    def test_datetime_with_specific_timezone(self):
+        aus_time = zoneinfo.ZoneInfo("Etc/GMT-10")
+        dt = localtime.datetime(2016, 8, 5, tz=aus_time)
+        assert dt.hour == 0
+        utc_dt = dt.astimezone(localtime.UTC)
+        assert utc_dt.hour == 14
+
 
 class TestAsLocaltime:
     def test_conversion_of_gmt_dt(self):
