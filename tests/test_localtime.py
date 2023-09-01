@@ -41,6 +41,23 @@ class TestSecondsInThePast:
             )
 
 
+class TestMakeAwareAssumingLocal:
+    def test_assume_default_timezone_when_none_provided(self):
+        dt = datetime.datetime(2022, 1, 1, 0)
+
+        timezone_aware_dt = localtime.make_aware_assuming_local(dt)
+
+        assert timezone_aware_dt.tzinfo == timezone.get_current_timezone()
+
+    def test_make_aware_with_provided_timezone(self):
+        dt = datetime.datetime(2022, 1, 1, 0)
+        tz = zoneinfo.ZoneInfo("Etc/GMT-10")
+
+        timezone_aware_dt = localtime.make_aware_assuming_local(dt, tz=tz)
+
+        assert timezone_aware_dt.tzinfo == tz
+
+
 class TestDate:
     def test_date_calculation_near_midnight_during_bst(self):
         near_midnight_in_utc = datetime.datetime(2016, 6, 1, 23, 50, 0, tzinfo=localtime.UTC)

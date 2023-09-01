@@ -349,13 +349,17 @@ def as_range(
     return midnight(_date, tz), latest(_date, tz)
 
 
-def make_aware_assuming_local(dt: datetime_.datetime) -> datetime_.datetime:
+def make_aware_assuming_local(
+    dt: datetime_.datetime, tz: Optional[datetime_.tzinfo] = None
+) -> datetime_.datetime:
     """
     Just a wrapper for Django's method, which will takes a naive datetime, and makes it timezone
-    aware, assuming the current timezone if none is passed (which it isn't from this wrapper
-    function). It will also raise an exception if the passed datetime is already timezone-aware.
+    aware, assuming the current timezone if none is passed.
+    It will also raise an exception if the passed datetime is already timezone-aware.
     """
-    return timezone.make_aware(dt)
+    if tz is None:
+        tz = timezone.get_current_timezone()
+    return timezone.make_aware(dt, timezone=tz)
 
 
 def make_aware_assuming_utc(dt: datetime_.datetime) -> datetime_.datetime:
