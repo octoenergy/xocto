@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.1.0 - 2023-09-01
+
+- Add URL utils [#87](https://github.com/octoenergy/xocto/pull/87)
+
 ## v4.0.0 - 2023-07-05
 
 - Remove pytz in favour of Python's builtin ZoneInfo [#61](https://github.com/octoenergy/xocto/pull/61)
