@@ -834,8 +834,9 @@ def get_finite_datetime_ranges_from_timestamps(
     ]
 
 
-def any_overlapping(ranges: Sequence[Range[T]]) -> bool:
+def any_overlapping(ranges: Iterable[Range[T]]) -> bool:
     """Return true if any of the passed Ranges are overlapping."""
+    ranges = list(ranges)
     if not ranges:
         return False
     range_set = RangeSet[T]([ranges[0]])
