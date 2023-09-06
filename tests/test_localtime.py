@@ -1053,3 +1053,40 @@ class TestPeriodExceedsOneYear:
             period_start_at,
             first_dt_exceeding_one_year - relativedelta.relativedelta(microseconds=1),
         )
+
+
+class TestParseDate:
+    def test_returns_date(self):
+        assert localtime.parse_date("2020-01-01") == datetime.date(2020, 1, 1)
+
+    def test_errors_if_invalid(self):
+        with pytest.raises(ValueError) as exc_info:
+            localtime.parse_date("abcd")
+
+        assert "Invalid isoformat string" in str(exc_info.value)
+
+
+class TestParseDatetime:
+    @override_settings(TIME_ZONE="Australia/Sydney")
+    def test_returns_datetime(self):
+        assert localtime.parse_dt("2020-01-01 10:11:12") == datetime.datetime(
+            2020, 1, 1, 10, 11, 12, tzinfo=zoneinfo.ZoneInfo("Australia/Sydney")
+        )
+
+    @override_settings(TIME_ZONE="Australia/Sydney")
+    def test_assumes_midnight(self):
+        assert localtime.parse_dt("2020-01-01") == datetime.datetime(
+            2020, 1, 1, 0, 0, 0, tzinfo=zoneinfo.ZoneInfo("Australia/Sydney")
+        )
+
+    def test_errors_if_timezone_specified(self):
+        with pytest.raises(ValueError) as exc_info:
+            localtime.parse_dt("2020-01-01 10:11 +01:00")
+
+        assert "expects a naive datetime" in str(exc_info.value)
+
+    def test_errors_if_invalid(self):
+        with pytest.raises(ValueError) as exc_info:
+            localtime.parse_date("abcd")
+
+        assert "Invalid isoformat string" in str(exc_info.value)

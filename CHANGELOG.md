@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.2.0 - 2023-09-06
+
+- Add `localtime.parse_date` and `localtime.parse_dt` [#91](https://github.com/octoenergy/xocto/pull/91)
+
 ## v4.1.1 - 2023-09-06
 
 - Allow any iterable type in `ranges.any_overlapping` [#90](https://github.com/octoenergy/xocto/pull/90)
