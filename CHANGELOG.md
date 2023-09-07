@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.1.1 - 2023-09-06
+
+- Allow any iterable type in `ranges.any_overlapping` [#90](https://github.com/octoenergy/xocto/pull/90)
+
 ## v4.1.0 - 2023-09-01
 
 - Add URL utils [#87](https://github.com/octoenergy/xocto/pull/87)
