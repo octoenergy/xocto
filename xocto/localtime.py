@@ -729,3 +729,20 @@ def period_exceeds_one_year(start_at: datetime_.datetime, end_at: datetime_.date
         one_year_after_start_at = one_year_after_start_at.replace(month=3, day=1)
 
     return tz_unaware_end_at > one_year_after_start_at
+
+
+def parse_date(value: str) -> datetime_.date:
+    """
+    Returns a datetime.date for a given ISO format date string.
+    """
+    return datetime_.date.fromisoformat(value)
+
+
+def parse_dt(value: str) -> datetime_.datetime:
+    """
+    Returns a datetime.datetime for a given ISO format date/time string.
+
+    The date/time must be naive - not include timezone information.
+    """
+    _datetime = datetime_.datetime.fromisoformat(value)
+    return timezone.make_aware(_datetime)

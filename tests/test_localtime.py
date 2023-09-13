@@ -638,35 +638,36 @@ class TestDaysInTheFuture:
         assert localtime.days_in_the_future(-1) == localtime.yesterday()
 
 
-@pytest.mark.parametrize(
-    "start_date,end_date,day_of_month,expected_result",
-    (
-        ("2017-01-01", "2018-12-31", 9, "2018-12-09"),  # Result in last month.
-        ("2017-01-01", "2018-12-08", 9, "2018-11-09"),  # Result in previous month.
-        ("2017-01-01", "2017-03-30", 31, "2017-01-31"),  # Result affected by short month.
-        ("2017-01-12", "2017-01-30", 12, "2017-01-12"),  # Result same as from date.
-        ("2017-01-12", "2017-01-30", 30, "2017-01-30"),  # Result same as to date.
-        ("2017-01-12", "2017-02-10", 11, None),  # Result not in range.
-        ("2017-01-01", "2016-01-01", 1, ValueError),  # Invalid range.
-        ("2017-01-01", "2018-12-31", 0, ValueError),  # Day too low.
-        ("2017-01-01", "2018-12-31", 32, ValueError),  # Day too high.
-    ),
-)
-def test_latest_date_for_day(start_date, end_date, day_of_month, expected_result):
-    kwargs = dict(
-        start_date=factories.date(start_date),
-        end_date=factories.date(end_date),
-        day_of_month=day_of_month,
+class TestLatestDateForDay:
+    @pytest.mark.parametrize(
+        "start_date,end_date,day_of_month,expected_result",
+        (
+            ("2017-01-01", "2018-12-31", 9, "2018-12-09"),  # Result in last month.
+            ("2017-01-01", "2018-12-08", 9, "2018-11-09"),  # Result in previous month.
+            ("2017-01-01", "2017-03-30", 31, "2017-01-31"),  # Result affected by short month.
+            ("2017-01-12", "2017-01-30", 12, "2017-01-12"),  # Result same as from date.
+            ("2017-01-12", "2017-01-30", 30, "2017-01-30"),  # Result same as to date.
+            ("2017-01-12", "2017-02-10", 11, None),  # Result not in range.
+            ("2017-01-01", "2016-01-01", 1, ValueError),  # Invalid range.
+            ("2017-01-01", "2018-12-31", 0, ValueError),  # Day too low.
+            ("2017-01-01", "2018-12-31", 32, ValueError),  # Day too high.
+        ),
     )
-    if isinstance(expected_result, type) and issubclass(expected_result, Exception):
-        with pytest.raises(expected_result):
-            localtime.latest_date_for_day(**kwargs)
-    else:
-        if expected_result is not None:
-            expected_result = factories.date(expected_result)
+    def test_latest_date_for_day(self, start_date, end_date, day_of_month, expected_result):
+        kwargs = dict(
+            start_date=factories.date(start_date),
+            end_date=factories.date(end_date),
+            day_of_month=day_of_month,
+        )
+        if isinstance(expected_result, type) and issubclass(expected_result, Exception):
+            with pytest.raises(expected_result):
+                localtime.latest_date_for_day(**kwargs)
+        else:
+            if expected_result is not None:
+                expected_result = factories.date(expected_result)
 
-        result = localtime.latest_date_for_day(**kwargs)
-        assert result == expected_result
+            result = localtime.latest_date_for_day(**kwargs)
+            assert result == expected_result
 
 
 class TestIsWithinTheLastYear:
@@ -995,58 +996,97 @@ class TestDatetimeFromUTCUnixTimestamp:
         assert dt.minute == 30
 
 
-@pytest.mark.parametrize(
-    ("period_start_at", "first_dt_exceeding_one_year"),
-    [
-        (
-            # Basic case.
-            localtime.datetime(2021, 1, 1),
-            localtime.datetime(2022, 1, 1, microsecond=1),
-        ),
-        (
-            # A leap year.
-            localtime.datetime(2020, 1, 1),
-            localtime.datetime(2021, 1, 1, microsecond=1),
-        ),
-        (
-            # Start on a leap year, Feb 28th.
-            localtime.datetime(2020, 2, 28),
-            localtime.datetime(2021, 2, 28, microsecond=1),
-        ),
-        (
-            # Start on a leap year, Feb 29th.
-            localtime.datetime(2020, 2, 29),
-            localtime.datetime(2021, 3, 1, microsecond=1),  # !important
-        ),
-        (
-            # Start on a leap year, March 1st.
-            localtime.datetime(2020, 3, 1),
-            localtime.datetime(2021, 3, 1, microsecond=1),
-        ),
-        (
-            # End on a leap year, Feb 28th.
-            localtime.datetime(2019, 2, 28),
-            localtime.datetime(2020, 2, 28, microsecond=1),
-        ),
-        (
-            # End on a leap year, March 1st.
-            localtime.datetime(2019, 3, 1),
-            localtime.datetime(2020, 3, 1, microsecond=1),
-        ),
-        (
-            # Clock moves backward twice.
-            localtime.datetime(2021, 10, 31),
-            localtime.datetime(2022, 10, 31, microsecond=1),
-        ),
-        (
-            # Clock moves forward twice.
-            localtime.datetime(2021, 3, 28),
-            localtime.datetime(2022, 3, 28, microsecond=1),
-        ),
-    ],
-)
-def test_period_exceeds_one_year(period_start_at, first_dt_exceeding_one_year):
-    assert localtime.period_exceeds_one_year(period_start_at, first_dt_exceeding_one_year)
-    assert not localtime.period_exceeds_one_year(
-        period_start_at, first_dt_exceeding_one_year - relativedelta.relativedelta(microseconds=1)
+class TestPeriodExceedsOneYear:
+    @pytest.mark.parametrize(
+        ("period_start_at", "first_dt_exceeding_one_year"),
+        [
+            (
+                # Basic case.
+                localtime.datetime(2021, 1, 1),
+                localtime.datetime(2022, 1, 1, microsecond=1),
+            ),
+            (
+                # A leap year.
+                localtime.datetime(2020, 1, 1),
+                localtime.datetime(2021, 1, 1, microsecond=1),
+            ),
+            (
+                # Start on a leap year, Feb 28th.
+                localtime.datetime(2020, 2, 28),
+                localtime.datetime(2021, 2, 28, microsecond=1),
+            ),
+            (
+                # Start on a leap year, Feb 29th.
+                localtime.datetime(2020, 2, 29),
+                localtime.datetime(2021, 3, 1, microsecond=1),  # !important
+            ),
+            (
+                # Start on a leap year, March 1st.
+                localtime.datetime(2020, 3, 1),
+                localtime.datetime(2021, 3, 1, microsecond=1),
+            ),
+            (
+                # End on a leap year, Feb 28th.
+                localtime.datetime(2019, 2, 28),
+                localtime.datetime(2020, 2, 28, microsecond=1),
+            ),
+            (
+                # End on a leap year, March 1st.
+                localtime.datetime(2019, 3, 1),
+                localtime.datetime(2020, 3, 1, microsecond=1),
+            ),
+            (
+                # Clock moves backward twice.
+                localtime.datetime(2021, 10, 31),
+                localtime.datetime(2022, 10, 31, microsecond=1),
+            ),
+            (
+                # Clock moves forward twice.
+                localtime.datetime(2021, 3, 28),
+                localtime.datetime(2022, 3, 28, microsecond=1),
+            ),
+        ],
     )
+    def test_period_exceeds_one_year(self, period_start_at, first_dt_exceeding_one_year):
+        assert localtime.period_exceeds_one_year(period_start_at, first_dt_exceeding_one_year)
+        assert not localtime.period_exceeds_one_year(
+            period_start_at,
+            first_dt_exceeding_one_year - relativedelta.relativedelta(microseconds=1),
+        )
+
+
+class TestParseDate:
+    def test_returns_date(self):
+        assert localtime.parse_date("2020-01-01") == datetime.date(2020, 1, 1)
+
+    def test_errors_if_invalid(self):
+        with pytest.raises(ValueError) as exc_info:
+            localtime.parse_date("abcd")
+
+        assert "Invalid isoformat string" in str(exc_info.value)
+
+
+class TestParseDatetime:
+    @override_settings(TIME_ZONE="Australia/Sydney")
+    def test_returns_datetime(self):
+        assert localtime.parse_dt("2020-01-01 10:11:12") == datetime.datetime(
+            2020, 1, 1, 10, 11, 12, tzinfo=zoneinfo.ZoneInfo("Australia/Sydney")
+        )
+
+    @override_settings(TIME_ZONE="Australia/Sydney")
+    def test_assumes_midnight(self):
+        assert localtime.parse_dt("2020-01-01") == datetime.datetime(
+            2020, 1, 1, 0, 0, 0, tzinfo=zoneinfo.ZoneInfo("Australia/Sydney")
+        )
+
+    def test_errors_if_timezone_specified(self):
+        with pytest.raises(ValueError) as exc_info:
+            localtime.parse_dt("2020-01-01 10:11 +01:00")
+
+        assert "expects a naive datetime" in str(exc_info.value)
+
+    def test_errors_if_invalid(self):
+        with pytest.raises(ValueError) as exc_info:
+            localtime.parse_date("abcd")
+
+        assert "Invalid isoformat string" in str(exc_info.value)
