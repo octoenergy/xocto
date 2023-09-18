@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.2.1 - 2023-09-18
+
+- Allow timzone override in `localtime.parse_dt` [#93](https://github.com/octoenergy/xocto/pull/93)
+
 ## v4.2.0 - 2023-09-06
 
 - Add `localtime.parse_date` and `localtime.parse_dt` [#91](https://github.com/octoenergy/xocto/pull/91)
