@@ -738,11 +738,11 @@ def parse_date(value: str) -> datetime_.date:
     return datetime_.date.fromisoformat(value)
 
 
-def parse_dt(value: str) -> datetime_.datetime:
+def parse_dt(value: str, tz: timezone.zoneinfo.ZoneInfo | None = None) -> datetime_.datetime:
     """
     Returns a datetime.datetime for a given ISO format date/time string.
 
     The date/time must be naive - not include timezone information.
     """
     _datetime = datetime_.datetime.fromisoformat(value)
-    return timezone.make_aware(_datetime)
+    return timezone.make_aware(_datetime, timezone=tz)
