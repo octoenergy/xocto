@@ -46,13 +46,27 @@ docker run -v `pwd`:/opt/app xocto/black
 
 ## Publishing
 
-Release to PyPI by creating a pull request that:
+Before you begin, determine the release number. This follows the instructions specifiwed on [semver.org](https://semver.org/). Releases therefore use this pattern:
+
+```
+MAJOR.MINOR.PATCH
+```
+
+Where: 
+
+- MAJOR version when you make incompatible API changes
+- MINOR version when you add functionality in a backward compatible manner
+- PATCH version when you make backward compatible bug fixes
+
+### Release to PyPI
+
+Create a pull request that:
 
 1. Adds release notes to `CHANGELOG.md`.
 
 2. Updates the `VERSION` constant in `setup.py`.
 
-3. Updates the `__version__` constant in `xocto/__init__.py`.
+3. Updates the `__version__` constant in `xocto/__init__.py`, following the [semver.org](https://semver.org/) specification.
 
 Commit these changes in a single commit with subject matching
 `Bump version to v...`.
