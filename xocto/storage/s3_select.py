@@ -91,6 +91,11 @@ class CSVInputSerializer(BaseSerializer):
 
 
 @dataclasses.dataclass(frozen=True)
+class ParquetInputSerializer(BaseSerializer):
+    pass
+
+
+@dataclasses.dataclass(frozen=True)
 class CSVOutputSerializer(BaseSerializer):
     # Indicates whether to use quotation marks around output fields.
     QuoteFields: QuoteFields | None = None
@@ -165,3 +170,23 @@ def get_serializers_for_csv_file(
         temp_dict["ScanRange"] = scan_range.to_dict()
 
     return temp_dict
+
+
+def get_serializers_for_parquet_file(
+    output_serializer: JSONOutputSerializer | CSVOutputSerializer,
+) -> dict[str, dict[str, Any]]:
+    """
+    Returns input and output serialization dictionaries that should be used to perform a select_object_content query.
+
+    Parquet files do not support input serialization or scan ranges.
+    """
+    return {
+        "input_serialization": {
+            "Parquet": {},
+        },
+        "output_serialization": {
+            "JSON"
+            if isinstance(output_serializer, JSONOutputSerializer)
+            else "CSV": output_serializer.to_dict()
+        },
+    }

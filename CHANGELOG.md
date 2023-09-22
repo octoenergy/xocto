@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.3.0 - 2023-09-27
+
+- Enable querying parquet files using `S3FileStore.fetch_object_contents_with_s3_select` and `LocalFileStore.fetch_object_contents_with_s3_select` [#95](https://github.com/octoenergy/xocto/pull/95/)
+
 ## v4.2.1 - 2023-09-18
 
 - Allow timzone override in `localtime.parse_dt` [#93](https://github.com/octoenergy/xocto/pull/93)
