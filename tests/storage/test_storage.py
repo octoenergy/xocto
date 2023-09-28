@@ -7,9 +7,12 @@ from unittest import mock
 
 import boto3
 import moto
+import pandas as pd
+import pyarrow
 import pytest
 import time_machine
 from django.test import override_settings
+from pyarrow import parquet
 
 from xocto.storage import s3_select, storage
 
@@ -28,6 +31,12 @@ def mock_s3_bucket(mocker):
         )
 
         yield bucket
+
+
+@pytest.fixture
+def sample_dataframe():
+    data = {"Name": ["Alice", "Bob", "Charlie"], "Age": [25, 30, 35]}
+    return pd.DataFrame(data)
 
 
 def test_memory_storage_used_during_tests():
@@ -494,6 +503,71 @@ class TestS3FileStore:
             OutputSerialization={"JSON": {"RecordDelimiter": "\n"}},
         )
 
+    def test_fetch_file_contents_using_s3_select_with_parquet_as_input(self):
+        store = storage.S3FileStore("some-bucket")
+
+        # Moto doesn't support faking a response from `select_object_content` that's why
+        # we need a stub that can return us a fake response.
+        boto_client = mock.Mock()
+        store._get_boto_client = mock.Mock(return_value=boto_client)
+
+        # Mock a fake response from S3 Select.
+        # Note: Response has been heavily trimmed for the sake of this test.
+        boto_client.select_object_content.return_value = {
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+            # Payload returns an EventStream iterator, therefore mock it using a list.
+            "Payload": iter([{"Records": {"Payload": b"Foo\nBar"}}]),
+        }
+
+        assert list(
+            store.fetch_file_contents_using_s3_select(
+                key_path="some_file.parquet",
+                # LIMIT 1 means we want to fetch a single row.
+                raw_sql="""SELECT * FROM s3Object LIMIT 1""",
+                input_serializer=s3_select.ParquetInputSerializer(),
+                output_serializer=s3_select.JSONOutputSerializer(),
+            )
+        ) == ["Foo\nBar"]
+
+        boto_client.select_object_content.assert_called_with(
+            Bucket="some-bucket",
+            Key="some_file.parquet",
+            ExpressionType="SQL",
+            Expression="SELECT * FROM s3Object LIMIT 1",
+            InputSerialization={"Parquet": {}},
+            OutputSerialization={"JSON": {"RecordDelimiter": "\n"}},
+        )
+
+    def test_fetch_file_contents_using_s3_select_with_parquet_fails_with_scan_range(self):
+        store = storage.S3FileStore("some-bucket")
+
+        # Moto doesn't support faking a response from `select_object_content` that's why
+        # we need a stub that can return us a fake response.
+        boto_client = mock.Mock()
+        store._get_boto_client = mock.Mock(return_value=boto_client)
+
+        # Mock a fake response from S3 Select.
+        # Note: Response has been heavily trimmed for the sake of this test.
+        boto_client.select_object_content.return_value = {
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+            # Payload returns an EventStream iterator, therefore mock it using a list.
+            "Payload": iter([{"Records": {"Payload": b"Foo\nBar"}}]),
+        }
+
+        with pytest.raises(ValueError) as error:
+
+            list(
+                store.fetch_file_contents_using_s3_select(
+                    key_path="some_file.parquet",
+                    raw_sql="""SELECT * FROM s3Object LIMIT 1""",
+                    input_serializer=s3_select.ParquetInputSerializer(),
+                    output_serializer=s3_select.JSONOutputSerializer(),
+                    scan_range=s3_select.ScanRange(0, 100),
+                )
+            )
+
+        assert str(error.value) == "The scan_range parameter is not supported for parquet files"
+
     @pytest.mark.parametrize("expected_error_code", [400, 401, 403, 500])
     def test_fetch_file_contents_using_s3_select_raises_errors(self, expected_error_code):
         store = storage.S3FileStore("some-bucket")
@@ -623,6 +697,18 @@ class TestMemoryFileStore:
 
 
 class TestLocalFileStore:
+    @classmethod
+    def setup_class(cls):
+        cls.sample_dataframe = pd.DataFrame(
+            {"Name": ["Alice", "Bob", "Charlie"], "Age": [25, 30, 35]}
+        )
+
+        cls.csv_data = """Name,Age
+                        Alice,25
+                        Bob,30
+                        Charlie,35
+                       """
+
     def test_store_and_fetch(self):
         with tempfile.TemporaryDirectory() as tdir:
             store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=False)
@@ -770,6 +856,263 @@ class TestLocalFileStore:
         store = storage.LocalFileStore("bucket-name")
         fetch_url = store.fetch_url("some/key", version_id="some-version")
         assert fetch_url == "/media-url/bucket-name/some/some-version/key"
+
+    @mock.patch.object(storage.LocalFileStore, "_filepath_for_key_path")
+    def test_fetch_csv_file_contents_using_s3_select(self, mock__filepath_for_key_path):
+
+        store = storage.LocalFileStore("my_bucket")
+        mock_csv_data = "Name,Age\nAlice,25\nBob,30\nCharlie,35\n"
+        with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".csv") as tmp_csv_file:
+            tmp_csv_file.write(mock_csv_data)
+            tmp_csv_file_path = tmp_csv_file.name
+
+        mock__filepath_for_key_path.return_value = tmp_csv_file_path
+
+        input_serializer = s3_select.CSVInputSerializer(
+            FileHeaderInfo=s3_select.FileHeaderInfo.USE, FieldDelimiter=","
+        )
+        output_serializer = s3_select.JSONOutputSerializer()
+
+        results = list(
+            store.fetch_file_contents_using_s3_select(
+                key_path="my_csv_file.csv",
+                raw_sql="SELECT * FROM s3object",
+                input_serializer=input_serializer,
+                output_serializer=output_serializer,
+            )
+        )
+
+        expected_results = [
+            '{"Name":"Alice","Age":25}\n'
+            '{"Name":"Bob","Age":30}\n'
+            '{"Name":"Charlie","Age":35}\n'
+        ]
+        assert results == expected_results
+
+    @mock.patch.object(storage.LocalFileStore, "_filepath_for_key_path")
+    def test_fetch_csv_file_contents_using_s3_select_and_where_statement(
+        self, mock__filepath_for_key_path
+    ):
+
+        store = storage.LocalFileStore("my_bucket")
+        mock_csv_data = "Name,Age\nAlice,25\nBob,30\nCharlie,35\n"
+        with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".csv") as tmp_csv_file:
+            tmp_csv_file.write(mock_csv_data)
+            tmp_csv_file_path = tmp_csv_file.name
+
+        mock__filepath_for_key_path.return_value = tmp_csv_file_path
+
+        input_serializer = s3_select.CSVInputSerializer(
+            FileHeaderInfo=s3_select.FileHeaderInfo.USE, FieldDelimiter=","
+        )
+        output_serializer = s3_select.JSONOutputSerializer()
+
+        results = list(
+            store.fetch_file_contents_using_s3_select(
+                key_path="my_csv_file.csv",
+                raw_sql="SELECT * FROM s3object WHERE Name = 'Alice'",
+                input_serializer=input_serializer,
+                output_serializer=output_serializer,
+            )
+        )
+
+        expected_results = ['{"Name":"Alice","Age":25}\n']
+        assert results == expected_results
+
+    @mock.patch.object(storage.LocalFileStore, "_filepath_for_key_path")
+    def test_fetch_parquet_file_contents_using_s3_select(self, mock__filepath_for_key_path):
+
+        store = storage.LocalFileStore("my_bucket")
+        mock_data = {"Name": ["Alice", "Bob", "Charlie"], "Age": [25, 30, 35]}
+        df = pd.DataFrame(mock_data)
+
+        with tempfile.NamedTemporaryFile(
+            delete=False, mode="w", suffix=".parquet"
+        ) as tmp_parquet_file:
+            parquet_file_path = tmp_parquet_file.name
+
+            table = pyarrow.Table.from_pandas(df)
+            parquet.write_table(table, parquet_file_path)
+
+            mock__filepath_for_key_path.return_value = parquet_file_path
+
+            input_serializer = s3_select.ParquetInputSerializer()
+            output_serializer = s3_select.JSONOutputSerializer()
+
+            results = list(
+                store.fetch_file_contents_using_s3_select(
+                    key_path="my_parquet_file.parquet",
+                    raw_sql="SELECT * FROM s3object",
+                    input_serializer=input_serializer,
+                    output_serializer=output_serializer,
+                )
+            )
+
+            expected_results = [
+                '{"Name":"Alice","Age":25}\n'
+                '{"Name":"Bob","Age":30}\n'
+                '{"Name":"Charlie","Age":35}\n'
+            ]
+            assert results == expected_results
+
+    def test_fetch_nonexistent_file_with_s3_select(self):
+
+        input_serializer = s3_select.CSVInputSerializer(s3_select.FileHeaderInfo.USE)
+        output_serializer = s3_select.JSONOutputSerializer()
+        store = storage.LocalFileStore("my_bucket")
+
+        with pytest.raises(FileNotFoundError):
+            list(
+                store.fetch_file_contents_using_s3_select(
+                    key_path="nonexistent_file.csv",
+                    raw_sql="SELECT * FROM s3Object",
+                    input_serializer=input_serializer,
+                    output_serializer=output_serializer,
+                )
+            )
+
+    def test_fetch_file_with_s3_select_scan_range_raises_error(self):
+
+        input_serializer = s3_select.CSVInputSerializer(s3_select.FileHeaderInfo.USE)
+        output_serializer = s3_select.JSONOutputSerializer()
+        store = storage.LocalFileStore("my_bucket")
+
+        with pytest.raises(NotImplementedError):
+            list(
+                store.fetch_file_contents_using_s3_select(
+                    key_path="nonexistent_file.csv",
+                    raw_sql="SELECT * FROM s3Object",
+                    input_serializer=input_serializer,
+                    output_serializer=output_serializer,
+                    scan_range=s3_select.ScanRange(0, 100),
+                )
+            )
+
+    @mock.patch.object(storage.LocalFileStore, "_filepath_for_key_path")
+    def test_json_output_unsupported_record_separator_raises_exception(
+        self, mock__filepath_for_key_path
+    ):
+
+        store = storage.LocalFileStore("my_bucket")
+        mock_data = {"Name": ["Alice", "Bob", "Charlie"], "Age": [25, 30, 35]}
+        df = pd.DataFrame(mock_data)
+
+        with tempfile.NamedTemporaryFile(
+            delete=False, mode="w", suffix=".parquet"
+        ) as tmp_parquet_file:
+            parquet_file_path = tmp_parquet_file.name
+
+            table = pyarrow.Table.from_pandas(df)
+            parquet.write_table(table, parquet_file_path)
+
+            mock__filepath_for_key_path.return_value = parquet_file_path
+
+            input_serializer = s3_select.ParquetInputSerializer()
+            output_serializer = s3_select.JSONOutputSerializer("\r")
+
+            with pytest.raises(NotImplementedError):
+                list(
+                    store.fetch_file_contents_using_s3_select(
+                        key_path="my_parquet_file.parquet",
+                        raw_sql="SELECT * FROM s3object",
+                        input_serializer=input_serializer,
+                        output_serializer=output_serializer,
+                    )
+                )
+
+    def test_output_csv_with_serializer_quoting_always(self):
+        store = storage.LocalFileStore("my_bucket")
+        serializer = s3_select.CSVOutputSerializer(QuoteFields=s3_select.QuoteFields.ALWAYS)
+        result = store.output_csv_with_serializer(
+            df=self.sample_dataframe, output_serializer=serializer
+        )
+        expected = '"Name","Age"\n"Alice","25"\n"Bob","30"\n"Charlie","35"\n'
+        assert result == expected
+
+    def test_output_csv_with_serializer_quoting_as_needed(self):
+
+        sample_dataframe = pd.DataFrame(
+            {"Name": ["Ali,ce", "Bob", "Charlie"], "Age": [25, 30, 35]}
+        )
+        store = storage.LocalFileStore("my_bucket")
+        serializer = s3_select.CSVOutputSerializer(QuoteFields=s3_select.QuoteFields.ASNEEDED)
+        result = store.output_csv_with_serializer(
+            df=sample_dataframe, output_serializer=serializer
+        )
+        expected = 'Name,Age\n"Ali,ce",25\nBob,30\nCharlie,35\n'
+        assert result == expected
+
+    def test_output_csv_with_serializer_custom_delimiter(self):
+        store = storage.LocalFileStore("my_bucket")
+        serializer = s3_select.CSVOutputSerializer(FieldDelimiter=";")
+        result = store.output_csv_with_serializer(
+            df=self.sample_dataframe, output_serializer=serializer
+        )
+        expected = "Name;Age\nAlice;25\nBob;30\nCharlie;35\n"
+        assert result == expected
+
+    def test_output_csv_with_serializer_custom_escapechar(self):
+        store = storage.LocalFileStore("my_bucket")
+        serializer = s3_select.CSVOutputSerializer(QuoteEscapeCharacter="\\")
+        result = store.output_csv_with_serializer(
+            df=self.sample_dataframe, output_serializer=serializer
+        )
+        expected = "Name,Age\nAlice,25\nBob,30\nCharlie,35\n"
+        assert result == expected
+
+    def test_output_csv_with_serializer_custom_record_delimiter(self):
+        store = storage.LocalFileStore("my_bucket")
+        serializer = s3_select.CSVOutputSerializer(RecordDelimiter="|")
+        result = store.output_csv_with_serializer(
+            df=self.sample_dataframe, output_serializer=serializer
+        )
+        expected = "Name,Age|Alice,25|Bob,30|Charlie,35|"
+        assert result == expected
+
+    def test_read_csv_with_serializer(self):
+        store = storage.LocalFileStore("my_bucket")
+
+        with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".csv") as tmp_csv_file:
+            tmp_csv_file.write(self.csv_data)
+            tmp_csv_file_path = tmp_csv_file.name
+        input_serializer = s3_select.CSVInputSerializer(s3_select.FileHeaderInfo.USE)
+        result = store.read_csv_with_serializer(
+            csv_file_path=tmp_csv_file_path,
+            csv_input_serializer=input_serializer,
+        )
+        assert isinstance(result, pd.DataFrame)
+
+    def test_query_dataframe_with_sql(self):
+
+        data = {
+            "string_column": ["A", "B", "C"],
+            "array_column": [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+        }
+        dummy_df = pd.DataFrame(data)
+
+        store = storage.LocalFileStore("my_bucket")
+        raw_sql = "SELECT * FROM S3Object WHERE string_column = 'A'"
+
+        result_df = store.query_dataframe_with_sql(raw_sql, dummy_df)
+
+        assert result_df.shape == (1, 2)
+
+        assert result_df["string_column"][0] == "A"
+        assert result_df["array_column"][0] == [1, 2, 3]
+
+    def test_query_dataframe_with_sql_with_capitalised_object_in_query(self):
+
+        dummy_df = pd.DataFrame(self.sample_dataframe)
+
+        store = storage.LocalFileStore("my_bucket")
+        raw_sql = "SELECT * FROM s3OBJeCT WHERE Name = 'Alice'"
+
+        result_df = store.query_dataframe_with_sql(raw_sql, dummy_df)
+
+        assert result_df.shape == (1, 2)
+
+        assert result_df["Name"][0] == "Alice"
+        assert result_df["Age"][0] == 25
 
 
 class TestFromUri:

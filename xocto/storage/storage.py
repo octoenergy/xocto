@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import base64
+import csv
 import dataclasses
 import datetime
 import hashlib
@@ -27,12 +28,15 @@ from typing import (
 )
 
 import boto3
+import duckdb
 import magic
+import pandas as pd
 from botocore import exceptions as botocore_exceptions
 from botocore.response import StreamingBody
 from django.conf import settings
 from django.urls import reverse
 from django.utils.module_loading import import_string
+from pyarrow import parquet
 
 from xocto import events, localtime
 
@@ -550,24 +554,39 @@ class S3FileStore(BaseS3FileStore):
         self,
         key_path: str,
         raw_sql: str,
-        input_serializer: s3_select.CSVInputSerializer,
+        input_serializer: s3_select.CSVInputSerializer | s3_select.ParquetInputSerializer,
         output_serializer: s3_select.CSVOutputSerializer | s3_select.JSONOutputSerializer,
-        compression_type: s3_select.CompressionType,
+        compression_type: s3_select.CompressionType | None = None,
         scan_range: s3_select.ScanRange | None = None,
         chunk_size: int | None = None,
     ) -> Iterator[str]:
         """
-        Reads a CSV file from S3 using the given SQL statement.
+        Reads a CSV or Parquet file from S3 using the given SQL statement.
         Reference: https://dev.to/idrisrampurawala/efficiently-streaming-a-large-aws-s3-file-via-s3-select-4on
+        Does not support columnar compression for parquet files at present.
         """
 
         boto_client = self._get_boto_client()
-        serialization = s3_select.get_serializers_for_csv_file(
-            input_serializer=input_serializer,
-            compression_type=compression_type,
-            output_serializer=output_serializer,
-            scan_range=scan_range,
-        )
+
+        if isinstance(input_serializer, s3_select.CSVInputSerializer):
+            serialization = s3_select.get_serializers_for_csv_file(
+                input_serializer=input_serializer,
+                compression_type=compression_type
+                if compression_type is not None
+                else s3_select.CompressionType.NONE,
+                output_serializer=output_serializer,
+                scan_range=scan_range,
+            )
+        elif isinstance(input_serializer, s3_select.ParquetInputSerializer):
+            if scan_range is not None:
+                raise ValueError("The scan_range parameter is not supported for parquet files")
+            serialization = s3_select.get_serializers_for_parquet_file(
+                output_serializer=output_serializer
+            )
+        else:
+            raise ValueError(
+                "input_serializer must be either CSVInputSerializer or ParquetInputSerializer"
+            )
 
         select_object_content_parameters = dict(
             Bucket=self.bucket_name,
@@ -1106,6 +1125,171 @@ class LocalFileStore(BaseS3FileStore):
 
     def fetch_file_contents(self, key_path: str, version_id: str | None = None) -> bytes:
         return self.fetch_file(key_path, version_id).read()
+
+    def fetch_file_contents_using_s3_select(
+        self,
+        key_path: str,
+        raw_sql: str,
+        input_serializer: s3_select.CSVInputSerializer | s3_select.ParquetInputSerializer,
+        output_serializer: s3_select.CSVOutputSerializer | s3_select.JSONOutputSerializer,
+        compression_type: s3_select.CompressionType | None = None,
+        scan_range: s3_select.ScanRange | None = None,
+        chunk_size: int | None = None,
+    ) -> Iterator[str]:
+        """
+        Localdev version of S3FileStore `fetch_file_contents_using_s3_select`. Does not support scan ranges.
+        Converts the file to a pandas dataframe and then runs the SQL query on it
+        by creating an in memory DB with the table which a query can be run on. As the file is loaded into memory,
+        this is not recommended for use with very large files.
+
+        While this should return the same results as the S3FileStore version,
+        there may be small discrepancies in the results being returned.
+        """
+
+        if scan_range is not None:
+            raise NotImplementedError("Scan ranges are not supported for localdev")
+
+        input_file_path = self._filepath_for_key_path(key_path=key_path)
+
+        if isinstance(input_serializer, s3_select.CSVInputSerializer):
+            # https://docs.aws.amazon.com/AmazonS3/latest/API/API_CSVInput.html#AmazonS3-Type-CSVInput-QuoteCharacter
+            df = self.read_csv_with_serializer(
+                csv_file_path=input_file_path,
+                csv_input_serializer=input_serializer,
+                compression_type=compression_type,
+            )
+        elif isinstance(input_serializer, s3_select.ParquetInputSerializer):
+            parquet_file = parquet.ParquetFile(input_file_path)
+            df = parquet_file.read().to_pandas()
+
+        filtered_df = self.query_dataframe_with_sql(
+            raw_sql=raw_sql,
+            df=df,
+        )
+
+        if isinstance(output_serializer, s3_select.JSONOutputSerializer):
+            if output_serializer.RecordDelimiter != "\n":
+                raise NotImplementedError(
+                    "Only newline ('\n') is supported as the record delimiter for JSON output in localdev"
+                )
+            result = filtered_df.to_json(orient="records", lines=True, date_format="iso")
+        elif isinstance(output_serializer, s3_select.CSVOutputSerializer):
+            result = self.output_csv_with_serializer(
+                df=filtered_df,
+                output_serializer=output_serializer,
+            )
+
+        yield result
+
+    def query_dataframe_with_sql(
+        self,
+        raw_sql: str,
+        df: pd.DataFrame,
+    ) -> pd.DataFrame:
+
+        # s3 select requires the from clause to use the identifier "s3object"
+        # it is case insensitive however so people's queries may use different cases
+        S3_OBJECT_QUERY_IDENTIFIER = "s3object"
+
+        con = duckdb.connect(database=":memory:")
+        pattern = re.compile(rf"{S3_OBJECT_QUERY_IDENTIFIER}", re.IGNORECASE)
+        raw_sql = pattern.sub(S3_OBJECT_QUERY_IDENTIFIER, raw_sql)
+        con.register(S3_OBJECT_QUERY_IDENTIFIER, df)
+
+        result = con.execute(raw_sql)
+
+        df_filtered = result.fetchdf()
+
+        return df_filtered
+
+    def read_csv_with_serializer(
+        self,
+        csv_file_path: str,
+        csv_input_serializer: s3_select.CSVInputSerializer,
+        compression_type: s3_select.CompressionType | None = None,
+    ) -> pd.DataFrame:
+
+        input_serializer = csv_input_serializer.to_dict()
+
+        field_delimiter = input_serializer.get("FieldDelimiter", ",")
+        compression = compression_type.lower() if compression_type else "infer"
+        quotechar = input_serializer.get("QuoteCharacter", '"')
+        escapechar = input_serializer.get("QuoteEscapeCharacter", "\\")
+        comment = input_serializer.get("Comments")
+        record_delimiter = input_serializer.get("RecordDelimiter")
+        header: int | None | str
+
+        if "FileHeaderInfo" in input_serializer.keys():
+
+            if input_serializer["FileHeaderInfo"] == "NONE":
+                header = None
+            elif input_serializer["FileHeaderInfo"] == "IGNORE":
+                raise NotImplementedError(
+                    "Value `IGNORE` of column selection not implemented for localdev"
+                )
+            elif input_serializer["FileHeaderInfo"] == "USE":
+                header = 0
+            else:
+                header = "infer"
+        else:
+            header = "infer"
+
+        # Define default values for each parameter
+        default_kwargs = {
+            "sep": field_delimiter,
+            "compression": compression,
+            "quotechar": quotechar,
+            "escapechar": escapechar,
+            "comment": comment,
+            "header": header,
+            "lineterminator": record_delimiter if record_delimiter != "\n" else None,
+            "engine": "c" if record_delimiter != "\n" else None,
+        }
+
+        kwargs = {
+            key: value
+            for key, value in default_kwargs.items()
+            if value is not None or key == "header"
+        }
+
+        df = pd.read_csv(filepath_or_buffer=csv_file_path, **kwargs)
+
+        return df
+
+    def output_csv_with_serializer(
+        self,
+        df: pd.DataFrame,
+        output_serializer: s3_select.CSVOutputSerializer,
+    ) -> str:
+
+        output_serializer_dict = output_serializer.to_dict()
+
+        field_delimiter = output_serializer_dict.get("FieldDelimiter", ",")
+        quotechar = output_serializer_dict.get("QuoteCharacter", '"')
+        escapechar = output_serializer_dict.get("QuoteEscapeCharacter", "\\")
+        record_delimiter = output_serializer_dict.get("RecordDelimiter", "\n")
+
+        if "QuoteFields" in output_serializer_dict.keys():
+            if output_serializer_dict["QuoteFields"] == "ALWAYS":
+                quoting = csv.QUOTE_ALL
+            else:
+                quoting = None
+        else:
+            quoting = None
+
+        default_kwargs = {
+            "sep": field_delimiter,
+            "lineterminator": record_delimiter if record_delimiter != "\n" else None,
+            "quotechar": quotechar,
+            "escapechar": escapechar,
+            "quoting": quoting,
+        }
+
+        kwargs = {key: value for key, value in default_kwargs.items() if value is not None}
+
+        result = df.to_csv(index=False, **kwargs)
+
+        return result
 
     def fetch_url(
         self,

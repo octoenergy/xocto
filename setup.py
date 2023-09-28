@@ -5,7 +5,7 @@ from setuptools import setup
 
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
-VERSION = "4.2.1"
+VERSION = "4.3.0"
 
 with open(path.join(REPO_ROOT, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
@@ -34,6 +34,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "ddtrace>=1.9.0",
+        "duckdb==0.8.1",
         "django>=4.0",
         "openpyxl>=3.1.0",
         "pact-python>=1.6.0",
@@ -55,6 +56,7 @@ setup(
             "mypy==0.991",
             "numpy==1.22.2",
             "pre-commit>=3.2.0",
+            "pyarrow-stubs==10.0.1.6",
             "twine==4.0.2",
             "types-openpyxl==3.0.4.5",
             "types-python-dateutil==2.8.19.6",
