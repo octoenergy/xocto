@@ -622,8 +622,14 @@ class RangeSet(Generic[T]):
         """
         return self.union(other)
 
+    def is_left_finite(self) -> bool:
+        return all(r.is_left_finite() for r in self._ranges)
+
+    def is_right_finite(self) -> bool:
+        return all(r.is_right_finite() for r in self._ranges)
+
     def is_finite(self) -> bool:
-        return all([r.is_finite() for r in self._ranges])
+        return all(r.is_finite() for r in self._ranges)
 
     def complement(self) -> RangeSet[T]:
         """
