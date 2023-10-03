@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.4.0 - 2023-10-03
+
+- Add `is_left_finite` and `is_right_finite` methods to `ranges.RangeSet` [#96](https://github.com/octoenergy/xocto/pull/96/).
+
 ## v4.3.0 - 2023-09-27
 
 - Enable querying parquet files using `S3FileStore.fetch_object_contents_with_s3_select` and `LocalFileStore.fetch_object_contents_with_s3_select` [#95](https://github.com/octoenergy/xocto/pull/95/)
