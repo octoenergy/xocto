@@ -15,6 +15,9 @@ lint:
 test:
 	py.test
 
+coverage:
+	py.test --cov=xocto
+
 black:
 	black -v --check .
 
