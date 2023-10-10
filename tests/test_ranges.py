@@ -617,3 +617,175 @@ class TestFiniteDateRange:
             end=datetime.date(2000, 1, 2),
         )
         assert range.days == 2
+
+    class TestIsDisjoint:
+        @pytest.mark.parametrize(
+            "other",
+            [
+                ranges.Range(
+                    start=datetime.date(2000, 1, 1),
+                    end=datetime.date(2000, 1, 2),
+                    boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE,
+                ),
+                ranges.Range(
+                    start=datetime.date(2000, 1, 5),
+                    end=datetime.date(2000, 1, 6),
+                    boundaries=ranges.RangeBoundaries.INCLUSIVE_EXCLUSIVE,
+                ),
+            ],
+        )
+        def test_identifies_ranges_that_are_not_disjoint(self, other):
+            range = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 3),
+                end=datetime.date(2000, 1, 4),
+            )
+            assert range.is_disjoint(other) is False
+
+        @pytest.mark.parametrize(
+            "other",
+            [
+                ranges.Range(
+                    start=datetime.date(2000, 1, 1),
+                    end=datetime.date(2000, 1, 2),
+                    boundaries=ranges.RangeBoundaries.INCLUSIVE_EXCLUSIVE,
+                ),
+                ranges.Range(
+                    start=datetime.date(2000, 1, 5),
+                    end=datetime.date(2000, 1, 6),
+                    boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE,
+                ),
+            ],
+        )
+        def test_identifies_ranges_that_are_disjoint(self, other):
+            range = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 3),
+                end=datetime.date(2000, 1, 4),
+            )
+            assert range.is_disjoint(other) is True
+
+    class TestUnion:
+        @pytest.mark.parametrize(
+            "range, other",
+            [
+                (
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2000, 1, 1),
+                        end=datetime.date(2000, 1, 2),
+                    ),
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2000, 1, 3),
+                        end=datetime.date(2000, 1, 4),
+                    ),
+                ),
+                (
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2000, 1, 3),
+                        end=datetime.date(2000, 1, 4),
+                    ),
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2000, 1, 1),
+                        end=datetime.date(2000, 1, 2),
+                    ),
+                ),
+            ],
+        )
+        def test_handles_adjacent_ranges(self, range, other):
+            """
+            As FiniteDateRange boundaries are double inclusive, when two ranges
+            end/start on consecutive days they effectively cover a fully contiguous
+            period of time and should make a union.
+            """
+            union = range | other
+            assert union == ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 1),
+                end=datetime.date(2000, 1, 4),
+            )
+
+        @pytest.mark.parametrize(
+            "range, other",
+            [
+                (
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2000, 1, 1),
+                        end=datetime.date(2000, 1, 2),
+                    ),
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2000, 1, 4),
+                        end=datetime.date(2000, 1, 5),
+                    ),
+                ),
+                (
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2000, 1, 4),
+                        end=datetime.date(2000, 1, 5),
+                    ),
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2000, 1, 1),
+                        end=datetime.date(2000, 1, 2),
+                    ),
+                ),
+            ],
+        )
+        def test_handles_disjoint_ranges(self, range, other):
+            """
+            Disjoint ranges (those with a full clear day between them) should not make
+            a union.
+            """
+            union = range | other
+            assert union is None
+
+        @pytest.mark.parametrize(
+            "other",
+            [
+                pytest.param(
+                    # This is a complex case, because the behaviour of union orders
+                    # the ranges first the union method is called on this param Range
+                    # not the FiniteDateRange defined in the test body. The test case
+                    # still has value though as it does confirm that we get the desired
+                    # behaviour, even if it is not with the expected method being
+                    # called.
+                    ranges.Range(
+                        start=datetime.date(2000, 1, 1),
+                        end=datetime.date(2000, 1, 2),
+                        boundaries=ranges.RangeBoundaries.INCLUSIVE_EXCLUSIVE,
+                    ),
+                    id="other_excludes_adjacent_end_boundary",
+                ),
+                pytest.param(
+                    ranges.Range(
+                        start=datetime.date(2000, 1, 5),
+                        end=datetime.date(2000, 1, 6),
+                        boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE,
+                    ),
+                    id="other_excludes_adjacent_start_boundary",
+                ),
+            ],
+        )
+        def test_respects_other_range_boundaries(self, other):
+            """
+            Disjoint ranges (those with a full clear day between them) should not make
+            a union.
+            """
+            range = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 3),
+                end=datetime.date(2000, 1, 4),
+            )
+            union = range | other
+            assert union is None
+
+        def test_doesnt_extend_union(self):
+            """
+            A union of ranges should be longer than the sum of it's parts.
+            """
+            # This is a weird test to include, it is added because this feels like an
+            # obvious risk with the implementation I have used.
+            range = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 3),
+                end=datetime.date(2000, 1, 4),
+            )
+            other = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 3),
+                end=datetime.date(2000, 1, 4),
+            )
+            union = range | other
+            assert union == range
