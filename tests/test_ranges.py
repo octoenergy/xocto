@@ -600,3 +600,20 @@ class TestAnyOverlapping:
 
     def test_returns_false_for_empty_set_of_ranges(self):
         assert not ranges.any_overlapping([])
+
+
+class TestFiniteDateRange:
+    """
+    Test class for methods specific to the the FiniteDateRange subclass.
+    """
+
+    def test_days_property_has_correct_value(self):
+        """
+        As FiniteDateRange boundaries are double inclusive, the days
+        property should include the start and end dates in the count.
+        """
+        range = ranges.FiniteDateRange(
+            start=datetime.date(2000, 1, 1),
+            end=datetime.date(2000, 1, 2),
+        )
+        assert range.days == 2

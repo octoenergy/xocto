@@ -798,7 +798,7 @@ class FiniteDateRange(FiniteRange[datetime.date]):
         """
         Return the number of days between the start and end of the range.
         """
-        return (self.end - self.start).days
+        return (self.end - self.start).days + 1
 
 
 def get_finite_datetime_ranges_from_timestamps(
