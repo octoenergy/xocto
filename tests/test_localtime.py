@@ -1090,3 +1090,16 @@ class TestParseDatetime:
             localtime.parse_date("abcd")
 
         assert "Invalid isoformat string" in str(exc_info.value)
+
+
+class TestStrftime:
+    @override_settings(TIME_ZONE="Europe/Berlin")
+    def test_formats_datetime_in_local_timezone(self):
+        dt = datetime.datetime(2023, 10, 1, 22, 30, 0, tzinfo=timezone.utc)
+        fmt = "%Y-%m-%d %H:%M:%S %z"
+
+        assert localtime.strftime(dt, fmt) == "2023-10-02 00:30:00 +0200"
+        assert (
+            localtime.strftime(dt, fmt, tz=zoneinfo.ZoneInfo("Europe/London"))
+            == "2023-10-01 23:30:00 +0100"
+        )
