@@ -749,3 +749,16 @@ def parse_dt(value: str, tz: zoneinfo.ZoneInfo | None = None) -> datetime_.datet
     """
     _datetime = datetime_.datetime.fromisoformat(value)
     return timezone.make_aware(_datetime, timezone=tz)
+
+
+def strftime(
+    dt: datetime_.datetime,
+    fmt: str,
+    tz: zoneinfo.ZoneInfo | None = None,
+) -> str:
+    """
+    Format a tz aware datetime in localtime.
+
+    Wrapper for `datetime.strftime`.
+    """
+    return as_localtime(dt, tz=tz).strftime(fmt)
