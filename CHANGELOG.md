@@ -1,9 +1,10 @@
 # Changelog
 
-## v4.3.0 - 2023-10-12
+## v4.4.0 - 2023-10-12
 
 - Replaced flake8 and isort with ruff [#101](https://github.com/octoenergy/xocto/pull/101)
 - Updated types in localtime.py [#101](https://github.com/octoenergy/xocto/pull/101)
+- Add `RangeSet.is_(left|right)_finite` [#96](https://github.com/octoenergy/xocto/pull/96)
 
 ## v4.3.0 - 2023-09-27
 
