@@ -31,4 +31,4 @@ jobs:
           name: Black
           command: |
             . ~/venv/bin/activate
-            make black
+            make black_check
