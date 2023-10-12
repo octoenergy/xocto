@@ -42,6 +42,7 @@ from xocto import events, localtime
 
 from . import files, s3_select
 
+
 if TYPE_CHECKING:
     from _typeshed import WriteableBuffer
     from mypy_boto3_s3 import service_resource

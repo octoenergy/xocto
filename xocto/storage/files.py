@@ -11,6 +11,7 @@ import os
 import tempfile
 from typing import IO, Any, AnyStr, Callable
 
+
 XLRD_FLOAT_TYPE = 2
 
 

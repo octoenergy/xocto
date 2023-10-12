@@ -6,6 +6,7 @@ import structlog
 from django import http
 from django.conf import settings
 
+
 logger = structlog.get_logger("events")
 
 __all__ = ["publish"]

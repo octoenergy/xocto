@@ -10,23 +10,27 @@ clean:
 # Static analysis
 
 lint:
-	flake8
+	make black_check ruff mypy
 
-test:
-	py.test
+black_check:
+	black --check --diff .
 
-black:
-	black -v --check .
-
-isort:
-	isort --check-only .
+ruff:
+	ruff check .
 
 mypy:
 	mypy
 
+test:
+	py.test
+
+format:
+	ruff check --fix .
+	black .
+
 docker_images:
 	docker build -t xocto/pytest --target=pytest .
-	docker build -t xocto/isort --target=isort .
+	docker build -t xocto/ruff --target=ruff .
 	docker build -t xocto/black --target=black .
 
 # Releases
