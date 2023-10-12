@@ -5,7 +5,18 @@ import enum
 import functools
 import itertools
 import operator
-from typing import Any, Generic, Iterable, Iterator, List, Optional, Sequence, TypeVar, Union, cast
+from typing import (
+    Any,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from . import types
 

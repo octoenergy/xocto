@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ddtrace
 
+
 tracer = ddtrace.tracer
 wrap = tracer.wrap
 

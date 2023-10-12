@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models.expressions import Combinable
 from django.http import HttpRequest
 
+
 # A type variable which can be used in generic types, and represents a Django model of some
 # description
 Model = TypeVar("Model", bound=models.Model)

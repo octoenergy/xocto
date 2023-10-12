@@ -3,6 +3,7 @@ from os import path
 
 from setuptools import setup
 
+
 REPO_ROOT = path.abspath(path.dirname(__file__))
 
 VERSION = "4.3.0"
@@ -51,12 +52,12 @@ setup(
             "black==22.12.0",
             "boto3==1.26.53",
             "botocore==1.29.53",
-            "isort==5.11.4",
             "mypy-boto3-s3==1.26.0.post1",
             "mypy==0.991",
             "numpy==1.22.2",
             "pre-commit>=3.2.0",
             "pyarrow-stubs==10.0.1.6",
+            "ruff==0.0.292",
             "twine==4.0.2",
             "types-openpyxl==3.0.4.5",
             "types-python-dateutil==2.8.19.6",
@@ -65,7 +66,7 @@ setup(
             "wheel==0.38.4",
         ],
         "test": [
-            "flake8==6.0.0",
+            "ruff==0.0.292",
             "hypothesis==6.62.1",
             "moto[s3,sqs]==4.1",
             "pytest-django==4.5.2",
