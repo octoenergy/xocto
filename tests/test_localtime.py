@@ -9,9 +9,8 @@ from django.conf import settings
 from django.test import override_settings
 from django.utils import timezone
 
-from xocto import localtime
-
 from tests import factories
+from xocto import localtime
 
 
 class TestNow:

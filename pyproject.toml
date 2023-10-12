@@ -98,6 +98,6 @@ section-order = [
 
 [tool.ruff.isort.sections]
 "project" = [
-    "{{ cookiecutter.python_package_name }}",
+    "xocto",
     "tests",
 ]
