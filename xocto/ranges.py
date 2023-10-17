@@ -801,6 +801,21 @@ class FiniteDateRange(FiniteRange[datetime.date]):
         assert base_intersection.boundaries == RangeBoundaries.INCLUSIVE_INCLUSIVE
         return FiniteDateRange(base_intersection.start, base_intersection.end)
 
+    def is_disjoint(self, other: Range[datetime.date]) -> bool:
+        # Adjacent dates should not be considered disjoint, we extend the other
+        # range to allow them to be considered adjacent.
+        other_start = other.start
+        if other._is_left_inclusive:
+            assert other_start is not None
+            other_start -= datetime.timedelta(days=1)
+        other_end = other.end
+        if other._is_right_inclusive:
+            assert other_end is not None
+            other_end += datetime.timedelta(days=1)
+        return super().is_disjoint(
+            Range(start=other_start, end=other_end, boundaries=other.boundaries)
+        )
+
     def __and__(self, other: Range[datetime.date]) -> Optional["FiniteDateRange"]:
         return self.intersection(other)
 
