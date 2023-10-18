@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.5.0 - 2023-10-18
+
+- Fix bug with `FiniteDateRange.days` being 1 day short [#98](https://github.com/octoenergy/xocto/pull/98)
+- Make `FiniteDateRange.is_disjoint` recognise adjacent ranges as not disjoint [#99](https://github.com/octoenergy/xocto/pull/99)
+- Add a `strftime` function to localtime module [#100](https://github.com/octoenergy/xocto/pull/100)
+
 ## v4.4.0 - 2023-10-12
 
 - Replaced flake8 and isort with ruff [#101](https://github.com/octoenergy/xocto/pull/101)
