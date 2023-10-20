@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.6.0 - 2023-10-20
+
+- Upgrade duckdb package to version 0.9.0[#104](https://github.com/octoenergy/xocto/pull/104)
+
 ## v4.5.0 - 2023-10-18
 
 - Fix bug with `FiniteDateRange.days` being 1 day short [#98](https://github.com/octoenergy/xocto/pull/98)
