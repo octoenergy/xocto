@@ -618,6 +618,36 @@ class TestFiniteDateRange:
         )
         assert range.days == 2
 
+    class TestIntersection:
+        def test_overlapping_ranges_will_intersect(self):
+            ranges_ = [
+                ranges.FiniteDateRange(
+                    start=datetime.date(2000, 1, 1),
+                    end=datetime.date(2000, 1, 3),
+                ),
+                ranges.FiniteDateRange(
+                    start=datetime.date(2000, 1, 3),
+                    end=datetime.date(2000, 1, 5),
+                ),
+            ]
+            assert ranges_[0] & ranges_[1] == ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 3),
+                end=datetime.date(2000, 1, 3),
+            )
+
+        def test_adjacent_ranges_wont_intersect(self):
+            ranges_ = [
+                ranges.FiniteDateRange(
+                    start=datetime.date(2000, 1, 1),
+                    end=datetime.date(2000, 1, 2),
+                ),
+                ranges.FiniteDateRange(
+                    start=datetime.date(2000, 1, 3),
+                    end=datetime.date(2000, 1, 4),
+                ),
+            ]
+            assert ranges_[0] & ranges_[1] is None
+
     class TestIsDisjoint:
         @pytest.mark.parametrize(
             "other",

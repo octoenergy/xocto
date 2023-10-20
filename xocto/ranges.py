@@ -794,7 +794,11 @@ class FiniteDateRange(FiniteRange[datetime.date]):
         """
         Intersections with finite ranges will always be finite.
         """
-        base_intersection = super().intersection(other)
+        try:
+            base_intersection = super().intersection(other)
+        except ValueError:
+            # This occurs when calling intersection on an adjacent date range.
+            return None
         if base_intersection is None:
             return None
 
