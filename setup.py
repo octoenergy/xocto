@@ -35,7 +35,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "ddtrace>=1.9.0",
-        "duckdb==0.8.1",
+        "duckdb>=0.9.0",
         "django>=4.0",
         "openpyxl>=3.1.0",
         "pact-python>=1.6.0",
