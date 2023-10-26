@@ -28,9 +28,7 @@ ONE_HOUR = datetime_.timedelta(hours=1)
 MIDNIGHT_TIME = datetime_.time(0, 0)
 
 
-def as_localtime(
-    dt: datetime_.datetime, tz: zoneinfo.ZoneInfo | None = None
-) -> datetime_.datetime:
+def as_localtime(dt: datetime_.datetime, tz: datetime_.tzinfo | None = None) -> datetime_.datetime:
     """
     Convert a tz aware datetime to localtime.
 
@@ -72,7 +70,7 @@ def datetime(
 # Returning dates
 
 
-def date(dt: datetime_.datetime, tz: zoneinfo.ZoneInfo | None = None) -> datetime_.date:
+def date(dt: datetime_.datetime, tz: datetime_.tzinfo | None = None) -> datetime_.date:
     """
     Return the date of the given datetime in the given timezone, defaulting to local time.
 
@@ -89,49 +87,49 @@ def date(dt: datetime_.datetime, tz: zoneinfo.ZoneInfo | None = None) -> datetim
     return as_localtime(dt, tz=tz).date()
 
 
-def today(tz: zoneinfo.ZoneInfo | None = None) -> datetime_.date:
+def today(tz: datetime_.tzinfo | None = None) -> datetime_.date:
     """
     Return the current date in the provided timezone (or the local timezone if none is supplied).
     """
     return date(timezone.now(), tz)
 
 
-def yesterday(tz: zoneinfo.ZoneInfo | None = None) -> datetime_.date:
+def yesterday(tz: datetime_.tzinfo | None = None) -> datetime_.date:
     """
     Return the previous date in the provided timezone (or the local timezone if none is supplied).
     """
     return days_in_the_past(1, tz)
 
 
-def tomorrow(tz: zoneinfo.ZoneInfo | None = None) -> datetime_.date:
+def tomorrow(tz: datetime_.tzinfo | None = None) -> datetime_.date:
     """
     Return the next date in the provided timezone (or the local timezone if none is supplied).
     """
     return days_in_the_future(1, tz)
 
 
-def days_in_the_past(n: int, tz: zoneinfo.ZoneInfo | None = None) -> datetime_.date:
+def days_in_the_past(n: int, tz: datetime_.tzinfo | None = None) -> datetime_.date:
     """
     Return n days before the current date (in the provided or local timezone).
     """
     return today(tz) - relativedelta(days=n)
 
 
-def days_in_the_future(n: int, tz: zoneinfo.ZoneInfo | None = None) -> datetime_.date:
+def days_in_the_future(n: int, tz: datetime_.tzinfo | None = None) -> datetime_.date:
     """
     Return n days after the current date (in the provided or local timezone).
     """
     return today(tz) + relativedelta(days=n)
 
 
-def months_in_the_past(n: int, tz: zoneinfo.ZoneInfo | None = None) -> datetime_.date:
+def months_in_the_past(n: int, tz: datetime_.tzinfo | None = None) -> datetime_.date:
     """
     Return n months before the current date (in the provided or local timezone).
     """
     return today(tz) - relativedelta(months=n)
 
 
-def months_in_the_future(n: int, tz: zoneinfo.ZoneInfo | None = None) -> datetime_.date:
+def months_in_the_future(n: int, tz: datetime_.tzinfo | None = None) -> datetime_.date:
     """
     Return n months after the current date (in the provided or local timezone).
     """
@@ -139,7 +137,7 @@ def months_in_the_future(n: int, tz: zoneinfo.ZoneInfo | None = None) -> datetim
 
 
 def date_of_day_before(
-    dt: datetime_.datetime, tz: zoneinfo.ZoneInfo | None = None
+    dt: datetime_.datetime, tz: datetime_.tzinfo | None = None
 ) -> datetime_.date:
     """
     Return the date of the day before the datetime passed in.
@@ -197,7 +195,7 @@ def seconds_in_the_past(n: int) -> datetime_.datetime:
 
 def midnight(
     date_or_datetime: datetime_.date | datetime_.datetime | None = None,
-    tz: zoneinfo.ZoneInfo | None = None,
+    tz: datetime_.tzinfo | None = None,
 ) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for midnight of the passed date.
@@ -225,7 +223,7 @@ def midnight(
 
 def next_midnight(
     date_or_datetime: datetime_.date | datetime_.datetime | None = None,
-    tz: zoneinfo.ZoneInfo | None = None,
+    tz: datetime_.tzinfo | None = None,
 ) -> datetime_.datetime:
     """
     Return the datetime for midnight of the following day to the date passed in.
@@ -249,7 +247,7 @@ def next_midnight(
 
 
 def midday(
-    _date: datetime_.date | None = None, tz: zoneinfo.ZoneInfo | None = None
+    _date: datetime_.date | None = None, tz: datetime_.tzinfo | None = None
 ) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for midday of the passed date.
@@ -264,7 +262,7 @@ def midday(
 
 
 def datetime_from_date(
-    _date: datetime_.date, hour: int, tz: zoneinfo.ZoneInfo | None = None
+    _date: datetime_.date, hour: int, tz: datetime_.tzinfo | None = None
 ) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for the hour of the passed date.
@@ -274,7 +272,7 @@ def datetime_from_date(
 
 
 def datetime_from_epoch_timestamp(
-    timestamp: int | float, tz: zoneinfo.ZoneInfo | None = None
+    timestamp: int | float, tz: datetime_.tzinfo | None = None
 ) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for the passed epoch timestamp.
@@ -285,7 +283,7 @@ def datetime_from_epoch_timestamp(
 
 
 def latest(
-    _date: datetime_.date | None = None, tz: zoneinfo.ZoneInfo | None = None
+    _date: datetime_.date | None = None, tz: datetime_.tzinfo | None = None
 ) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for the latest representable datetime of the passed date.
@@ -299,7 +297,7 @@ def latest(
 
 
 def combine(
-    _date: datetime_.date, _time: datetime_.time, tz: zoneinfo.ZoneInfo
+    _date: datetime_.date, _time: datetime_.time, tz: datetime_.tzinfo
 ) -> datetime_.datetime:
     """
     Return a TZ-aware datetime obtained by combining the given date and time.
@@ -314,7 +312,7 @@ def combine(
 
 
 def date_boundaries(
-    _date: datetime_.date | None, tz: zoneinfo.ZoneInfo | None = None
+    _date: datetime_.date | None, tz: datetime_.tzinfo | None = None
 ) -> Tuple[datetime_.datetime, datetime_.datetime]:
     """
     Return a 2-tuple with the start and ending dt for the given date in the local timezone.
@@ -342,7 +340,7 @@ def month_boundaries(month: int, year: int) -> Tuple[datetime_.datetime, datetim
 
 
 def as_range(
-    _date: datetime_.date | None, tz: zoneinfo.ZoneInfo | None = None
+    _date: datetime_.date | None, tz: datetime_.tzinfo | None = None
 ) -> Tuple[datetime_.datetime, datetime_.datetime]:
     """
     Return a 2-tuple of the min and max datetimes for the given date.
@@ -621,7 +619,7 @@ def is_dst(local_time: datetime_.datetime) -> bool:
     return bool(local_time.dst())
 
 
-def is_localtime_midnight(dt: datetime_.datetime, tz: zoneinfo.ZoneInfo | None = None) -> bool:
+def is_localtime_midnight(dt: datetime_.datetime, tz: datetime_.tzinfo | None = None) -> bool:
     """
     Return whether the supplied datetime is at midnight (in the site's local time zone).
 
@@ -632,7 +630,7 @@ def is_localtime_midnight(dt: datetime_.datetime, tz: zoneinfo.ZoneInfo | None =
 
 
 def is_aligned_to_midnight(
-    range: ranges.FiniteDatetimeRange, tz: zoneinfo.ZoneInfo | None = None
+    range: ranges.FiniteDatetimeRange, tz: datetime_.tzinfo | None = None
 ) -> bool:
     """
     Return whether this range is aligned to localtime midnight.
@@ -741,7 +739,7 @@ def parse_date(value: str) -> datetime_.date:
     return datetime_.date.fromisoformat(value)
 
 
-def parse_dt(value: str, tz: zoneinfo.ZoneInfo | None = None) -> datetime_.datetime:
+def parse_dt(value: str, tz: datetime_.tzinfo | None = None) -> datetime_.datetime:
     """
     Returns a datetime.datetime for a given ISO format date/time string.
 
@@ -754,7 +752,7 @@ def parse_dt(value: str, tz: zoneinfo.ZoneInfo | None = None) -> datetime_.datet
 def strftime(
     dt: datetime_.datetime,
     fmt: str,
-    tz: zoneinfo.ZoneInfo | None = None,
+    tz: datetime_.tzinfo | None = None,
 ) -> str:
     """
     Format a tz aware datetime in localtime.
