@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.6.1 - 2023-10-27
+
+- Fix erroneously narrow typehinting in localtime module [#106](https://github.com/octoenergy/xocto/pull/106)
+- Fix ValueError bug when trying to intersect adjacent FiniteDateRanges [#105](https://github.com/octoenergy/xocto/pull/105)
+
 ## v4.6.0 - 2023-10-20
 
 - Upgrade duckdb package to version 0.9.0[#104](https://github.com/octoenergy/xocto/pull/104)
