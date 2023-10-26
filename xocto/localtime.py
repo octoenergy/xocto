@@ -3,7 +3,7 @@ from __future__ import annotations
 import calendar
 import datetime as datetime_
 import decimal
-from typing import Generator, Optional, Sequence, Tuple, Union
+from typing import Generator, Sequence, Tuple
 
 import zoneinfo
 from dateutil import tz
@@ -175,7 +175,7 @@ def day_after(d: datetime_.date) -> datetime_.date:
 # Returning datetimes
 
 
-def seconds_in_the_future(n: int, dt: Optional[datetime_.datetime] = None) -> datetime_.datetime:
+def seconds_in_the_future(n: int, dt: datetime_.datetime | None = None) -> datetime_.datetime:
     """
     Return a datetime of the number of specifed seconds in the future.
     """
@@ -196,8 +196,8 @@ def seconds_in_the_past(n: int) -> datetime_.datetime:
 
 
 def midnight(
-    date_or_datetime: Optional[Union[datetime_.date, datetime_.datetime]] = None,
-    tz: Optional[zoneinfo.ZoneInfo] = None,
+    date_or_datetime: datetime_.date | datetime_.datetime | None = None,
+    tz: zoneinfo.ZoneInfo | None = None,
 ) -> datetime_.datetime:
     """
     Return a TZ-aware datetime for midnight of the passed date.
@@ -224,8 +224,8 @@ def midnight(
 
 
 def next_midnight(
-    date_or_datetime: Optional[Union[datetime_.date, datetime_.datetime]] = None,
-    tz: Optional[zoneinfo.ZoneInfo] = None,
+    date_or_datetime: datetime_.date | datetime_.datetime | None = None,
+    tz: zoneinfo.ZoneInfo | None = None,
 ) -> datetime_.datetime:
     """
     Return the datetime for midnight of the following day to the date passed in.
@@ -314,7 +314,7 @@ def combine(
 
 
 def date_boundaries(
-    _date: Optional[datetime_.date], tz: Optional[zoneinfo.ZoneInfo] = None
+    _date: datetime_.date | None, tz: zoneinfo.ZoneInfo | None = None
 ) -> Tuple[datetime_.datetime, datetime_.datetime]:
     """
     Return a 2-tuple with the start and ending dt for the given date in the local timezone.
@@ -342,7 +342,7 @@ def month_boundaries(month: int, year: int) -> Tuple[datetime_.datetime, datetim
 
 
 def as_range(
-    _date: Optional[datetime_.date], tz: Optional[zoneinfo.ZoneInfo] = None
+    _date: datetime_.date | None, tz: zoneinfo.ZoneInfo | None = None
 ) -> Tuple[datetime_.datetime, datetime_.datetime]:
     """
     Return a 2-tuple of the min and max datetimes for the given date.
@@ -533,7 +533,7 @@ def is_within_the_last_week(date: datetime_.date) -> bool:
 
 def latest_date_for_day(
     start_date: datetime_.date, end_date: datetime_.date, day_of_month: int
-) -> Optional[datetime_.date]:
+) -> datetime_.date | None:
     """
     Given an integer day of a month, return the latest date with that day of the month,
     bounded by the supplied start_date and end_date. If no such date exists, return None.
@@ -621,7 +621,7 @@ def is_dst(local_time: datetime_.datetime) -> bool:
     return bool(local_time.dst())
 
 
-def is_localtime_midnight(dt: datetime_.datetime, tz: Optional[zoneinfo.ZoneInfo] = None) -> bool:
+def is_localtime_midnight(dt: datetime_.datetime, tz: zoneinfo.ZoneInfo | None = None) -> bool:
     """
     Return whether the supplied datetime is at midnight (in the site's local time zone).
 
