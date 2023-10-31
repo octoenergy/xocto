@@ -18,6 +18,8 @@ See [xocto.numbers](https://github.com/octoenergy/xocto/blob/master/xocto/number
 ## API Reference
 
 ```{eval-rst}
+.. module:: xocto.types
+
 .. automodule:: xocto.numbers
    :members:
    :undoc-members:

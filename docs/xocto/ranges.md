@@ -27,6 +27,8 @@ See [xocto.ranges](https://github.com/octoenergy/xocto/blob/master/xocto/ranges.
 ## API Reference
 
 ```{eval-rst}
+.. module:: xocto.types
+
 .. automodule:: xocto.ranges
    :members:
    :undoc-members:
