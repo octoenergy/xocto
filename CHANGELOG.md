@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.7.0 - 2023-10-31
+
+🎃 Happy Halloween! 🎃
+
+- Adding explicit type for Optional Foreign Key [#108](https://github.com/octoenergy/xocto/pull/108)
+
 ## v4.6.1 - 2023-10-27
 
 - Fix erroneously narrow typehinting in localtime module [#106](https://github.com/octoenergy/xocto/pull/106)
