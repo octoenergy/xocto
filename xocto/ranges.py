@@ -811,11 +811,17 @@ class FiniteDateRange(FiniteRange[datetime.date]):
         other_start = other.start
         if other._is_left_inclusive:
             assert other_start is not None
-            other_start -= datetime.timedelta(days=1)
+            try:
+                other_start -= datetime.timedelta(days=1)
+            except OverflowError:
+                pass
         other_end = other.end
         if other._is_right_inclusive:
             assert other_end is not None
-            other_end += datetime.timedelta(days=1)
+            try:
+                other_end += datetime.timedelta(days=1)
+            except OverflowError:
+                pass
         return super().is_disjoint(
             Range(start=other_start, end=other_end, boundaries=other.boundaries)
         )

@@ -671,6 +671,16 @@ class TestFiniteDateRange:
             )
             assert range.is_disjoint(other) is False
 
+        def test_handles_edge_of_time(self):
+            # This test is fairly coupled to knowledge of the is_disjoint implementation here.
+            range = ranges.FiniteDateRange(
+                start=datetime.date.min,
+                end=datetime.date.max,
+            )
+            # We're not particularly interested in this assertion, we just want to be sure this
+            # doesn't error.
+            assert range.is_disjoint(range) is False
+
         @pytest.mark.parametrize(
             "other",
             [
