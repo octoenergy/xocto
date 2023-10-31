@@ -19,9 +19,24 @@ from xocto import localtime
 
 See [xocto.localtime](https://github.com/octoenergy/xocto/blob/master/xocto/localtime.py) for more details, including examples and in depth technical details.
 
+## Variables
+
+```{eval-rst}
+.. autodata:: xocto.localtime.far_future
+.. autodata:: xocto.localtime.far_past
+.. autodata:: xocto.localtime.UTC
+.. autodata:: xocto.localtime.LONDON
+.. autodata:: xocto.localtime.ONE_DAY
+.. autodata:: xocto.localtime.ONE_HOUR
+.. autodata:: xocto.localtime.MIDNIGHT_TIME
+```
+
 ## API Reference
 
 ```{eval-rst}
+
+.. module:: xocto.types
+
 .. automodule:: xocto.localtime
    :members:
    :undoc-members:
