@@ -23,7 +23,9 @@ class PactConsumerClient:
         headers = {"Content-Type": "application/json"}
         if token:
             headers["Authorization"] = token
-        response = requests.post(url, data=json.dumps(data), headers=headers, verify=False)
+        response = requests.post(
+            url, data=json.dumps(data), headers=headers, verify=False
+        )
         return response.json()
 
 

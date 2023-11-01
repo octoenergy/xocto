@@ -125,7 +125,9 @@ def convert_local_to_sp_and_date(
     # Date of the settlement period in the time zone
     delivery_date = _get_delivery_date(half_hourly_time, timezone_str, is_wholesale)
     # First settlement period in the time zone
-    first_delivery_time = _get_first_delivery_time(delivery_date, timezone_str, is_wholesale)
+    first_delivery_time = _get_first_delivery_time(
+        delivery_date, timezone_str, is_wholesale
+    )
     # Fetch settlement period
     delta = half_hourly_time - first_delivery_time
     settlement_period = ((int(delta.total_seconds()) // 60) + 30) // 30

@@ -22,7 +22,9 @@ User = TypeVar("User", bound=auth_models.AbstractBaseUser)
 # Helpers for declaring django relations on classes
 # These are one-item Unions so that mypy knows they are type aliases and not strings
 ForeignKey = Union["models.ForeignKey[Union[Model, Combinable], Model]"]
-OptionalForeignKey = Union["models.ForeignKey[Union[Model, Combinable, None], Union[Model, None]]"]
+OptionalForeignKey = Union[
+    "models.ForeignKey[Union[Model, Combinable, None], Union[Model, None]]"
+]
 
 OneToOneField = Union["models.OneToOneField[Union[Model, Combinable], Model]"]
 OptionalOneToOneField = Union[

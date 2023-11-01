@@ -24,16 +24,17 @@ class TestSize:
 def test_files_hash_correctly():
     file1 = io.BytesIO(b"This is my first file")
     assert (
-        files.hashfile(file1) == "2f1b1b913ca382ad8f992ec6a18ecedfa2fcd8ff21b0a2227614a7bd94c23d2d"
+        files.hashfile(file1)
+        == "2f1b1b913ca382ad8f992ec6a18ecedfa2fcd8ff21b0a2227614a7bd94c23d2d"
     )
     file2 = io.BytesIO(b"And this is my second")
     assert (
-        files.hashfile(file2) == "8cbe3eb51eec64423d2a870da81475361fa3571402fb77810db261e1920d45b4"
+        files.hashfile(file2)
+        == "8cbe3eb51eec64423d2a870da81475361fa3571402fb77810db261e1920d45b4"
     )
 
 
 def test_convert_xlsx_file_to_csv(fixture_path):
-
     report_filename = "Daily-report-Octopus Energy-2020-04-08"
     xlsx_filepath = fixture_path(f"siteworks/agent_reports/{report_filename}.xlsx")
     csv_filepath = fixture_path(f"siteworks/agent_reports/{report_filename}.csv")
@@ -58,7 +59,6 @@ def test_convert_xlsx_file_to_csv(fixture_path):
 
 
 def test_convert_xls_file_to_csv(fixture_path):
-
     report_filename = "Daily-report-Octopus Energy-2019-08-15"
     xls_filepath = fixture_path(f"siteworks/agent_reports/{report_filename}.xls")
     csv_filepath = fixture_path(f"siteworks/agent_reports/{report_filename}.csv")

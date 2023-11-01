@@ -84,7 +84,10 @@ def test_convert_sp_and_date_to_utc_for_wholesale(sp, date, expected):
     Test the convert_sp_and_date_to_utc function within a wholesale context
     for days where british time is the same as GMT, where british time is BST, and change days
     """
-    assert settlement_periods.convert_sp_and_date_to_utc(sp, date, is_wholesale=True) == expected
+    assert (
+        settlement_periods.convert_sp_and_date_to_utc(sp, date, is_wholesale=True)
+        == expected
+    )
 
 
 @pytest.mark.parametrize(

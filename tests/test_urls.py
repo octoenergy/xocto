@@ -86,7 +86,9 @@ class TestParseFileDestinationFromURL:
         relative to that.
         """
         dest_url = "ftp://some_server/gas/destination?upload=nested/sub/dir"
-        (fs_url, dest_path, upload_path) = urls.parse_file_destination_from_url(dest_url)
+        (fs_url, dest_path, upload_path) = urls.parse_file_destination_from_url(
+            dest_url
+        )
 
         assert fs_url == "ftp://some_server/gas/destination"
         assert dest_path == "."
@@ -100,7 +102,9 @@ class TestParseFileDestinationFromURL:
         relative to that.
         """
         dest_url = "ftp://some_server/gas/destination?upload=.."
-        (fs_url, dest_path, upload_path) = urls.parse_file_destination_from_url(dest_url)
+        (fs_url, dest_path, upload_path) = urls.parse_file_destination_from_url(
+            dest_url
+        )
 
         assert fs_url == "ftp://some_server/gas"
         assert dest_path == "destination"
@@ -115,7 +119,9 @@ class TestParseFileDestinationFromURL:
         ancestor between the two dirs and both paths are given relative to that.
         """
         dest_url = "ftp://some_server/gas/destination/dir?upload=../../upload/sub/dir"
-        (fs_url, dest_path, upload_path) = urls.parse_file_destination_from_url(dest_url)
+        (fs_url, dest_path, upload_path) = urls.parse_file_destination_from_url(
+            dest_url
+        )
 
         assert fs_url == "ftp://some_server/gas"
         assert dest_path == "destination/dir"
@@ -128,7 +134,9 @@ class TestParseFileDestinationFromURL:
         In that case the upload dir is resolved relative to the root of the FS URL.
         """
         dest_url = "ftp://some_server/gas/destination?upload=/gas/upload"
-        (fs_url, dest_path, upload_path) = urls.parse_file_destination_from_url(dest_url)
+        (fs_url, dest_path, upload_path) = urls.parse_file_destination_from_url(
+            dest_url
+        )
 
         assert fs_url == "ftp://some_server/gas"
         assert dest_path == "destination"

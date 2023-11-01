@@ -1,5 +1,84 @@
-[tool.black]
-line-length = 99
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xocto"
+version = "4.9.0"
+requires-python = ">=3.9"
+description = "Kraken Technologies Python service utilities"
+readme = "README.md"
+authors = [
+  {name = "Kraken Technologies", email = "talent@octopus.energy"},
+]
+maintainers = [
+  {name = "Kraken Technologies", email = "talent@octopus.energy"},
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+license = {text = "MIT"}
+dependencies = [
+  "ddtrace>=1.9.0",
+  "duckdb>=0.9.0",
+  "django>=4.0",
+  "openpyxl>=3.1.0",
+  "pact-python>=1.6.0",
+  "pandas>=1.5.3",
+  "pyarrow>=11.0.0",
+  "python-dateutil>=2.8.2",
+  "python-magic>=0.4.27",
+  "pytz",
+  "structlog>=20.2.0",
+  "xlrd>=2.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "boto3==1.26.53",
+  "botocore==1.29.53",
+  "mypy-boto3-s3==1.26.0.post1",
+  "mypy==0.991",
+  "numpy==1.22.2",
+  "pre-commit>=3.2.0",
+  "pyarrow-stubs==10.0.1.6",
+  "ruff==0.1.3",
+  "twine==4.0.2",
+  "types-openpyxl==3.0.4.5",
+  "types-python-dateutil==2.8.19.6",
+  "types-pytz==2022.7.1.0",
+  "types-requests==2.28.11.8",
+  "wheel==0.38.4",
+]
+test = [
+  "hypothesis==6.62.1",
+  "moto[s3,sqs]==4.1",
+  "ruff==0.1.3",  
+  "pytest-django==4.5.2",
+  "pytest-mock==3.10.0",
+  "pytest==7.2.1",
+  "time-machine==2.9.0",
+]
+docs = [
+  "Sphinx==4.5.0",
+  "myst-parser==0.18.1",
+]
+
+[project.urls]
+changelog = "https://github.com/octoenergy/xocto/blob/main/CHANGELOG.md"
+documentation = "https://xocto.readthedocs.io"
+issues = "https://github.com/octoenergy/xocto/issues"
+
+[tool.setuptools]
+packages = ["xocto", "xocto.events", "xocto.storage"]
+# Old setup.py version required
+#  package_data={"xocto": ["py.typed"]},
 
 [tool.mypy]
 # Specify which files to check.

@@ -249,7 +249,9 @@ def test_union_and_intersection_are_commutative(
 
 
 @given(valid_integer_range(), valid_integer_range())
-def test_union_and_intersection_are_idempotent(a: ranges.Range[Any], b: ranges.Range[Any]) -> None:
+def test_union_and_intersection_are_idempotent(
+    a: ranges.Range[Any], b: ranges.Range[Any]
+) -> None:
     union = a | b
     assume(union is not None)
     assert union is not None
@@ -276,7 +278,9 @@ def test_range_difference_and_intersection_form_partition(
                 # a contains b
                 assert b_difference is None
                 assert a_difference.is_disjoint(ranges.RangeSet([intersection]))
-                assert a_difference | ranges.RangeSet([intersection]) == ranges.RangeSet([a])
+                assert a_difference | ranges.RangeSet(
+                    [intersection]
+                ) == ranges.RangeSet([a])
             else:
                 assert a_difference.is_disjoint(intersection)
                 assert a_difference | intersection == a
@@ -286,7 +290,9 @@ def test_range_difference_and_intersection_form_partition(
                 # b contains a
                 assert a_difference is None
                 assert b_difference.is_disjoint(ranges.RangeSet([intersection]))
-                assert b_difference | ranges.RangeSet([intersection]) == ranges.RangeSet([b])
+                assert b_difference | ranges.RangeSet(
+                    [intersection]
+                ) == ranges.RangeSet([b])
             else:
                 assert b_difference.is_disjoint(intersection)
                 assert b_difference | intersection == b
@@ -387,7 +393,9 @@ def test_finite_range():
         (ranges.RangeSet([ranges.Range(1, 3), ranges.Range(0, 2)]), "{[0,3)}"),
     ],
 )
-def test_rangeset_construction(rangeset: ranges.RangeSet[Any], expected_string: str) -> None:
+def test_rangeset_construction(
+    rangeset: ranges.RangeSet[Any], expected_string: str
+) -> None:
     assert str(rangeset) == expected_string
 
 
@@ -412,7 +420,11 @@ def test_rangeset_addition(a: ranges.Range[Any], b: ranges.Range[Any]) -> None:
         # Partial match
         (ranges.RangeSet([ranges.Range(0, 5)]), ranges.Range(1, 6), False),
         # Partial match
-        (ranges.RangeSet([ranges.Range(0, 2), ranges.Range(3, 7)]), ranges.Range(1, 6), False),
+        (
+            ranges.RangeSet([ranges.Range(0, 2), ranges.Range(3, 7)]),
+            ranges.Range(1, 6),
+            False,
+        ),
     ],
 )
 def test_rangeset_contains_range(rangeset, item, expected_result):
@@ -574,7 +586,9 @@ class TestAnyOverlapping:
                 ranges.Range(1, 3),
             ],
             [
-                ranges.Range(0, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE),
+                ranges.Range(
+                    0, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE
+                ),
                 ranges.Range(2, 4),
             ],
         ],
@@ -591,7 +605,9 @@ class TestAnyOverlapping:
             ],
             [
                 ranges.Range(0, 2),
-                ranges.Range(2, 4, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE),
+                ranges.Range(
+                    2, 4, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE
+                ),
             ],
         ],
     )

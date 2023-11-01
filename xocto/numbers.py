@@ -7,7 +7,9 @@ from typing import TypeVar
 from . import types
 
 
-def quantise(number: int | float | str, base: int, rounding: str = decimal.ROUND_HALF_EVEN) -> int:
+def quantise(
+    number: int | float | str, base: int, rounding: str = decimal.ROUND_HALF_EVEN
+) -> int:
     """
     Round a number to an arbitrary integer base. For example:
     >>> quantise(256, 5)
@@ -79,7 +81,9 @@ def round_decimal_places(
     return value.quantize(decimal.Decimal(quantize_string), rounding=rounding)
 
 
-def round_to_integer(value: decimal.Decimal, rounding: str = decimal.ROUND_HALF_UP) -> int:
+def round_to_integer(
+    value: decimal.Decimal, rounding: str = decimal.ROUND_HALF_UP
+) -> int:
     """
     Round a decimal to the nearest integer, using a given rounding method.
 
@@ -96,7 +100,10 @@ T = TypeVar("T")
 
 
 def clip_to_range(
-    val: types.Comparable[T], *, minval: types.Comparable[T], maxval: types.Comparable[T]
+    val: types.Comparable[T],
+    *,
+    minval: types.Comparable[T],
+    maxval: types.Comparable[T],
 ) -> types.Comparable[T]:
     """
     Clip the value to the min and max values given.

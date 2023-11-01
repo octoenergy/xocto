@@ -220,7 +220,11 @@ class BaseS3FileStore(abc.ABC):
 
     @abc.abstractmethod
     def store_filepath(
-        self, namespace: str, filepath: str, overwrite: bool = False, dest_filepath: str = ""
+        self,
+        namespace: str,
+        filepath: str,
+        overwrite: bool = False,
+        dest_filepath: str = "",
     ) -> tuple[str, str]:
         raise NotImplementedError()
 
@@ -286,7 +290,10 @@ class BaseS3FileStore(abc.ABC):
             return (self.bucket_name, key_path), False
 
         self.store_file(
-            namespace=namespace, filename=filepath, contents=contents, content_type=content_type
+            namespace=namespace,
+            filename=filepath,
+            contents=contents,
+            content_type=content_type,
         )
         return (self.bucket_name, key_path), True
 
@@ -299,7 +306,9 @@ class BaseS3FileStore(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def fetch_file_contents(self, key_path: str, version_id: str | None = None) -> bytes:
+    def fetch_file_contents(
+        self, key_path: str, version_id: str | None = None
+    ) -> bytes:
         raise NotImplementedError()
 
     def fetch_text_file(
@@ -324,7 +333,9 @@ class BaseS3FileStore(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def generate_presigned_post(self, *, key_path: str, expires_in: int = 60) -> PreSignedPost:
+    def generate_presigned_post(
+        self, *, key_path: str, expires_in: int = 60
+    ) -> PreSignedPost:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -472,7 +483,10 @@ class S3FileStore(BaseS3FileStore):
 
         boto_client = self._get_boto_client()
         boto_client.upload_fileobj(
-            Fileobj=file_obj, Bucket=self.bucket_name, Key=key_path, ExtraArgs=extra_args
+            Fileobj=file_obj,
+            Bucket=self.bucket_name,
+            Key=key_path,
+            ExtraArgs=extra_args,
         )
 
         return self.bucket_name, key_path
@@ -496,14 +510,21 @@ class S3FileStore(BaseS3FileStore):
 
         boto_client = self._get_boto_client()
         boto_response = boto_client.put_object(
-            Body=file_obj, Bucket=self.bucket_name, Key=key_path, **extra_args  # type: ignore[arg-type]
+            Body=file_obj,
+            Bucket=self.bucket_name,
+            Key=key_path,
+            **extra_args,  # type: ignore[arg-type]
         )
         version_id = boto_response["VersionId"]
 
         return self.bucket_name, key_path, version_id
 
     def store_filepath(
-        self, namespace: str, filepath: str, overwrite: bool = False, dest_filepath: str = ""
+        self,
+        namespace: str,
+        filepath: str,
+        overwrite: bool = False,
+        dest_filepath: str = "",
     ) -> tuple[str, str]:
         """
         Store a file in S3 given its local filepath.
@@ -533,13 +554,18 @@ class S3FileStore(BaseS3FileStore):
 
         boto_client = self._get_boto_client()
         boto_client.upload_file(
-            Filename=filepath, Bucket=self.bucket_name, Key=key_path, ExtraArgs=extra_args
+            Filename=filepath,
+            Bucket=self.bucket_name,
+            Key=key_path,
+            ExtraArgs=extra_args,
         )
 
         return self.bucket_name, key_path
 
     def get_key(self, key_path: str, version_id: str | None = None) -> S3Object:
-        return S3Object(bucket_name=self.bucket_name, key=key_path, version_id=version_id)
+        return S3Object(
+            bucket_name=self.bucket_name, key=key_path, version_id=version_id
+        )
 
     def get_file_type(self, key_path: str) -> str:
         return self._get_boto_object_for_key(key=key_path).content_type
@@ -548,15 +574,19 @@ class S3FileStore(BaseS3FileStore):
         boto_object = self._get_boto_object_for_key(key=key_path, version_id=version_id)
         return boto_object.get()["Body"]
 
-    def fetch_file_contents(self, key_path: str, version_id: str | None = None) -> bytes:
+    def fetch_file_contents(
+        self, key_path: str, version_id: str | None = None
+    ) -> bytes:
         return self.fetch_file(key_path, version_id).read()
 
     def fetch_file_contents_using_s3_select(
         self,
         key_path: str,
         raw_sql: str,
-        input_serializer: s3_select.CSVInputSerializer | s3_select.ParquetInputSerializer,
-        output_serializer: s3_select.CSVOutputSerializer | s3_select.JSONOutputSerializer,
+        input_serializer: s3_select.CSVInputSerializer
+        | s3_select.ParquetInputSerializer,
+        output_serializer: s3_select.CSVOutputSerializer
+        | s3_select.JSONOutputSerializer,
         compression_type: s3_select.CompressionType | None = None,
         scan_range: s3_select.ScanRange | None = None,
         chunk_size: int | None = None,
@@ -580,7 +610,9 @@ class S3FileStore(BaseS3FileStore):
             )
         elif isinstance(input_serializer, s3_select.ParquetInputSerializer):
             if scan_range is not None:
-                raise ValueError("The scan_range parameter is not supported for parquet files")
+                raise ValueError(
+                    "The scan_range parameter is not supported for parquet files"
+                )
             serialization = s3_select.get_serializers_for_parquet_file(
                 output_serializer=output_serializer
             )
@@ -636,7 +668,9 @@ class S3FileStore(BaseS3FileStore):
             "get_object", Params=params, ExpiresIn=expires_in
         )
 
-    def generate_presigned_post(self, *, key_path: str, expires_in: int = 60) -> PreSignedPost:
+    def generate_presigned_post(
+        self, *, key_path: str, expires_in: int = 60
+    ) -> PreSignedPost:
         boto_client = self._get_boto_client()
         presigned_post = boto_client.generate_presigned_post(
             Bucket=self.bucket_name, Key=key_path, ExpiresIn=expires_in
@@ -771,7 +805,9 @@ class S3FileStore(BaseS3FileStore):
 
     def _get_boto_client(self) -> S3Client:
         return boto3.client(
-            "s3", region_name=settings.AWS_REGION, endpoint_url=settings.AWS_S3_ENDPOINT_URL
+            "s3",
+            region_name=settings.AWS_REGION,
+            endpoint_url=settings.AWS_S3_ENDPOINT_URL,
         )
 
     def _get_boto_bucket(self) -> service_resource.Bucket:
@@ -811,7 +847,9 @@ class S3FileStore(BaseS3FileStore):
         # It'd cause the S3SubdirectoryFileStore to add the subdir to the path, which is
         # not safe since the key may have come from somewhere that already includes this.
         return self._get_boto_object(
-            s3_object=S3Object(bucket_name=self.bucket_name, key=key, version_id=version_id)
+            s3_object=S3Object(
+                bucket_name=self.bucket_name, key=key, version_id=version_id
+            )
         )
 
     def _select_object_content(
@@ -820,7 +858,6 @@ class S3FileStore(BaseS3FileStore):
         boto_client: S3Client,
         select_object_content_parameters: dict[str, Any],
     ) -> Iterator[str]:
-
         # Error codes reference: https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#SelectObjectContentErrorCodeList
         invalid_response_statuses = [400, 401, 403, 500]
 
@@ -833,7 +870,9 @@ class S3FileStore(BaseS3FileStore):
                 error.response.get("Error", {}).get("HTTPStatusCode", None)
                 in invalid_response_statuses
             ):
-                raise S3SelectUnexpectedResponse("Received invalid response from S3 Select")
+                raise S3SelectUnexpectedResponse(
+                    "Received invalid response from S3 Select"
+                )
             raise
 
         if response["ResponseMetadata"]["HTTPStatusCode"] in invalid_response_statuses:
@@ -1082,7 +1121,11 @@ class LocalFileStore(BaseS3FileStore):
         return os.path.join(self.storage_root, key_path)
 
     def store_filepath(
-        self, namespace: str, filepath: str, overwrite: bool = False, dest_filepath: str = ""
+        self,
+        namespace: str,
+        filepath: str,
+        overwrite: bool = False,
+        dest_filepath: str = "",
     ) -> tuple[str, str]:
         if not dest_filepath:
             dest_filepath = os.path.basename(filepath)
@@ -1098,7 +1141,9 @@ class LocalFileStore(BaseS3FileStore):
         return self.bucket_name, store_filepath
 
     def get_key(self, key_path: str, version_id: str | None = None) -> S3Object:
-        return S3Object(bucket_name=self.bucket_name, key=key_path, version_id=version_id)
+        return S3Object(
+            bucket_name=self.bucket_name, key=key_path, version_id=version_id
+        )
 
     def get_file_type(self, key_path: str) -> str:
         mime = magic.Magic(mime=True)
@@ -1122,17 +1167,23 @@ class LocalFileStore(BaseS3FileStore):
             raise KeyDoesNotExist(f"Key {key_path} was not found at {file_path}")
         with open(file_path, "rb") as f:
             raw_stream = io.BytesIO(f.read())
-        return StreamingBody(raw_stream=raw_stream, content_length=files.size(raw_stream))
+        return StreamingBody(
+            raw_stream=raw_stream, content_length=files.size(raw_stream)
+        )
 
-    def fetch_file_contents(self, key_path: str, version_id: str | None = None) -> bytes:
+    def fetch_file_contents(
+        self, key_path: str, version_id: str | None = None
+    ) -> bytes:
         return self.fetch_file(key_path, version_id).read()
 
     def fetch_file_contents_using_s3_select(
         self,
         key_path: str,
         raw_sql: str,
-        input_serializer: s3_select.CSVInputSerializer | s3_select.ParquetInputSerializer,
-        output_serializer: s3_select.CSVOutputSerializer | s3_select.JSONOutputSerializer,
+        input_serializer: s3_select.CSVInputSerializer
+        | s3_select.ParquetInputSerializer,
+        output_serializer: s3_select.CSVOutputSerializer
+        | s3_select.JSONOutputSerializer,
         compression_type: s3_select.CompressionType | None = None,
         scan_range: s3_select.ScanRange | None = None,
         chunk_size: int | None = None,
@@ -1173,7 +1224,9 @@ class LocalFileStore(BaseS3FileStore):
                 raise NotImplementedError(
                     "Only newline ('\n') is supported as the record delimiter for JSON output in localdev"
                 )
-            result = filtered_df.to_json(orient="records", lines=True, date_format="iso")
+            result = filtered_df.to_json(
+                orient="records", lines=True, date_format="iso"
+            )
         elif isinstance(output_serializer, s3_select.CSVOutputSerializer):
             result = self.output_csv_with_serializer(
                 df=filtered_df,
@@ -1187,7 +1240,6 @@ class LocalFileStore(BaseS3FileStore):
         raw_sql: str,
         df: pd.DataFrame,
     ) -> pd.DataFrame:
-
         # s3 select requires the from clause to use the identifier "s3object"
         # it is case insensitive however so people's queries may use different cases
         S3_OBJECT_QUERY_IDENTIFIER = "s3object"
@@ -1209,7 +1261,6 @@ class LocalFileStore(BaseS3FileStore):
         csv_input_serializer: s3_select.CSVInputSerializer,
         compression_type: s3_select.CompressionType | None = None,
     ) -> pd.DataFrame:
-
         input_serializer = csv_input_serializer.to_dict()
 
         field_delimiter = input_serializer.get("FieldDelimiter", ",")
@@ -1221,7 +1272,6 @@ class LocalFileStore(BaseS3FileStore):
         header: int | None | str
 
         if "FileHeaderInfo" in input_serializer.keys():
-
             if input_serializer["FileHeaderInfo"] == "NONE":
                 header = None
             elif input_serializer["FileHeaderInfo"] == "IGNORE":
@@ -1262,7 +1312,6 @@ class LocalFileStore(BaseS3FileStore):
         df: pd.DataFrame,
         output_serializer: s3_select.CSVOutputSerializer,
     ) -> str:
-
         output_serializer_dict = output_serializer.to_dict()
 
         field_delimiter = output_serializer_dict.get("FieldDelimiter", ",")
@@ -1286,7 +1335,9 @@ class LocalFileStore(BaseS3FileStore):
             "quoting": quoting,
         }
 
-        kwargs = {key: value for key, value in default_kwargs.items() if value is not None}
+        kwargs = {
+            key: value for key, value in default_kwargs.items() if value is not None
+        }
 
         result = df.to_csv(index=False, **kwargs)
 
@@ -1319,7 +1370,9 @@ class LocalFileStore(BaseS3FileStore):
 
         return f"{settings.MEDIA_URL}{self.bucket_name}/{url_path}"
 
-    def generate_presigned_post(self, *, key_path: str, expires_in: int = 60) -> PreSignedPost:
+    def generate_presigned_post(
+        self, *, key_path: str, expires_in: int = 60
+    ) -> PreSignedPost:
         return PreSignedPost(
             # Resolves to a localdev/storage url
             url=reverse("fake-presigned-post-upload"),
@@ -1380,11 +1433,15 @@ class LocalFileStore(BaseS3FileStore):
         return datetime.datetime.fromtimestamp(file_stats.st_mtime)
 
     def copy(self, *, s3_object: S3Object, destination: str) -> S3Object:
-        shutil.copyfile(src=self._filepath("", s3_object.key), dst=self._filepath("", destination))
+        shutil.copyfile(
+            src=self._filepath("", s3_object.key), dst=self._filepath("", destination)
+        )
         return S3Object(bucket_name=self.bucket_name, key=destination)
 
     def rename(self, *, s3_object: S3Object, destination: str) -> S3Object:
-        os.rename(src=self._filepath("", s3_object.key), dst=self._filepath("", destination))
+        os.rename(
+            src=self._filepath("", s3_object.key), dst=self._filepath("", destination)
+        )
         return S3Object(bucket_name=self.bucket_name, key=destination)
 
     def delete(self, *, s3_object: S3Object) -> None:
@@ -1427,9 +1484,13 @@ class LocalEmailStore(LocalFileStore):
     ]
 
     def __init__(self, bucket_name: str = "", *args: Any, **kwargs: Any) -> None:
-        super().__init__(bucket_name=bucket_name, storage_root=settings.EMAIL_STORAGE_ROOT)
+        super().__init__(
+            bucket_name=bucket_name, storage_root=settings.EMAIL_STORAGE_ROOT
+        )
 
-    def fetch_file_contents(self, key_path: str, version_id: str | None = None) -> bytes:
+    def fetch_file_contents(
+        self, key_path: str, version_id: str | None = None
+    ) -> bytes:
         # Randomly select one of the fixture files
         key_path = random.choice(self.email_keys)
         return super().fetch_file_contents(key_path, version_id)
@@ -1513,24 +1574,39 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
         content_type: str = "",
     ) -> tuple[str, str, str]:
         version = str(uuid.uuid4())
-        self.versioned_buffers[self.bucket_name][key_path][version] = _to_bytes(contents=contents)
+        self.versioned_buffers[self.bucket_name][key_path][version] = _to_bytes(
+            contents=contents
+        )
         self.buffers[self.bucket_name][key_path] = _to_bytes(contents=contents)
         return self.bucket_name, key_path, version
 
     def store_filepath(
-        self, namespace: str, filepath: str, overwrite: bool = False, dest_filepath: str = ""
+        self,
+        namespace: str,
+        filepath: str,
+        overwrite: bool = False,
+        dest_filepath: str = "",
     ) -> tuple[str, str]:
         with open(filepath, "rb") as f:
             if not dest_filepath:
                 dest_filepath = os.path.basename(filepath)
-            return self.store_file(namespace, dest_filepath, f.read(), overwrite=overwrite)
+            return self.store_file(
+                namespace, dest_filepath, f.read(), overwrite=overwrite
+            )
 
-    def fetch_file_contents(self, key_path: str, version_id: str | None = None) -> bytes:
+    def fetch_file_contents(
+        self, key_path: str, version_id: str | None = None
+    ) -> bytes:
         if version_id:
             versioned_bucket = self.versioned_buffers[self.bucket_name]
-            if key_path not in versioned_bucket or version_id not in versioned_bucket[key_path]:
+            if (
+                key_path not in versioned_bucket
+                or version_id not in versioned_bucket[key_path]
+            ):
                 raise KeyDoesNotExist(
-                    "Key with path %s and version %s was not found" % key_path % version_id
+                    "Key with path %s and version %s was not found"
+                    % key_path
+                    % version_id
                 )
             return versioned_bucket[key_path][version_id]
         else:
@@ -1540,7 +1616,9 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
             return bucket[key_path]
 
     def get_key(self, key_path: str, version_id: str | None = None) -> S3Object:
-        return S3Object(bucket_name=self.bucket_name, key=key_path, version_id=version_id)
+        return S3Object(
+            bucket_name=self.bucket_name, key=key_path, version_id=version_id
+        )
 
     def get_file_type(self, key_path: str) -> str:
         mime = magic.Magic(mime=True)
@@ -1548,7 +1626,9 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
 
     def fetch_file(self, key_path: str, version_id: str | None = None) -> StreamingBody:
         raw_stream = io.BytesIO(self.fetch_file_contents(key_path, version_id))
-        return StreamingBody(raw_stream=raw_stream, content_length=files.size(raw_stream))
+        return StreamingBody(
+            raw_stream=raw_stream, content_length=files.size(raw_stream)
+        )
 
     def fetch_url(
         self,
@@ -1607,7 +1687,9 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
         for bucket in self.buffers.values():
             bucket.clear()
 
-    def generate_presigned_post(self, *, key_path: str, expires_in: int = 60) -> PreSignedPost:
+    def generate_presigned_post(
+        self, *, key_path: str, expires_in: int = 60
+    ) -> PreSignedPost:
         return PreSignedPost(
             # Resolves to a localdev/storage url
             url=reverse("fake-presigned-post-upload"),
@@ -1631,7 +1713,9 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
 
 
 def store(
-    bucket_name: str, use_date_in_key_path: bool = True, set_acl_bucket_owner: bool = False
+    bucket_name: str,
+    use_date_in_key_path: bool = True,
+    set_acl_bucket_owner: bool = False,
 ) -> BaseS3FileStore:
     """
     Return the appropriate storage instance for a given bucket.
@@ -1664,7 +1748,9 @@ def user_documents(use_date_in_key_path: bool = True) -> BaseS3FileStore:
     """
     Return the user documents store.
     """
-    return store(settings.S3_USER_DOCUMENTS_BUCKET, use_date_in_key_path=use_date_in_key_path)
+    return store(
+        settings.S3_USER_DOCUMENTS_BUCKET, use_date_in_key_path=use_date_in_key_path
+    )
 
 
 def archive(use_date_in_key_path: bool = True) -> BaseS3FileStore:
@@ -1705,13 +1791,16 @@ def outbound_flow_store() -> BaseS3FileStore:
     storage_class = import_string(settings.STORAGE_BACKEND)
     if storage_class == S3FileStore:
         return storage_class(
-            bucket_name=settings.INTEGRATION_FLOW_S3_OUTBOUND_BUCKET, use_date_in_key_path=False
+            bucket_name=settings.INTEGRATION_FLOW_S3_OUTBOUND_BUCKET,
+            use_date_in_key_path=False,
         )
     else:
         return storage_class(bucket_name=settings.INTEGRATION_FLOW_S3_OUTBOUND_BUCKET)
 
 
-def from_uri(uri: str) -> FileSystemFileStore | S3SubdirectoryFileStore | MemoryFileStore:
+def from_uri(
+    uri: str
+) -> FileSystemFileStore | S3SubdirectoryFileStore | MemoryFileStore:
     """
     :raises ValueError: if the URI does not contain a scheme for a supported storage system.
     """

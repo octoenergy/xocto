@@ -33,7 +33,6 @@ def test_quantise(number_to_round, base, rounding_strategy, expected_result):
 
 
 def test_truncate_decimal_places():
-
     assert numbers.truncate_decimal_places(D("123.45"), 1) == 123.4
     assert numbers.truncate_decimal_places(D("123.456"), 1) == 123.4
     assert numbers.truncate_decimal_places(D("123.4"), 2) == 123.40

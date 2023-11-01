@@ -1,9 +1,9 @@
 import datetime
 import decimal
+import zoneinfo
 
 import pytest
 import time_machine
-import zoneinfo
 from dateutil import relativedelta
 from django.conf import settings
 from django.test import override_settings
@@ -26,7 +26,9 @@ class TestSecondsInTheFuture:
                 localtime.datetime_.datetime(2020, 1, 1, 12, 0, 1, tzinfo=localtime.UTC)
             )
             assert localtime.seconds_in_the_future(1.5) == localtime.as_localtime(
-                localtime.datetime_.datetime(2020, 1, 1, 12, 0, 1, 500000, tzinfo=localtime.UTC)
+                localtime.datetime_.datetime(
+                    2020, 1, 1, 12, 0, 1, 500000, tzinfo=localtime.UTC
+                )
             )
 
 
@@ -34,22 +36,30 @@ class TestSecondsInThePast:
     def test_seconds_in_past(self):
         with time_machine.travel("2020-01-01 12:00:00.000", tick=False):
             assert localtime.seconds_in_the_past(1) == localtime.as_localtime(
-                localtime.datetime_.datetime(2020, 1, 1, 11, 59, 59, tzinfo=localtime.UTC)
+                localtime.datetime_.datetime(
+                    2020, 1, 1, 11, 59, 59, tzinfo=localtime.UTC
+                )
             )
             assert localtime.seconds_in_the_past(1.5) == localtime.as_localtime(
-                localtime.datetime_.datetime(2020, 1, 1, 11, 59, 58, 500000, tzinfo=localtime.UTC)
+                localtime.datetime_.datetime(
+                    2020, 1, 1, 11, 59, 58, 500000, tzinfo=localtime.UTC
+                )
             )
 
 
 class TestDate:
     def test_date_calculation_near_midnight_during_bst(self):
-        near_midnight_in_utc = datetime.datetime(2016, 6, 1, 23, 50, 0, tzinfo=localtime.UTC)
+        near_midnight_in_utc = datetime.datetime(
+            2016, 6, 1, 23, 50, 0, tzinfo=localtime.UTC
+        )
         assert localtime.date(near_midnight_in_utc) == (
             near_midnight_in_utc.date() + datetime.timedelta(days=1)
         )
 
     def test_date_calculation_near_midnight_outside_of_bst(self):
-        near_midnight_in_utc = datetime.datetime(2016, 11, 1, 23, 50, 0, tzinfo=localtime.UTC)
+        near_midnight_in_utc = datetime.datetime(
+            2016, 11, 1, 23, 50, 0, tzinfo=localtime.UTC
+        )
         assert localtime.date(near_midnight_in_utc) == near_midnight_in_utc.date()
 
     @pytest.mark.parametrize("tz", (zoneinfo.ZoneInfo("Etc/GMT-10"), localtime.UTC))
@@ -62,7 +72,9 @@ class TestDate:
         Check that we do not fallback to today if a datetime is not passed to the function -
         we have localtime.today for that.
         """
-        with pytest.raises(TypeError, match="You must supply a datetime to localtime.date"):
+        with pytest.raises(
+            TypeError, match="You must supply a datetime to localtime.date"
+        ):
             localtime.date(None)
 
 
@@ -115,7 +127,9 @@ class TestMidnight:
     def test_midnight_in_different_timezone(self):
         aus_time = zoneinfo.ZoneInfo("Etc/GMT-10")
 
-        with time_machine.travel(datetime.datetime(2020, 2, 2, 1, tzinfo=aus_time), tick=False):
+        with time_machine.travel(
+            datetime.datetime(2020, 2, 2, 1, tzinfo=aus_time), tick=False
+        ):
             result = localtime.midnight(tz=aus_time)
 
         assert result == datetime.datetime(2020, 2, 2, 0, 0, tzinfo=aus_time)
@@ -128,19 +142,39 @@ class TestMidnight:
         midnight = datetime.datetime(2020, 6, 1, 23, tzinfo=datetime.timezone.utc)
 
         # We'll assert the same thing three ways for clarity:
-        assert localtime.midnight(midnight).date() == localtime.as_localtime(midnight).date()
+        assert (
+            localtime.midnight(midnight).date()
+            == localtime.as_localtime(midnight).date()
+        )
         assert localtime.midnight(midnight).date() == datetime.date(2020, 6, 2)
         assert localtime.midnight(midnight) == midnight
 
-    @override_settings(TIME_ZONE="Australia/Sydney")  # set the django default/current timezone
+    @override_settings(
+        TIME_ZONE="Australia/Sydney"
+    )  # set the django default/current timezone
     @pytest.mark.parametrize(
         "naive_datetime,expected_midnight",
         [
-            (datetime.datetime(2021, 6, 17, 18, 0, 0), datetime.datetime(2021, 6, 17, 0, 0, 0)),
-            (datetime.datetime(2021, 6, 17, 23, 30, 0), datetime.datetime(2021, 6, 17, 0, 0, 0)),
-            (datetime.datetime(2021, 6, 18, 0, 0, 0), datetime.datetime(2021, 6, 18, 0, 0, 0)),
-            (datetime.datetime(2021, 6, 18, 0, 30, 0), datetime.datetime(2021, 6, 18, 0, 0, 0)),
-            (datetime.datetime(2021, 6, 18, 6, 0, 0), datetime.datetime(2021, 6, 18, 0, 0, 0)),
+            (
+                datetime.datetime(2021, 6, 17, 18, 0, 0),
+                datetime.datetime(2021, 6, 17, 0, 0, 0),
+            ),
+            (
+                datetime.datetime(2021, 6, 17, 23, 30, 0),
+                datetime.datetime(2021, 6, 17, 0, 0, 0),
+            ),
+            (
+                datetime.datetime(2021, 6, 18, 0, 0, 0),
+                datetime.datetime(2021, 6, 18, 0, 0, 0),
+            ),
+            (
+                datetime.datetime(2021, 6, 18, 0, 30, 0),
+                datetime.datetime(2021, 6, 18, 0, 0, 0),
+            ),
+            (
+                datetime.datetime(2021, 6, 18, 6, 0, 0),
+                datetime.datetime(2021, 6, 18, 0, 0, 0),
+            ),
         ],
     )
     def test_localtime_midnight_calculation_for_naive_datetime_and_no_timezone(
@@ -163,7 +197,9 @@ class TestMidnight:
         assert actual_midnight == expected_midnight
         assert str(actual_midnight.tzinfo) == "Australia/Sydney"
 
-    @override_settings(TIME_ZONE="Australia/Sydney")  # set the django default/current timezone
+    @override_settings(
+        TIME_ZONE="Australia/Sydney"
+    )  # set the django default/current timezone
     @pytest.mark.parametrize(
         "naive_datetime,specified_timezone,expected_midnight",
         [
@@ -230,7 +266,9 @@ class TestMidnight:
         """
         specified_timezone_obj = zoneinfo.ZoneInfo(specified_timezone)
         # attach the specified timezone to the expected midnight
-        expected_midnight = timezone.make_aware(expected_midnight, timezone=specified_timezone_obj)
+        expected_midnight = timezone.make_aware(
+            expected_midnight, timezone=specified_timezone_obj
+        )
 
         actual_midnight = localtime.midnight(naive_datetime, tz=specified_timezone_obj)
 
@@ -256,7 +294,9 @@ class TestMidday:
     def test_midday_in_different_timezone(self):
         aus_time = zoneinfo.ZoneInfo("Etc/GMT-10")
 
-        with time_machine.travel(datetime.datetime(2020, 2, 2, 1, tzinfo=aus_time), tick=False):
+        with time_machine.travel(
+            datetime.datetime(2020, 2, 2, 1, tzinfo=aus_time), tick=False
+        ):
             result = localtime.midday(tz=aus_time)
 
         assert result == datetime.datetime(2020, 2, 2, 12, 0, tzinfo=aus_time)
@@ -521,7 +561,10 @@ class TestStartOfMonth:
                 localtime.datetime(2016, 12, 5, 11, 34, 59),
                 localtime.datetime(2016, 12, 1, 0, 0, 0),
             ),
-            (localtime.datetime(2017, 3, 31, 11, 29, 59), localtime.datetime(2017, 3, 1, 0, 0, 0)),
+            (
+                localtime.datetime(2017, 3, 31, 11, 29, 59),
+                localtime.datetime(2017, 3, 1, 0, 0, 0),
+            ),
         ],
     )
     def test_start_of_month(self, dt, result):
@@ -532,8 +575,14 @@ class TestEndOfMonth:
     @pytest.mark.parametrize(
         ("dt", "result"),
         [
-            (localtime.datetime(2016, 12, 5, 11, 34, 59), localtime.datetime(2017, 1, 1, 0, 0, 0)),
-            (localtime.datetime(2017, 3, 31, 11, 29, 59), localtime.datetime(2017, 4, 1, 0, 0, 0)),
+            (
+                localtime.datetime(2016, 12, 5, 11, 34, 59),
+                localtime.datetime(2017, 1, 1, 0, 0, 0),
+            ),
+            (
+                localtime.datetime(2017, 3, 31, 11, 29, 59),
+                localtime.datetime(2017, 4, 1, 0, 0, 0),
+            ),
         ],
     )
     def test_end_of_month(self, dt, result):
@@ -589,7 +638,9 @@ class TestNextMidnight:
     def test_default_in_different_timezone(self):
         aus_time = zoneinfo.ZoneInfo("Etc/GMT-10")
 
-        with time_machine.travel(datetime.datetime(2020, 2, 2, 1, tzinfo=aus_time), tick=False):
+        with time_machine.travel(
+            datetime.datetime(2020, 2, 2, 1, tzinfo=aus_time), tick=False
+        ):
             result = localtime.next_midnight(tz=aus_time)
 
         assert result == datetime.datetime(2020, 2, 3, 0, 0, tzinfo=aus_time)
@@ -616,10 +667,12 @@ class TestNextMidnight:
 
 class TestDaysInThePast:
     def test_is_sane(self):
-        assert localtime.days_in_the_past(2) == datetime.date.today() - datetime.timedelta(days=2)
-        assert localtime.days_in_the_past(-20) == datetime.date.today() + datetime.timedelta(
-            days=20
-        )
+        assert localtime.days_in_the_past(
+            2
+        ) == datetime.date.today() - datetime.timedelta(days=2)
+        assert localtime.days_in_the_past(
+            -20
+        ) == datetime.date.today() + datetime.timedelta(days=20)
         assert localtime.days_in_the_past(0) == datetime.date.today()
         assert localtime.days_in_the_past(1) == localtime.yesterday()
         assert localtime.days_in_the_past(-1) == localtime.tomorrow()
@@ -627,12 +680,12 @@ class TestDaysInThePast:
 
 class TestDaysInTheFuture:
     def test_is_sane(self):
-        assert localtime.days_in_the_future(2) == datetime.date.today() + datetime.timedelta(
-            days=2
-        )
-        assert localtime.days_in_the_future(-20) == datetime.date.today() - datetime.timedelta(
-            days=20
-        )
+        assert localtime.days_in_the_future(
+            2
+        ) == datetime.date.today() + datetime.timedelta(days=2)
+        assert localtime.days_in_the_future(
+            -20
+        ) == datetime.date.today() - datetime.timedelta(days=20)
         assert localtime.days_in_the_future(0) == datetime.date.today()
         assert localtime.days_in_the_future(1) == localtime.tomorrow()
         assert localtime.days_in_the_future(-1) == localtime.yesterday()
@@ -644,7 +697,12 @@ class TestLatestDateForDay:
         (
             ("2017-01-01", "2018-12-31", 9, "2018-12-09"),  # Result in last month.
             ("2017-01-01", "2018-12-08", 9, "2018-11-09"),  # Result in previous month.
-            ("2017-01-01", "2017-03-30", 31, "2017-01-31"),  # Result affected by short month.
+            (
+                "2017-01-01",
+                "2017-03-30",
+                31,
+                "2017-01-31",
+            ),  # Result affected by short month.
             ("2017-01-12", "2017-01-30", 12, "2017-01-12"),  # Result same as from date.
             ("2017-01-12", "2017-01-30", 30, "2017-01-30"),  # Result same as to date.
             ("2017-01-12", "2017-02-10", 11, None),  # Result not in range.
@@ -653,7 +711,9 @@ class TestLatestDateForDay:
             ("2017-01-01", "2018-12-31", 32, ValueError),  # Day too high.
         ),
     )
-    def test_latest_date_for_day(self, start_date, end_date, day_of_month, expected_result):
+    def test_latest_date_for_day(
+        self, start_date, end_date, day_of_month, expected_result
+    ):
         kwargs = dict(
             start_date=factories.date(start_date),
             end_date=factories.date(end_date),
@@ -736,7 +796,9 @@ class TestWithinLastWeek:
         now = factories.local.dt(now_str)
         supplied_date = factories.date(supplied_date_str)
         with time_machine.travel(now, tick=False):
-            assert localtime.is_within_the_last_week(supplied_date) == is_within_last_year
+            assert (
+                localtime.is_within_the_last_week(supplied_date) == is_within_last_year
+            )
 
 
 class TestIsDST:
@@ -747,21 +809,53 @@ class TestIsDST:
             (datetime.datetime(2019, 1, 1), zoneinfo.ZoneInfo("Europe/London"), False),
             (datetime.datetime(2019, 6, 1), zoneinfo.ZoneInfo("Europe/London"), True),
             # Test London boundaries
-            (datetime.datetime(2017, 3, 26, 0, 0), zoneinfo.ZoneInfo("Europe/London"), False),
-            (datetime.datetime(2017, 3, 26, 2, 0), zoneinfo.ZoneInfo("Europe/London"), True),
-            (datetime.datetime(2017, 10, 29, 0, 0), zoneinfo.ZoneInfo("Europe/London"), True),
-            (datetime.datetime(2017, 10, 29, 2, 0), zoneinfo.ZoneInfo("Europe/London"), False),
+            (
+                datetime.datetime(2017, 3, 26, 0, 0),
+                zoneinfo.ZoneInfo("Europe/London"),
+                False,
+            ),
+            (
+                datetime.datetime(2017, 3, 26, 2, 0),
+                zoneinfo.ZoneInfo("Europe/London"),
+                True,
+            ),
+            (
+                datetime.datetime(2017, 10, 29, 0, 0),
+                zoneinfo.ZoneInfo("Europe/London"),
+                True,
+            ),
+            (
+                datetime.datetime(2017, 10, 29, 2, 0),
+                zoneinfo.ZoneInfo("Europe/London"),
+                False,
+            ),
             # UTC should never be DST
             (datetime.datetime(2019, 1, 1), zoneinfo.ZoneInfo("UTC"), False),
             (datetime.datetime(2019, 6, 1), zoneinfo.ZoneInfo("UTC"), False),
             (datetime.datetime(2019, 1, 1), datetime.timezone.utc, False),
             (datetime.datetime(2019, 6, 1), datetime.timezone.utc, False),
             # Test Eastern Australia timezone
-            (datetime.datetime(2019, 1, 1), zoneinfo.ZoneInfo("Australia/Sydney"), True),
-            (datetime.datetime(2019, 6, 1), zoneinfo.ZoneInfo("Australia/Sydney"), False),
+            (
+                datetime.datetime(2019, 1, 1),
+                zoneinfo.ZoneInfo("Australia/Sydney"),
+                True,
+            ),
+            (
+                datetime.datetime(2019, 6, 1),
+                zoneinfo.ZoneInfo("Australia/Sydney"),
+                False,
+            ),
             # Test Western Australia timezone (they don't have DST)
-            (datetime.datetime(2019, 1, 1), zoneinfo.ZoneInfo("Australia/Perth"), False),
-            (datetime.datetime(2019, 6, 1), zoneinfo.ZoneInfo("Australia/Perth"), False),
+            (
+                datetime.datetime(2019, 1, 1),
+                zoneinfo.ZoneInfo("Australia/Perth"),
+                False,
+            ),
+            (
+                datetime.datetime(2019, 6, 1),
+                zoneinfo.ZoneInfo("Australia/Perth"),
+                False,
+            ),
         ),
     )
     def test_returns_correct_values(self, naive_datetime, tz, expected):
@@ -826,7 +920,9 @@ class TestCombine:
                 factories.date("1 Jun 2020"),
                 factories.time("01:00"),
                 "Europe/London",
-                datetime.datetime(2020, 6, 1, 1, 0).astimezone(zoneinfo.ZoneInfo("Europe/London")),
+                datetime.datetime(2020, 6, 1, 1, 0).astimezone(
+                    zoneinfo.ZoneInfo("Europe/London")
+                ),
             ),
             (
                 factories.date("1 Jul 2021"),
@@ -855,7 +951,9 @@ class TestNextDateWithDayOfMonth:
     )
     def test_next_date_with_day_of_month(self, current_date, day_of_month, expected):
         assert (
-            localtime.next_date_with_day_of_month(date=current_date, day_of_month=day_of_month)
+            localtime.next_date_with_day_of_month(
+                date=current_date, day_of_month=day_of_month
+            )
             == expected
         )
 
@@ -879,7 +977,11 @@ class TestConsolidateIntoIntervals:
                 [(localtime.today(), localtime.today())],
             ),
             (
-                [localtime.today(), localtime.yesterday(), localtime.days_in_the_future(2)],
+                [
+                    localtime.today(),
+                    localtime.yesterday(),
+                    localtime.days_in_the_future(2),
+                ],
                 [
                     (localtime.yesterday(), localtime.today()),
                     (localtime.days_in_the_future(2), localtime.days_in_the_future(2)),
@@ -920,7 +1022,9 @@ class TestDatetimeFromUTCUnixTimestamp:
         """
         # Before clocks move forward
         # 29th of March 2020 0:30am UTC = 0:30am Europe/London
-        timestamp = datetime.datetime(2020, 3, 29, 0, 30, tzinfo=localtime.UTC).timestamp()
+        timestamp = datetime.datetime(
+            2020, 3, 29, 0, 30, tzinfo=localtime.UTC
+        ).timestamp()
 
         dt = localtime.datetime_from_epoch_timestamp(timestamp)
 
@@ -941,7 +1045,9 @@ class TestDatetimeFromUTCUnixTimestamp:
         """
         # After clocks move forward
         # 29th of March 2020 1:30am UTC = 2:30 am Europe/London
-        timestamp = datetime.datetime(2020, 3, 29, 1, 30, tzinfo=localtime.UTC).timestamp()
+        timestamp = datetime.datetime(
+            2020, 3, 29, 1, 30, tzinfo=localtime.UTC
+        ).timestamp()
 
         dt = localtime.datetime_from_epoch_timestamp(timestamp)
 
@@ -962,7 +1068,9 @@ class TestDatetimeFromUTCUnixTimestamp:
         """
         # Before clocks move backwards
         # 25th of October 2020 0:30am UTC = 1:30am Europe/London
-        timestamp = datetime.datetime(2020, 10, 25, 0, 30, tzinfo=localtime.UTC).timestamp()
+        timestamp = datetime.datetime(
+            2020, 10, 25, 0, 30, tzinfo=localtime.UTC
+        ).timestamp()
 
         dt = localtime.datetime_from_epoch_timestamp(timestamp)
 
@@ -983,7 +1091,9 @@ class TestDatetimeFromUTCUnixTimestamp:
         """
         # After clocks move backwards
         # 25th of October 2020 1:30am UTC = 1:30am Europe/London
-        timestamp = datetime.datetime(2020, 10, 25, 1, 30, tzinfo=localtime.UTC).timestamp()
+        timestamp = datetime.datetime(
+            2020, 10, 25, 1, 30, tzinfo=localtime.UTC
+        ).timestamp()
 
         dt = localtime.datetime_from_epoch_timestamp(timestamp)
 
@@ -1047,8 +1157,12 @@ class TestPeriodExceedsOneYear:
             ),
         ],
     )
-    def test_period_exceeds_one_year(self, period_start_at, first_dt_exceeding_one_year):
-        assert localtime.period_exceeds_one_year(period_start_at, first_dt_exceeding_one_year)
+    def test_period_exceeds_one_year(
+        self, period_start_at, first_dt_exceeding_one_year
+    ):
+        assert localtime.period_exceeds_one_year(
+            period_start_at, first_dt_exceeding_one_year
+        )
         assert not localtime.period_exceeds_one_year(
             period_start_at,
             first_dt_exceeding_one_year - relativedelta.relativedelta(microseconds=1),
