@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.7.1 - 2023-11-01
+
+- Adding explicit type for Optional OneToOneField [#113](https://github.com/octoenergy/xocto/pull/113)
+
 ## v4.7.0 - 2023-10-31
 
 🎃 Happy Halloween! 🎃
