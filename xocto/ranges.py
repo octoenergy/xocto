@@ -28,7 +28,9 @@ class RangeBoundaries(enum.Enum):
     INCLUSIVE_INCLUSIVE = "[]"
 
     @classmethod
-    def from_bounds(cls, left_exclusive: bool, right_exclusive: bool) -> "RangeBoundaries":
+    def from_bounds(
+        cls, left_exclusive: bool, right_exclusive: bool
+    ) -> "RangeBoundaries":
         """
         Convenience method to get the relevant boundary type by specifiying the exclusivity of each
         end.
@@ -247,10 +249,14 @@ class Range(Generic[T]):
                 return False
             else:
                 # If one endpoint is None then that range is greater, otherwise compare them
-                return (other.end is None) or (self.end is not None and self.end < other.end)
+                return (other.end is None) or (
+                    self.end is not None and self.end < other.end
+                )
         else:
             # If one endpoint is None then that range is lesser, otherwise compare them
-            return (self.start is None) or (other.start is not None and self.start < other.start)
+            return (self.start is None) or (
+                other.start is not None and self.start < other.start
+            )
 
     def __contains__(self, item: T) -> bool:
         """
@@ -286,13 +292,15 @@ class Range(Generic[T]):
         """
         if self.end is not None and other.start is not None:
             if not (
-                self._is_inside_right_bound(other.start) and other._is_inside_left_bound(self.end)
+                self._is_inside_right_bound(other.start)
+                and other._is_inside_left_bound(self.end)
             ):
                 return True
 
         if self.start is not None and other.end is not None:
             if not (
-                self._is_inside_left_bound(other.end) and other._is_inside_right_bound(self.start)
+                self._is_inside_left_bound(other.end)
+                and other._is_inside_right_bound(self.start)
             ):
                 return True
 
@@ -320,7 +328,9 @@ class Range(Generic[T]):
             end = range_r.end
             right_exclusive = range_r._is_right_exclusive
 
-        boundaries = RangeBoundaries.from_bounds(range_r._is_left_exclusive, right_exclusive)
+        boundaries = RangeBoundaries.from_bounds(
+            range_r._is_left_exclusive, right_exclusive
+        )
 
         return Range(range_r.start, end, boundaries=boundaries)
 
@@ -349,11 +359,15 @@ class Range(Generic[T]):
             end = range_r.end
             right_exclusive = range_r._is_right_exclusive
 
-        boundaries = RangeBoundaries.from_bounds(range_l._is_left_exclusive, right_exclusive)
+        boundaries = RangeBoundaries.from_bounds(
+            range_l._is_left_exclusive, right_exclusive
+        )
 
         return Range(range_l.start, end, boundaries=boundaries)
 
-    def difference(self, other: "Range[T]") -> Optional[Union["Range[T]", "RangeSet[T]"]]:
+    def difference(
+        self, other: "Range[T]"
+    ) -> Optional[Union["Range[T]", "RangeSet[T]"]]:
         """
         Return a range or rangeset consisting of the bits of this range that do not intersect the
         other range (or None if this range is covered by the other range).
@@ -385,7 +399,9 @@ class Range(Generic[T]):
             boundaries = RangeBoundaries.from_bounds(
                 other._is_right_inclusive, self._is_right_exclusive
             )
-            upper_part: Optional["Range[T]"] = Range(other.end, self.end, boundaries=boundaries)
+            upper_part: Optional["Range[T]"] = Range(
+                other.end, self.end, boundaries=boundaries
+            )
         else:
             upper_part = None
 
@@ -668,7 +684,6 @@ class RangeSet(Generic[T]):
             )
 
         for preceeding_range, current_range in zip(self._ranges[:-1], self._ranges[1:]):
-
             complement.append(
                 Range(
                     preceeding_range.end,
@@ -749,7 +764,9 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         """
         super().__init__(start, end, boundaries=RangeBoundaries.INCLUSIVE_EXCLUSIVE)
 
-    def intersection(self, other: Range[datetime.datetime]) -> Optional["FiniteDatetimeRange"]:
+    def intersection(
+        self, other: Range[datetime.datetime]
+    ) -> Optional["FiniteDatetimeRange"]:
         """
         Intersections with finite ranges will always be finite.
         """
@@ -760,7 +777,9 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         assert base_intersection.boundaries == RangeBoundaries.INCLUSIVE_EXCLUSIVE
         return FiniteDatetimeRange(base_intersection.start, base_intersection.end)
 
-    def __and__(self, other: Range[datetime.datetime]) -> Optional["FiniteDatetimeRange"]:
+    def __and__(
+        self, other: Range[datetime.datetime]
+    ) -> Optional["FiniteDatetimeRange"]:
         return self.intersection(other)
 
     @property

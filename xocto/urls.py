@@ -23,7 +23,9 @@ def pop_url_query_param(url: str, key: str) -> tuple[str, str | None]:
     ValueError: ...
     """
     parsed_url = parse.urlparse(url)
-    query_dict = parse.parse_qs(parsed_url.query, keep_blank_values=True, errors="strict")
+    query_dict = parse.parse_qs(
+        parsed_url.query, keep_blank_values=True, errors="strict"
+    )
     query_value_list = query_dict.pop(key, (None,))
     if len(query_value_list) != 1:
         raise ValueError(f"Cannot pop multi-valued query param: Key {key!r} in {url!r}")
@@ -107,11 +109,15 @@ def parse_file_destination_from_url(url: str) -> tuple[str, str, str]:
     else:
         parsed_url = parse.urlparse(url)
         destination_path = parsed_url.path
-        upload_path = os.path.abspath(os.path.join(destination_path, url_relative_upload_path))
+        upload_path = os.path.abspath(
+            os.path.join(destination_path, url_relative_upload_path)
+        )
         common_path = os.path.commonpath((destination_path, upload_path))
         new_url = parse.urlunparse(parsed_url._replace(path=common_path))
         new_url = _fix_url_scheme(old_url=url, new_url=new_url)
-        upload_path = os.path.abspath(os.path.join(destination_path, url_relative_upload_path))
+        upload_path = os.path.abspath(
+            os.path.join(destination_path, url_relative_upload_path)
+        )
         rel_destination_path = os.path.relpath(destination_path, common_path)
         rel_upload_path = os.path.relpath(upload_path, common_path)
         return new_url, rel_destination_path, rel_upload_path

@@ -13,7 +13,7 @@ lint:
 	make black_check ruff mypy
 
 black_check:
-	black --check --diff .
+	ruff format .
 
 ruff:
 	ruff check .
@@ -26,12 +26,11 @@ test:
 
 format:
 	ruff check --fix .
-	black .
+	ruff format .
 
 docker_images:
 	docker build -t xocto/pytest --target=pytest .
 	docker build -t xocto/ruff --target=ruff .
-	docker build -t xocto/black --target=black .
 
 # Releases
 

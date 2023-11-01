@@ -20,7 +20,9 @@ from xocto.storage import s3_select, storage
 @pytest.fixture
 def mock_s3_bucket(mocker):
     with moto.mock_s3():
-        bucket = boto3.resource("s3", region_name="us-east-1").create_bucket(Bucket="some-bucket")
+        bucket = boto3.resource("s3", region_name="us-east-1").create_bucket(
+            Bucket="some-bucket"
+        )
 
         client = boto3.client("s3")
         mocker.patch.object(
@@ -63,11 +65,16 @@ class TestS3SubdirectoryFileStore:
             ),
         ],
     )
-    def test_make_key_path_with_use_date_in_key_path(self, namespace, filepath, expected):
+    def test_make_key_path_with_use_date_in_key_path(
+        self, namespace, filepath, expected
+    ):
         s3_file_store = storage.S3SubdirectoryFileStore(
             "s3://some-bucket/folder?use_date_in_key_path=1"
         )
-        assert s3_file_store.make_key_path(namespace=namespace, filepath=filepath) == expected
+        assert (
+            s3_file_store.make_key_path(namespace=namespace, filepath=filepath)
+            == expected
+        )
 
     @time_machine.travel("2021-09-10", tick=False)
     @pytest.mark.parametrize(
@@ -75,12 +82,21 @@ class TestS3SubdirectoryFileStore:
         [
             ("", "file.txt", "folder/file.txt"),
             ("namespace", "file.txt", "folder/namespace/file.txt"),
-            ("namespace/sub-namespace", "file.txt", "folder/namespace/sub-namespace/file.txt"),
+            (
+                "namespace/sub-namespace",
+                "file.txt",
+                "folder/namespace/sub-namespace/file.txt",
+            ),
         ],
     )
-    def test_make_key_path_without_use_date_in_key_path(self, namespace, filepath, expected):
+    def test_make_key_path_without_use_date_in_key_path(
+        self, namespace, filepath, expected
+    ):
         s3_file_store = storage.S3SubdirectoryFileStore("s3://some-bucket/folder")
-        assert s3_file_store.make_key_path(namespace=namespace, filepath=filepath) == expected
+        assert (
+            s3_file_store.make_key_path(namespace=namespace, filepath=filepath)
+            == expected
+        )
 
     @mock.patch.object(storage.S3FileStore, "_get_boto_client")
     def test_fetch_url(self, get_boto_client):
@@ -104,7 +120,11 @@ class TestS3SubdirectoryFileStore:
         # Should be called including the subdirectory path.
         get_boto_client.return_value.generate_presigned_url.assert_called_once_with(
             "get_object",
-            Params={"Bucket": "some-bucket", "Key": "folder/a/b.txt", "VersionId": "some-version"},
+            Params={
+                "Bucket": "some-bucket",
+                "Key": "folder/a/b.txt",
+                "VersionId": "some-version",
+            },
             ExpiresIn=mock.ANY,
         )
 
@@ -113,9 +133,14 @@ class TestS3SubdirectoryFileStore:
         filenames = [f"file_{i:04}.pdf" for i in range(105)]
         for filename in filenames:
             store.store_file(
-                namespace="some/path/", filename=filename, contents=f"{filename} content"
+                namespace="some/path/",
+                filename=filename,
+                contents=f"{filename} content",
             )
-        expected = [storage.S3Object("some-bucket", f"path/{filename}") for filename in filenames]
+        expected = [
+            storage.S3Object("some-bucket", f"path/{filename}")
+            for filename in filenames
+        ]
 
         # "file_00" excludes file_0100.pdf and above
         store = storage.S3SubdirectoryFileStore("s3://some-bucket/some")
@@ -146,7 +171,9 @@ class TestS3SubdirectoryFileStore:
             "a/b/bar.txt",
         ]
         # Should be called including the subdirectory path.
-        get_boto_bucket.return_value.objects.filter.assert_called_once_with(Prefix="folder/a/b")
+        get_boto_bucket.return_value.objects.filter.assert_called_once_with(
+            Prefix="folder/a/b"
+        )
 
     @mock.patch.object(storage.S3FileStore, "_get_boto_object")
     def test_fetch_file_fetches_given_path(self, get_boto_object):
@@ -173,23 +200,14 @@ class TestS3SubdirectoryFileStore:
 class TestS3FileStore:
     @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
     @mock.patch.object(storage.S3FileStore, "_get_boto_client")
-    def test_stores_file_that_does_not_exist(self, get_boto_client, get_boto_object_for_key):
+    def test_stores_file_that_does_not_exist(
+        self, get_boto_client, get_boto_object_for_key
+    ):
         get_boto_object_for_key.side_effect = storage.KeyDoesNotExist
         store = storage.S3FileStore("bucket")
 
-        store.store_file(namespace="files", filename="file.pdf", contents="some-content")
-
-        s3_client = get_boto_client.return_value
-        s3_client.upload_fileobj.assert_called_once()
-
-    @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
-    @mock.patch.object(storage.S3FileStore, "_get_boto_client")
-    def test_overwrites_file_that_does_exist(self, get_boto_client, get_boto_object_for_key):
-        get_boto_object_for_key.return_value = mock.Mock()
-        store = storage.S3FileStore("bucket")
-
         store.store_file(
-            namespace="files", filename="file.pdf", contents="some-content", overwrite=True
+            namespace="files", filename="file.pdf", contents="some-content"
         )
 
         s3_client = get_boto_client.return_value
@@ -197,16 +215,40 @@ class TestS3FileStore:
 
     @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
     @mock.patch.object(storage.S3FileStore, "_get_boto_client")
-    def test_raises_error_for_file_that_does_exist(self, get_boto_client, get_boto_object_for_key):
+    def test_overwrites_file_that_does_exist(
+        self, get_boto_client, get_boto_object_for_key
+    ):
+        get_boto_object_for_key.return_value = mock.Mock()
+        store = storage.S3FileStore("bucket")
+
+        store.store_file(
+            namespace="files",
+            filename="file.pdf",
+            contents="some-content",
+            overwrite=True,
+        )
+
+        s3_client = get_boto_client.return_value
+        s3_client.upload_fileobj.assert_called_once()
+
+    @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
+    @mock.patch.object(storage.S3FileStore, "_get_boto_client")
+    def test_raises_error_for_file_that_does_exist(
+        self, get_boto_client, get_boto_object_for_key
+    ):
         get_boto_object_for_key.return_value = mock.Mock()
         store = storage.S3FileStore("bucket")
 
         with pytest.raises(storage.FileExists):
-            store.store_file(namespace="files", filename="file.pdf", contents="some-content")
+            store.store_file(
+                namespace="files", filename="file.pdf", contents="some-content"
+            )
 
     @mock.patch.object(storage.S3FileStore, "_bucket_is_versioned")
     @mock.patch.object(storage.S3FileStore, "_get_boto_client")
-    def test_stores_file_in_versioned_bucket(self, get_boto_client, get_bucket_is_versioned):
+    def test_stores_file_in_versioned_bucket(
+        self, get_boto_client, get_bucket_is_versioned
+    ):
         bucket_name = "bucket"
         namespace = "files"
         filename = "file.pdf"
@@ -227,17 +269,23 @@ class TestS3FileStore:
 
     @mock.patch.object(storage.S3FileStore, "_bucket_is_versioned")
     @mock.patch.object(storage.S3FileStore, "_get_boto_client")
-    def test_raises_error_for_unversioned_bucket(self, get_boto_client, get_bucket_is_versioned):
+    def test_raises_error_for_unversioned_bucket(
+        self, get_boto_client, get_bucket_is_versioned
+    ):
         get_boto_client.return_value = mock.Mock()
         get_bucket_is_versioned.return_value = False
         store = storage.S3FileStore("bucket", use_date_in_key_path=False)
 
         with pytest.raises(storage.BucketNotVersioned):
-            store.store_versioned_file(key_path="files/file.pdf", contents="some-content")
+            store.store_versioned_file(
+                key_path="files/file.pdf", contents="some-content"
+            )
 
     @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
     @mock.patch.object(storage.S3FileStore, "_get_boto_client")
-    def test_stores_filepath_that_does_not_exist(self, get_boto_client, get_boto_object_for_key):
+    def test_stores_filepath_that_does_not_exist(
+        self, get_boto_client, get_boto_object_for_key
+    ):
         get_boto_object_for_key.side_effect = storage.KeyDoesNotExist
         store = storage.S3FileStore("bucket")
 
@@ -248,7 +296,9 @@ class TestS3FileStore:
 
     @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
     @mock.patch.object(storage.S3FileStore, "_get_boto_client")
-    def test_overwrites_filepath_that_does_exist(self, get_boto_client, get_boto_object_for_key):
+    def test_overwrites_filepath_that_does_exist(
+        self, get_boto_client, get_boto_object_for_key
+    ):
         get_boto_object_for_key.return_value = mock.Mock()
         store = storage.S3FileStore("bucket")
 
@@ -265,7 +315,10 @@ class TestS3FileStore:
         metadata = {"some": "metadata"}
 
         store.store_file(
-            namespace="files", filename="file.pdf", contents="some-content", metadata=metadata
+            namespace="files",
+            filename="file.pdf",
+            contents="some-content",
+            metadata=metadata,
         )
 
         s3_client = get_boto_client.return_value
@@ -336,11 +389,15 @@ class TestS3FileStore:
         with pytest.raises(ValueError):
             storage.S3FileStore("ab")
         with pytest.raises(ValueError):
-            storage.S3FileStore("loremlipsumdolorsitametconsecteturadipiscingelitnullamtinciduntu")
+            storage.S3FileStore(
+                "loremlipsumdolorsitametconsecteturadipiscingelitnullamtinciduntu"
+            )
         # Should not raise
         storage.S3FileStore("abc")
         # Should not raise
-        storage.S3FileStore("loremlipsumdolorsitametconsecteturadipiscingelitnullamtincidunt")
+        storage.S3FileStore(
+            "loremlipsumdolorsitametconsecteturadipiscingelitnullamtincidunt"
+        )
 
     def test_make_key_path_raises_error_when_exceeds_max_length(self):
         s3_file_store = storage.S3FileStore("some-bucket")
@@ -353,12 +410,21 @@ class TestS3FileStore:
         [
             ("", "file.txt", "2021/09/10/file.txt"),
             ("namespace", "file.txt", "namespace/2021/09/10/file.txt"),
-            ("namespace/sub-namespace", "file.txt", "namespace/sub-namespace/2021/09/10/file.txt"),
+            (
+                "namespace/sub-namespace",
+                "file.txt",
+                "namespace/sub-namespace/2021/09/10/file.txt",
+            ),
         ],
     )
-    def test_make_key_path_with_use_date_in_key_path(self, namespace, filepath, expected):
+    def test_make_key_path_with_use_date_in_key_path(
+        self, namespace, filepath, expected
+    ):
         s3_file_store = storage.S3FileStore("some-bucket", use_date_in_key_path=True)
-        assert s3_file_store.make_key_path(namespace=namespace, filepath=filepath) == expected
+        assert (
+            s3_file_store.make_key_path(namespace=namespace, filepath=filepath)
+            == expected
+        )
 
     @time_machine.travel("2021-09-10", tick=False)
     @pytest.mark.parametrize(
@@ -369,12 +435,21 @@ class TestS3FileStore:
             ("namespace", "file.txt", "namespace/file.txt"),
             ("namespace/", "file.txt", "namespace/file.txt"),
             ("namespace/sub-namespace", "file.txt", "namespace/sub-namespace/file.txt"),
-            ("namespace/sub-namespace/", "file.txt", "namespace/sub-namespace/file.txt"),
+            (
+                "namespace/sub-namespace/",
+                "file.txt",
+                "namespace/sub-namespace/file.txt",
+            ),
         ],
     )
-    def test_make_key_path_without_use_date_in_key_path(self, namespace, filepath, expected):
+    def test_make_key_path_without_use_date_in_key_path(
+        self, namespace, filepath, expected
+    ):
         s3_file_store = storage.S3FileStore("some-bucket", use_date_in_key_path=False)
-        assert s3_file_store.make_key_path(namespace=namespace, filepath=filepath) == expected
+        assert (
+            s3_file_store.make_key_path(namespace=namespace, filepath=filepath)
+            == expected
+        )
 
     @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
     @mock.patch.object(storage, "open", new_callable=mock.mock_open)
@@ -443,7 +518,9 @@ class TestS3FileStore:
                 },
                 "CompressionType": "NONE",
             },
-            OutputSerialization={"CSV": {"FieldDelimiter": ",", "RecordDelimiter": "\n"}},
+            OutputSerialization={
+                "CSV": {"FieldDelimiter": ",", "RecordDelimiter": "\n"}
+            },
         )
 
     @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
@@ -538,7 +615,9 @@ class TestS3FileStore:
             OutputSerialization={"JSON": {"RecordDelimiter": "\n"}},
         )
 
-    def test_fetch_file_contents_using_s3_select_with_parquet_fails_with_scan_range(self):
+    def test_fetch_file_contents_using_s3_select_with_parquet_fails_with_scan_range(
+        self
+    ):
         store = storage.S3FileStore("some-bucket")
 
         # Moto doesn't support faking a response from `select_object_content` that's why
@@ -555,7 +634,6 @@ class TestS3FileStore:
         }
 
         with pytest.raises(ValueError) as error:
-
             list(
                 store.fetch_file_contents_using_s3_select(
                     key_path="some_file.parquet",
@@ -566,10 +644,15 @@ class TestS3FileStore:
                 )
             )
 
-        assert str(error.value) == "The scan_range parameter is not supported for parquet files"
+        assert (
+            str(error.value)
+            == "The scan_range parameter is not supported for parquet files"
+        )
 
     @pytest.mark.parametrize("expected_error_code", [400, 401, 403, 500])
-    def test_fetch_file_contents_using_s3_select_raises_errors(self, expected_error_code):
+    def test_fetch_file_contents_using_s3_select_raises_errors(
+        self, expected_error_code
+    ):
         store = storage.S3FileStore("some-bucket")
 
         boto_client = mock.Mock()
@@ -581,7 +664,8 @@ class TestS3FileStore:
         }
 
         with pytest.raises(
-            storage.S3SelectUnexpectedResponse, match="Received invalid response from S3 Select"
+            storage.S3SelectUnexpectedResponse,
+            match="Received invalid response from S3 Select",
         ):
             file_contents = list(
                 store.fetch_file_contents_using_s3_select(
@@ -627,9 +711,13 @@ class TestMemoryFileStore:
         contents = self.store.fetch_file_contents(path)
         assert contents == b"last_contents"
 
-    @mock.patch.object(builtins, "open", mock.mock_open(read_data=b"test_store_filepath"))
+    @mock.patch.object(
+        builtins, "open", mock.mock_open(read_data=b"test_store_filepath")
+    )
     def test_store_filepath(self, *mocks):
-        bucket_name, path = self.store.store_filepath(namespace="x", filepath="test.pdf")
+        bucket_name, path = self.store.store_filepath(
+            namespace="x", filepath="test.pdf"
+        )
 
         assert bucket_name == "bucket"
         assert path == "x/test.pdf"
@@ -637,7 +725,9 @@ class TestMemoryFileStore:
         assert contents == b"test_store_filepath"
 
     @mock.patch.object(
-        builtins, "open", mock.mock_open(read_data=b"test_store_filepath_with_dest_filepath")
+        builtins,
+        "open",
+        mock.mock_open(read_data=b"test_store_filepath_with_dest_filepath"),
     )
     def test_store_filepath_with_dest_filepath(self, *mocks):
         bucket_name, path = self.store.store_filepath(
@@ -658,7 +748,9 @@ class TestMemoryFileStore:
     def test_list_s3_keys_page(self):
         filenames = [f"file_{i:04}.pdf" for i in range(105)]
         for filename in filenames:
-            self.store.store_file(namespace="", filename=filename, contents=f"{filename} content")
+            self.store.store_file(
+                namespace="", filename=filename, contents=f"{filename} content"
+            )
 
         expected = [storage.S3Object("bucket", filename) for filename in filenames]
 
@@ -669,23 +761,37 @@ class TestMemoryFileStore:
         assert not next_token
 
     def test_list_files(self):
-        self.store.store_file(namespace="x", filename="test.pdf", contents=b"test_list_files_1")
-        self.store.store_file(namespace="x", filename="test2.pdf", contents=b"test_list_files_2")
-        self.store.store_file(namespace="y", filename="test3.pdf", contents=b"test_list_files_3")
+        self.store.store_file(
+            namespace="x", filename="test.pdf", contents=b"test_list_files_1"
+        )
+        self.store.store_file(
+            namespace="x", filename="test2.pdf", contents=b"test_list_files_2"
+        )
+        self.store.store_file(
+            namespace="y", filename="test3.pdf", contents=b"test_list_files_3"
+        )
 
         listings = self.store.list_files(namespace="x")
         assert list(listings) == ["x/test.pdf", "x/test2.pdf"]
 
     def test_list_files_without_namespace(self):
-        self.store.store_file(namespace="x", filename="test.pdf", contents=b"test_list_files_1")
-        self.store.store_file(namespace="x", filename="test2.pdf", contents=b"test_list_files_2")
-        self.store.store_file(namespace="y", filename="test3.pdf", contents=b"test_list_files_3")
+        self.store.store_file(
+            namespace="x", filename="test.pdf", contents=b"test_list_files_1"
+        )
+        self.store.store_file(
+            namespace="x", filename="test2.pdf", contents=b"test_list_files_2"
+        )
+        self.store.store_file(
+            namespace="y", filename="test3.pdf", contents=b"test_list_files_3"
+        )
 
         listings = self.store.list_files()
         assert list(listings) == ["x/test.pdf", "x/test2.pdf", "y/test3.pdf"]
 
     def test_download_file(self):
-        self.store.store_file(namespace="mem", filename="test.pdf", contents=b"test_download_file")
+        self.store.store_file(
+            namespace="mem", filename="test.pdf", contents=b"test_download_file"
+        )
 
         file = self.store.download_file("mem/test.pdf")
         assert file.name == "/tmp/bucket/mem/test.pdf"
@@ -713,7 +819,9 @@ class TestLocalFileStore:
         with tempfile.TemporaryDirectory() as tdir:
             store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=False)
 
-            __, path = store.store_file(namespace="x", filename="test.pdf", contents="hello")
+            __, path = store.store_file(
+                namespace="x", filename="test.pdf", contents="hello"
+            )
 
             contents = store.fetch_file_contents(path)
             assert contents == b"hello"
@@ -749,7 +857,9 @@ class TestLocalFileStore:
         with tempfile.TemporaryDirectory() as tdir:
             store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=True)
 
-            __, path = store.store_file(namespace="x", filename="test.pdf", contents="hello")
+            __, path = store.store_file(
+                namespace="x", filename="test.pdf", contents="hello"
+            )
 
             contents = store.fetch_file_contents(path)
             assert contents == b"hello"
@@ -762,7 +872,9 @@ class TestLocalFileStore:
         with tempfile.TemporaryDirectory() as tdir:
             store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=True)
 
-            __, path = store.store_file(namespace="x", filename="test.pdf", contents="hello")
+            __, path = store.store_file(
+                namespace="x", filename="test.pdf", contents="hello"
+            )
 
             last_modified = store.get_last_modified(path)
             assert last_modified is not None
@@ -800,7 +912,9 @@ class TestLocalFileStore:
         with tempfile.TemporaryDirectory() as tdir:
             store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=False)
 
-            __, path = store.store_file(namespace="x", filename="test.pdf", contents="hello")
+            __, path = store.store_file(
+                namespace="x", filename="test.pdf", contents="hello"
+            )
 
             assert store.exists(path) is True
 
@@ -808,7 +922,9 @@ class TestLocalFileStore:
         with tempfile.TemporaryDirectory() as tdir:
             store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=True)
 
-            __, path = store.store_file(namespace="x", filename="test.pdf", contents="hello")
+            __, path = store.store_file(
+                namespace="x", filename="test.pdf", contents="hello"
+            )
 
             assert store.exists(path) is True
 
@@ -829,9 +945,15 @@ class TestLocalFileStore:
         with tempfile.TemporaryDirectory() as tdir:
             store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=False)
 
-            __, path = store.store_file(namespace="x", filename="test.pdf", contents="hello")
-            __, path = store.store_file(namespace="x", filename="test2.pdf", contents="goodbye")
-            __, path = store.store_file(namespace="y", filename="test3.pdf", contents="goodbye")
+            __, path = store.store_file(
+                namespace="x", filename="test.pdf", contents="hello"
+            )
+            __, path = store.store_file(
+                namespace="x", filename="test2.pdf", contents="goodbye"
+            )
+            __, path = store.store_file(
+                namespace="y", filename="test3.pdf", contents="goodbye"
+            )
 
             listings = store.list_files(namespace="x")
             assert sorted(list(listings)) == ["x/test.pdf", "x/test2.pdf"]
@@ -839,7 +961,9 @@ class TestLocalFileStore:
     def test_download_file(self):
         with tempfile.TemporaryDirectory() as tdir:
             store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=False)
-            __, path = store.store_file(namespace="x", filename="test.pdf", contents=b"hello")
+            __, path = store.store_file(
+                namespace="x", filename="test.pdf", contents=b"hello"
+            )
 
             file = store.download_file("x/test.pdf")
 
@@ -859,10 +983,11 @@ class TestLocalFileStore:
 
     @mock.patch.object(storage.LocalFileStore, "_filepath_for_key_path")
     def test_fetch_csv_file_contents_using_s3_select(self, mock__filepath_for_key_path):
-
         store = storage.LocalFileStore("my_bucket")
         mock_csv_data = "Name,Age\nAlice,25\nBob,30\nCharlie,35\n"
-        with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".csv") as tmp_csv_file:
+        with tempfile.NamedTemporaryFile(
+            delete=False, mode="w", suffix=".csv"
+        ) as tmp_csv_file:
             tmp_csv_file.write(mock_csv_data)
             tmp_csv_file_path = tmp_csv_file.name
 
@@ -893,10 +1018,11 @@ class TestLocalFileStore:
     def test_fetch_csv_file_contents_using_s3_select_and_where_statement(
         self, mock__filepath_for_key_path
     ):
-
         store = storage.LocalFileStore("my_bucket")
         mock_csv_data = "Name,Age\nAlice,25\nBob,30\nCharlie,35\n"
-        with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".csv") as tmp_csv_file:
+        with tempfile.NamedTemporaryFile(
+            delete=False, mode="w", suffix=".csv"
+        ) as tmp_csv_file:
             tmp_csv_file.write(mock_csv_data)
             tmp_csv_file_path = tmp_csv_file.name
 
@@ -920,8 +1046,9 @@ class TestLocalFileStore:
         assert results == expected_results
 
     @mock.patch.object(storage.LocalFileStore, "_filepath_for_key_path")
-    def test_fetch_parquet_file_contents_using_s3_select(self, mock__filepath_for_key_path):
-
+    def test_fetch_parquet_file_contents_using_s3_select(
+        self, mock__filepath_for_key_path
+    ):
         store = storage.LocalFileStore("my_bucket")
         mock_data = {"Name": ["Alice", "Bob", "Charlie"], "Age": [25, 30, 35]}
         df = pd.DataFrame(mock_data)
@@ -956,7 +1083,6 @@ class TestLocalFileStore:
             assert results == expected_results
 
     def test_fetch_nonexistent_file_with_s3_select(self):
-
         input_serializer = s3_select.CSVInputSerializer(s3_select.FileHeaderInfo.USE)
         output_serializer = s3_select.JSONOutputSerializer()
         store = storage.LocalFileStore("my_bucket")
@@ -972,7 +1098,6 @@ class TestLocalFileStore:
             )
 
     def test_fetch_file_with_s3_select_scan_range_raises_error(self):
-
         input_serializer = s3_select.CSVInputSerializer(s3_select.FileHeaderInfo.USE)
         output_serializer = s3_select.JSONOutputSerializer()
         store = storage.LocalFileStore("my_bucket")
@@ -992,7 +1117,6 @@ class TestLocalFileStore:
     def test_json_output_unsupported_record_separator_raises_exception(
         self, mock__filepath_for_key_path
     ):
-
         store = storage.LocalFileStore("my_bucket")
         mock_data = {"Name": ["Alice", "Bob", "Charlie"], "Age": [25, 30, 35]}
         df = pd.DataFrame(mock_data)
@@ -1022,7 +1146,9 @@ class TestLocalFileStore:
 
     def test_output_csv_with_serializer_quoting_always(self):
         store = storage.LocalFileStore("my_bucket")
-        serializer = s3_select.CSVOutputSerializer(QuoteFields=s3_select.QuoteFields.ALWAYS)
+        serializer = s3_select.CSVOutputSerializer(
+            QuoteFields=s3_select.QuoteFields.ALWAYS
+        )
         result = store.output_csv_with_serializer(
             df=self.sample_dataframe, output_serializer=serializer
         )
@@ -1030,12 +1156,13 @@ class TestLocalFileStore:
         assert result == expected
 
     def test_output_csv_with_serializer_quoting_as_needed(self):
-
         sample_dataframe = pd.DataFrame(
             {"Name": ["Ali,ce", "Bob", "Charlie"], "Age": [25, 30, 35]}
         )
         store = storage.LocalFileStore("my_bucket")
-        serializer = s3_select.CSVOutputSerializer(QuoteFields=s3_select.QuoteFields.ASNEEDED)
+        serializer = s3_select.CSVOutputSerializer(
+            QuoteFields=s3_select.QuoteFields.ASNEEDED
+        )
         result = store.output_csv_with_serializer(
             df=sample_dataframe, output_serializer=serializer
         )
@@ -1072,7 +1199,9 @@ class TestLocalFileStore:
     def test_read_csv_with_serializer(self):
         store = storage.LocalFileStore("my_bucket")
 
-        with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".csv") as tmp_csv_file:
+        with tempfile.NamedTemporaryFile(
+            delete=False, mode="w", suffix=".csv"
+        ) as tmp_csv_file:
             tmp_csv_file.write(self.csv_data)
             tmp_csv_file_path = tmp_csv_file.name
         input_serializer = s3_select.CSVInputSerializer(s3_select.FileHeaderInfo.USE)
@@ -1083,7 +1212,6 @@ class TestLocalFileStore:
         assert isinstance(result, pd.DataFrame)
 
     def test_query_dataframe_with_sql(self):
-
         data = {
             "string_column": ["A", "B", "C"],
             "array_column": [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
@@ -1101,7 +1229,6 @@ class TestLocalFileStore:
         assert result_df["array_column"][0] == [1, 2, 3]
 
     def test_query_dataframe_with_sql_with_capitalised_object_in_query(self):
-
         dummy_df = pd.DataFrame(self.sample_dataframe)
 
         store = storage.LocalFileStore("my_bucket")

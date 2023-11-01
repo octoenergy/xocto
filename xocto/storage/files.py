@@ -71,7 +71,9 @@ def convert_xlsx_to_csv(
     workbook = openpyxl.load_workbook(xlsx_filepath, data_only=True, read_only=True)
     sheet = workbook.active
 
-    csv_file, wr = _get_csv_file_and_writer(csv_filepath, encoding, errors, quoting, delimiter)
+    csv_file, wr = _get_csv_file_and_writer(
+        csv_filepath, encoding, errors, quoting, delimiter
+    )
 
     for row in sheet.rows:
         wr.writerow([cell.value for cell in row])
@@ -107,7 +109,9 @@ def convert_xls_to_csv(
     workbook = xlrd.open_workbook(xls_filepath)
     sheet = workbook.sheet_by_index(0)
 
-    csv_file, wr = _get_csv_file_and_writer(csv_filepath, encoding, errors, quoting, delimiter)
+    csv_file, wr = _get_csv_file_and_writer(
+        csv_filepath, encoding, errors, quoting, delimiter
+    )
     for rownum in range(sheet.nrows):
         row = sheet.row(rownum)
         values = []
@@ -138,7 +142,9 @@ def _get_csv_file_and_writer(
         delimiter = ","
 
     if csv_filepath:
-        csv_file: IO[str] = open(csv_filepath, mode="w+", encoding=encoding, errors=errors)
+        csv_file: IO[str] = open(
+            csv_filepath, mode="w+", encoding=encoding, errors=errors
+        )
     else:
         # `error' argument added in 3.8
         csv_file = tempfile.NamedTemporaryFile(mode="w+", encoding=encoding)

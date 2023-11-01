@@ -3,9 +3,9 @@ from __future__ import annotations
 import calendar
 import datetime as datetime_
 import decimal
+import zoneinfo
 from typing import Generator, Sequence, Tuple
 
-import zoneinfo
 from dateutil import tz
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
@@ -28,7 +28,9 @@ ONE_HOUR = datetime_.timedelta(hours=1)
 MIDNIGHT_TIME = datetime_.time(0, 0)
 
 
-def as_localtime(dt: datetime_.datetime, tz: datetime_.tzinfo | None = None) -> datetime_.datetime:
+def as_localtime(
+    dt: datetime_.datetime, tz: datetime_.tzinfo | None = None
+) -> datetime_.datetime:
     """
     Convert a tz aware datetime to localtime.
 
@@ -173,7 +175,9 @@ def day_after(d: datetime_.date) -> datetime_.date:
 # Returning datetimes
 
 
-def seconds_in_the_future(n: int, dt: datetime_.datetime | None = None) -> datetime_.datetime:
+def seconds_in_the_future(
+    n: int, dt: datetime_.datetime | None = None
+) -> datetime_.datetime:
     """
     Return a datetime of the number of specifed seconds in the future.
     """
@@ -323,7 +327,9 @@ def date_boundaries(
     return midnight(_date, tz), next_midnight(_date, tz)
 
 
-def month_boundaries(month: int, year: int) -> Tuple[datetime_.datetime, datetime_.datetime]:
+def month_boundaries(
+    month: int, year: int
+) -> Tuple[datetime_.datetime, datetime_.datetime]:
     """
     Return the boundary datetimes of a given month.
 
@@ -392,7 +398,9 @@ def within_date_range(
 
 
 def quantise(
-    dt: datetime_.datetime, timedelta: datetime_.timedelta, rounding: str = decimal.ROUND_HALF_EVEN
+    dt: datetime_.datetime,
+    timedelta: datetime_.timedelta,
+    rounding: str = decimal.ROUND_HALF_EVEN,
 ) -> datetime_.datetime:
     """
     'Round' a datetime to the nearest interval given by the `timedelta` argument.
@@ -411,7 +419,9 @@ def quantise(
     quantised_dt_timestamp = numbers.quantise(
         dt_as_timestamp, timedelta_seconds, rounding=rounding
     )
-    quantised_dt = datetime_.datetime.fromtimestamp(quantised_dt_timestamp, tz=dt.tzinfo)
+    quantised_dt = datetime_.datetime.fromtimestamp(
+        quantised_dt_timestamp, tz=dt.tzinfo
+    )
     return as_localtime(quantised_dt)
 
 
@@ -553,7 +563,9 @@ def latest_date_for_day(
     return None
 
 
-def next_date_with_day_of_month(date: datetime_.date, day_of_month: int) -> datetime_.date:
+def next_date_with_day_of_month(
+    date: datetime_.date, day_of_month: int
+) -> datetime_.date:
     """
     Given a starting `date`, return the next date with the specified `day_of_month`.
 
@@ -619,7 +631,9 @@ def is_dst(local_time: datetime_.datetime) -> bool:
     return bool(local_time.dst())
 
 
-def is_localtime_midnight(dt: datetime_.datetime, tz: datetime_.tzinfo | None = None) -> bool:
+def is_localtime_midnight(
+    dt: datetime_.datetime, tz: datetime_.tzinfo | None = None
+) -> bool:
     """
     Return whether the supplied datetime is at midnight (in the site's local time zone).
 
@@ -635,7 +649,9 @@ def is_aligned_to_midnight(
     """
     Return whether this range is aligned to localtime midnight.
     """
-    return all([is_localtime_midnight(range.start, tz), is_localtime_midnight(range.end, tz)])
+    return all(
+        [is_localtime_midnight(range.start, tz), is_localtime_midnight(range.end, tz)]
+    )
 
 
 def consolidate_into_intervals(
@@ -675,12 +691,17 @@ def consolidate_into_intervals(
             num_consecutive += 1
         else:
             intervals.append(
-                (interval_start, interval_start + datetime_.timedelta(days=num_consecutive))
+                (
+                    interval_start,
+                    interval_start + datetime_.timedelta(days=num_consecutive),
+                )
             )
             interval_start = date
             num_consecutive = 0
 
-    intervals.append((interval_start, interval_start + datetime_.timedelta(days=num_consecutive)))
+    intervals.append(
+        (interval_start, interval_start + datetime_.timedelta(days=num_consecutive))
+    )
 
     return intervals
 
@@ -704,7 +725,9 @@ def translate_english_month_to_spanish(month: int) -> str:
     return month_name_lookup[month_name]
 
 
-def period_exceeds_one_year(start_at: datetime_.datetime, end_at: datetime_.datetime) -> bool:
+def period_exceeds_one_year(
+    start_at: datetime_.datetime, end_at: datetime_.datetime
+) -> bool:
     """
     Returns true if the passed period exceeds one year.
 
