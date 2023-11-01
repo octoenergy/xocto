@@ -2,6 +2,7 @@
 
 ## v4.8.0 - 2023-11-01
 
+- Fix docs by adding missing rtd theme [#115](https://github.com/octoenergy/xocto/pull/113)
 - Adding explicit type for Optional OneToOneField [#113](https://github.com/octoenergy/xocto/pull/113)
 - Fix `OverflowError` when calling `is_disjoint` on a range containing `date.min` or `date.max` [#112](https://github.com/octoenergy/xocto/pull/112)
 - Improve autodoc of callables and variables [#111](https://github.com/octoenergy/xocto/pull/111)
