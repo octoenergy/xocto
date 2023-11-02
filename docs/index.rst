@@ -15,11 +15,14 @@ PyPI detail page: https://pypi.python.org/pypi/xocto
    :caption: Contents:
 
    xocto/events
+   xocto/health
    xocto/localtime
    xocto/numbers
    xocto/ranges
    xocto/pact_testing   
+   xocto/settlement_periods
    xocto/storage
+   xocto/tracing
    xocto/types
    xocto/development
 
