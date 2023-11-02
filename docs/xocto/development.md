@@ -44,6 +44,17 @@ docker run -v `pwd`:/opt/app xocto/isort
 docker run -v `pwd`:/opt/app xocto/black
 ```
 
+## Don't mix code changes with version updates
+
+Code changes mixed with version updates are problematic. The reason is because of this workflow:
+
+1. I write a bugfix PR that also updates the version
+2. You add a feature PR that also updates the version
+3. Everyone else mixes version changes with their code change PRs
+4. My PR is accepted, now everyone else has to update the version specified in their PR
+
+This is why typically in shared projects version releases are seperated into their own pull requests.
+
 ## Publishing
 
 Before you begin, determine the release number. This follows the instructions specifiwed on [semver.org](https://semver.org/). Releases therefore use this pattern:
