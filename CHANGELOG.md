@@ -1,6 +1,6 @@
 # Changelog
 
-## v4.8.0 - 2023-11-01
+## v4.8.0 - 2023-11-02
 
 - Fix docs by adding missing rtd theme [#115](https://github.com/octoenergy/xocto/pull/113)
 - Adding explicit type for Optional OneToOneField [#113](https://github.com/octoenergy/xocto/pull/113)
