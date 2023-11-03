@@ -1,6 +1,6 @@
 install: 
-	pip install pip==23.1.2
-	pip install -e .[dev,test]
+	pip install pip==23.3.1
+	pip install -e '.[dev,docs]'
 
 clean:
 	@echo Cleaning workspace
