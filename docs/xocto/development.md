@@ -24,8 +24,7 @@ Use these make commands:
 
 ```sh
 make lint
-make black
-make isort
+make format
 make mypy
 ```
 
