@@ -75,7 +75,7 @@ Create a pull request that:
 
 1. Adds release notes to `CHANGELOG.md`.
 
-2. Updates the `VERSION` constant in `setup.py`.
+2. Updates the `VERSION` constant in `pyproject.toml`.
 
 3. Updates the `__version__` constant in `xocto/__init__.py`, following the [semver.org](https://semver.org/) specification.
 
