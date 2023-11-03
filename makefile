@@ -34,7 +34,7 @@ docker_images:
 
 # Releases
 
-VERSION=v$(shell python setup.py --version)
+VERSION=v$(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
 
 tag:
 	@echo Tagging as $(VERSION)
