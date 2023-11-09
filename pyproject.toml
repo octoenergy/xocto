@@ -75,6 +75,10 @@ issues = "https://github.com/octoenergy/xocto/issues"
 [tool.setuptools]
 packages = ["xocto", "xocto.events", "xocto.storage"]
 
+
+# Mypy
+# ----
+
 [tool.mypy]
 # Specify which files to check.
 files = [
@@ -175,3 +179,53 @@ section-order = [
     "xocto",
     "tests",
 ]
+
+
+# Pytest
+# ------
+
+[tool.pytest.ini_options]
+# Convert some warning types into errors but ignore some others that we
+# can't/won't fix right now.
+#
+# Note:
+# - Each line is a colon-separated string.
+# - The first part is what to do with the warning - error or ignore.
+# - The second part is a regex that must match the start of the warning message.
+# - The third part is the warning class name.
+# - The fourth part is a regex that must match the module triggering the error.
+# - The order matters. These rules get applied with the bottom rule first.
+#   Hence the rules ignoring deprecation warnings must by below the rule that converts
+#   DeprecationWarnings into errors.
+filterwarnings = [
+    "error::RuntimeWarning",
+    "error::DeprecationWarning",
+    "ignore:defusedxml.lxml:DeprecationWarning:zeep",
+    "ignore:Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3:DeprecationWarning:(graphene|singledispatch)",
+    # https://github.com/ktosiek/pytest-freezegun/issues/35
+    "ignore:distutils Version classes are deprecated:DeprecationWarning:pytest_freezegun",
+    # These deprecation warnings were added in django 4.2 to warn of removal in django 5
+    "ignore:The USE_DEPRECATED_PYTZ setting:django.utils.deprecation.RemovedInDjango50Warning",
+    "ignore:The django.utils.timezone.utc alias is deprecated:django.utils.deprecation.RemovedInDjango50Warning",
+    "ignore:The is_dst argument to make_aware:django.utils.deprecation.RemovedInDjango50Warning",
+]
+
+DJANGO_SETTINGS_MODULE = "tests.settings"
+
+# Test modules must have be named this way.
+python_files = "test_*.py"
+
+# Default options when pytest is run:
+#
+#   --verbose      -> Show names of tests being run.
+#   --tb=short     -> Use short tracebacks.
+#                     https://docs.pytest.org/en/stable/usage.html#modifying-python-traceback-printing
+#   --nomigrations -> Disable Django's migrations and create the database by inspecting models instead.
+#                     https://pytest-django.readthedocs.io/en/latest/database.html#nomigrations-disable-django-migrations
+#   --reuse-db     -> Don't remove test database after each test run so it can be re-used next time.
+#                     https://pytest-django.readthedocs.io/en/latest/database.html#reuse-db-reuse-the-testing-database-between-test-runs
+#   --color=auto   -> Detect whether to print colored output.
+#   --capture=fd   -> Capture all output written to the STDOUT and STDERR file descriptors.
+#                     https://docs.pytest.org/en/stable/capture.html
+#
+addopts = "--tb=short --verbose --nomigrations --reuse-db --color=auto --capture=fd"
