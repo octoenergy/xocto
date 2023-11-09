@@ -30,10 +30,6 @@ format:
 	ruff check --fix .
 	ruff format .
 
-docker_images:
-	docker build -t xocto/pytest --target=pytest .
-	docker build -t xocto/ruff --target=ruff .
-
 # Releases
 
 VERSION=v$(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
