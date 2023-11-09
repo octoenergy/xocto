@@ -7,28 +7,22 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dev dependencies
+          name: Create virtualenv
           command: |
-            python3 -m venv ~/venv
-            . ~/venv/bin/activate
-            make install
+            python -m venv /home/circleci/venv/
+            echo "source /home/circleci/venv/bin/activate" >> $BASH_ENV
+      - run:
+          name: Install dev dependencies
+          command: make install
       - run:
           name: Test
-          command: |
-            . ~/venv/bin/activate
-            make test
+          command: make test
       - run:
           name: Lint
-          command: |
-            . ~/venv/bin/activate
-            make ruff
+          command: make ruff
       - run:
           name: Mypy
-          command: |
-            . ~/venv/bin/activate
-            make mypy
+          command: make mypy
       - run:
           name: Format
-          command: |
-            . ~/venv/bin/activate
-            make format_check
+          command: make format_check
