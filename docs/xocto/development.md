@@ -30,33 +30,36 @@ make lint_check    # Check linting
 make mypy          # Check Python type annotations
 ```
 
-## Don't mix code changes with version updates
+## Coding conventions
+
+### Don't mix code changes with version updates
 
 Code changes mixed with version updates are problematic. The reason is because
 of this workflow:
 
-1. I write a bugfix PR that also updates the version
+1. I write a bug-fix PR that also updates the version
 2. You add a feature PR that also updates the version
 3. Everyone else mixes version changes with their code change PRs
 4. My PR is accepted, now everyone else has to update the version specified in
    their PR
 
-This is why typically in shared projects version releases are seperated into
+This is why typically in shared projects version releases are separated into
 their own pull requests.
 
 ## Publishing
 
-Before you begin, determine the release number. This follows the instructions
-specified on [semver.org](https://semver.org/). Releases therefore use this
-pattern:
+### Version number
+
+First determine the version number. Follow the instructions specified on
+[semver.org](https://semver.org/) which advocates this pattern:
 
 ```
 MAJOR.MINOR.PATCH
 ```
 
-Where:
+where:
 
-- MAJOR version when you make incompatible API changes
+- MAJOR version when you make backwards-incompatible API changes
 - MINOR version when you add functionality in a backward compatible manner
 - PATCH version when you make backward compatible bug fixes
 
