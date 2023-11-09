@@ -34,35 +34,37 @@ Docker images for these jobs can be built with:
 make docker_images
 ```
 
-This creates separate images for pytest, isort and black. Each can be run like
-so:
+This creates an image for pytest. Each can be run like so:
 
 ```sh
 docker run -v `pwd`:/opt/app xocto/pytest
-docker run -v `pwd`:/opt/app xocto/isort
-docker run -v `pwd`:/opt/app xocto/black
 ```
 
 ## Don't mix code changes with version updates
 
-Code changes mixed with version updates are problematic. The reason is because of this workflow:
+Code changes mixed with version updates are problematic. The reason is because
+of this workflow:
 
 1. I write a bugfix PR that also updates the version
 2. You add a feature PR that also updates the version
 3. Everyone else mixes version changes with their code change PRs
-4. My PR is accepted, now everyone else has to update the version specified in their PR
+4. My PR is accepted, now everyone else has to update the version specified in
+   their PR
 
-This is why typically in shared projects version releases are seperated into their own pull requests.
+This is why typically in shared projects version releases are seperated into
+their own pull requests.
 
 ## Publishing
 
-Before you begin, determine the release number. This follows the instructions specifiwed on [semver.org](https://semver.org/). Releases therefore use this pattern:
+Before you begin, determine the release number. This follows the instructions
+specifiwed on [semver.org](https://semver.org/). Releases therefore use this
+pattern:
 
 ```
 MAJOR.MINOR.PATCH
 ```
 
-Where: 
+Where:
 
 - MAJOR version when you make incompatible API changes
 - MINOR version when you add functionality in a backward compatible manner
@@ -76,7 +78,8 @@ Create a pull request that:
 
 2. Updates the `VERSION` constant in `pyproject.toml`.
 
-3. Updates the `__version__` constant in `xocto/__init__.py`, following the [semver.org](https://semver.org/) specification.
+3. Updates the `__version__` constant in `xocto/__init__.py`, following the
+   [semver.org](https://semver.org/) specification.
 
 Commit these changes in a single commit with subject matching
 `Bump version to v...`.
