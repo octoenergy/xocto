@@ -11,9 +11,18 @@ jobs:
           command: |
             python -m venv /home/circleci/venv/
             echo "source /home/circleci/venv/bin/activate" >> $BASH_ENV
+      - restore_cache:
+          keys:
+            - &cache-key python-3.9-packages-v1-{{ checksum "pyproject.toml" }}
+            - &cache-key-prefix python-3.9-packages-v1-
       - run:
           name: Install dev dependencies
           command: make install
+      - save_cache:
+          key: *cache-key
+          paths:
+            - "/home/circleci/venv/"
+            - "/home/circleci/.cache/pip"
       - run:
           name: Check formatting
           command: make format_check
