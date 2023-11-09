@@ -29,19 +29,3 @@ FROM base as pytest
 # in.
 ENTRYPOINT ["py.test"]
 CMD [""]
-
-# ---
-
-# Create a isort image from the base
-FROM base as isort
-
-ENTRYPOINT ["isort"]
-CMD ["-rc"]
-
-# ---
-
-# Create a black image from the base
-FROM base as black
-
-ENTRYPOINT ["black"]
-CMD ["."]

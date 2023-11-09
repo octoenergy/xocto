@@ -21,14 +21,14 @@ jobs:
           name: Lint
           command: |
             . ~/venv/bin/activate
-            make lint
+            make ruff
       - run:
           name: Mypy
           command: |
             . ~/venv/bin/activate
             make mypy
       - run:
-          name: Black
+          name: Format
           command: |
             . ~/venv/bin/activate
-            make black_check
+            make format_check

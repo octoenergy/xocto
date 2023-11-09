@@ -10,10 +10,10 @@ clean:
 # Static analysis
 
 lint:
-	make black_check ruff mypy
+	make format_check ruff mypy
 
-black_check:
-	ruff format .
+format_check:
+	ruff format --check .
 
 ruff:
 	ruff check .
