@@ -30,18 +30,6 @@ make lint_check    # Check linting
 make mypy          # Check Python type annotations
 ```
 
-Docker images for these jobs can be built with:
-
-```sh
-make docker_images
-```
-
-This creates an image for pytest. Each can be run like so:
-
-```sh
-docker run -v `pwd`:/opt/app xocto/pytest
-```
-
 ## Don't mix code changes with version updates
 
 Code changes mixed with version updates are problematic. The reason is because
