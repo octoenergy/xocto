@@ -2,27 +2,29 @@ install:
 	pip install pip==23.3.1
 	pip install -e '.[dev,docs]'
 
-clean:
-	@echo Cleaning workspace
-	-rm -rf dist/ *.egg-info/ build/
-	-find . -type d -name __pycache__ -delete
 
-# Static analysis
+# CI step wrappers
 
-lint:
-	make format_check ruff mypy
+ci: format_check lint_check test mypy
 
 format_check:
 	ruff format --check .
 
-ruff:
+lint_check:
 	ruff check .
+
+test:
+	py.test
 
 mypy:
 	mypy
 
-test:
-	py.test
+# Local helpers
+
+clean:
+	@echo Cleaning workspace
+	-rm -rf dist/ *.egg-info/ build/
+	-find . -type d -name __pycache__ -delete
 
 format:
 	ruff check --fix .
