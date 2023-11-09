@@ -32,7 +32,8 @@ format:
 
 # Releases
 
-VERSION=v$(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+# Extract version from pyproject.toml
+VERSION=$(shell python -c "import importlib.metadata; print(importlib.metadata.version('xocto'))")
 
 tag:
 	@echo Tagging as $(VERSION)
