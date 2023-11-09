@@ -1,5 +1,7 @@
 # Development
 
+This page details how to develop `xocto`.
+
 ## Installation of development environment
 
 Create and activate a Python 3.9 virtualenv then run:
@@ -8,7 +10,7 @@ Create and activate a Python 3.9 virtualenv then run:
 make install
 ```
 
-to install the package including development and testing dependencies
+to install the package including development and testing dependencies.
 
 ## Running tests
 
@@ -23,9 +25,9 @@ make test
 Use these make commands:
 
 ```sh
-make lint
-make format
-make mypy
+make format_check  # Check formatting
+make lint_check    # Check linting
+make mypy          # Check Python type annotations
 ```
 
 Docker images for these jobs can be built with:
@@ -57,7 +59,7 @@ their own pull requests.
 ## Publishing
 
 Before you begin, determine the release number. This follows the instructions
-specifiwed on [semver.org](https://semver.org/). Releases therefore use this
+specified on [semver.org](https://semver.org/). Releases therefore use this
 pattern:
 
 ```

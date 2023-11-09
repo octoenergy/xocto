@@ -15,18 +15,18 @@ jobs:
           name: Install dev dependencies
           command: make install
       - run:
-          name: Test
+          name: Check formatting
+          command: make format_check
+          when: always
+      - run:
+          name: Check linting
+          command: make lint_check
+          when: always
+      - run:
+          name: Run tests
           command: make test
           when: always
       - run:
-          name: Lint
-          command: make ruff
-          when: always
-      - run:
-          name: Mypy
+          name: Check Python type annotations
           command: make mypy
-          when: always
-      - run:
-          name: Format
-          command: make format_check
           when: always
