@@ -17,12 +17,16 @@ jobs:
       - run:
           name: Test
           command: make test
+          when: always
       - run:
           name: Lint
           command: make ruff
+          when: always
       - run:
           name: Mypy
           command: make mypy
+          when: always
       - run:
           name: Format
           command: make format_check
+          when: always
