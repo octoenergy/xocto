@@ -802,10 +802,13 @@ class TestFiniteDateRange:
             )
 
             range_set = ranges.RangeSet([r1, r2, r3])
-            assert ranges.FiniteDateRange(
-                start=datetime.date(2000, 1, 1),
-                end=datetime.date(2000, 1, 8),
-            ) in range_set
+            assert (
+                ranges.FiniteDateRange(
+                    start=datetime.date(2000, 1, 1),
+                    end=datetime.date(2000, 1, 8),
+                )
+                in range_set
+            )
 
         @pytest.mark.parametrize(
             "range, other",

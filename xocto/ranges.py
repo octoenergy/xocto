@@ -837,6 +837,8 @@ class FiniteDateRange(FiniteRange[datetime.date]):
             return None
 
         assert base_union.boundaries == RangeBoundaries.INCLUSIVE_INCLUSIVE
+        assert base_union.start is not None
+        assert base_union.end is not None
         return FiniteDateRange(base_union.start, base_union.end)
 
     def is_disjoint(self, other: Range[datetime.date]) -> bool:
