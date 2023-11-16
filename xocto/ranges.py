@@ -824,6 +824,21 @@ class FiniteDateRange(FiniteRange[datetime.date]):
         assert base_intersection.boundaries == RangeBoundaries.INCLUSIVE_INCLUSIVE
         return FiniteDateRange(base_intersection.start, base_intersection.end)
 
+    def union(self, other: Range[datetime.date]) -> Optional["FiniteDateRange"]:
+        """
+        Unions between two FiniteDateRanges should produce a FiniteDateRange.
+        """
+        try:
+            base_union = super().union(other)
+        except ValueError:
+            return None
+
+        if base_union is None:
+            return None
+
+        assert base_union.boundaries == RangeBoundaries.INCLUSIVE_INCLUSIVE
+        return FiniteDateRange(base_union.start, base_union.end)
+
     def is_disjoint(self, other: Range[datetime.date]) -> bool:
         # Adjacent dates should not be considered disjoint, we extend the other
         # range to allow them to be considered adjacent.
