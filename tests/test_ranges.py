@@ -757,6 +757,56 @@ class TestFiniteDateRange:
                 end=datetime.date(2000, 1, 4),
             )
 
+        def test_handles_many_adjacent_ranges(self):
+            """
+            As FiniteDateRange boundaries are double inclusive, when two ranges
+            end/start on consecutive days they effectively cover a fully contiguous
+            period of time and should make a union.
+
+            This should apply with an arbitrary number of adjacent ranges.
+            """
+            r1 = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 1),
+                end=datetime.date(2000, 1, 2),
+            )
+            r2 = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 3),
+                end=datetime.date(2000, 1, 5),
+            )
+            r3 = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 6),
+                end=datetime.date(2000, 1, 8),
+            )
+
+            union = r1 | r2 | r3
+            assert union == ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 1),
+                end=datetime.date(2000, 1, 8),
+            )
+
+        def test_range_set_over_many_adjacent_ranges(self):
+            """
+            Multiple unions should be approximately equivalent to a RangeSet
+            """
+            r1 = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 1),
+                end=datetime.date(2000, 1, 2),
+            )
+            r2 = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 3),
+                end=datetime.date(2000, 1, 5),
+            )
+            r3 = ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 6),
+                end=datetime.date(2000, 1, 8),
+            )
+
+            range_set = ranges.RangeSet([r1, r2, r3])
+            assert ranges.FiniteDateRange(
+                start=datetime.date(2000, 1, 1),
+                end=datetime.date(2000, 1, 8),
+            ) in range_set
+
         @pytest.mark.parametrize(
             "range, other",
             [
