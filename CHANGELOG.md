@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.9.0 - 2023-11-17
+
+- Modernize setup to use pyproject.toml [#116](https://github.com/octoenergy/xocto/pull/116)
+- Populate `xocto.__version__` from package metadata
+- Enables `FiniteDateRange` to be unioned with more than two ranges [#123](https://github.com/octoenergy/xocto/pull/123)
+
 ## v4.8.0 - 2023-11-02
 
 - Fix docs by adding missing rtd theme [#115](https://github.com/octoenergy/xocto/pull/113)

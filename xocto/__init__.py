@@ -1,1 +1,4 @@
-__version__ = "4.8.0"
+import importlib.metadata
+
+
+__version__ = importlib.metadata.version("xocto")
