@@ -1,4 +1,4 @@
-install: 
+install:
 	pip install pip==23.3.1
 	pip install -e '.[dev,docs]'
 
@@ -33,7 +33,7 @@ format:
 # Releases
 
 # Extract version from pyproject.toml
-VERSION=$(shell python -c "import importlib.metadata; print(importlib.metadata.version('xocto'))")
+VERSION=v$(shell python -c "import importlib.metadata; print(importlib.metadata.version('xocto'))")
 
 tag:
 	@echo Tagging as $(VERSION)
