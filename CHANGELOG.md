@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.9.1 - 2023-11-20
+
+- Include py.typed files in package data to restore correct type checking [#127](https://github.com/octoenergy/xocto/pull/127)
+
 ## v4.9.0 - 2023-11-17
 
 - Modernize setup to use pyproject.toml [#116](https://github.com/octoenergy/xocto/pull/116)
