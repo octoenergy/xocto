@@ -77,8 +77,6 @@ packages = ["xocto", "xocto.events", "xocto.storage"]
 
 [tool.setuptools.package-data]
 "xocto" = ["py.typed"]
-"xocto.events" = ["py.typed"]
-"xocto.storage" = ["py.typed"]
 
 
 # Mypy
