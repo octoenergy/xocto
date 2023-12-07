@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.9.2 - 2023-12-07
+
+- Add HalfFiniteRangeSet class to better support working with sets of such ranges
+
 ## v4.9.1 - 2023-11-20
 
 - Include py.typed files in package data to restore correct type checking [#127](https://github.com/octoenergy/xocto/pull/127)
