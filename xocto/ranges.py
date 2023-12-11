@@ -726,6 +726,27 @@ class RangeSet(Generic[T]):
         return self.difference(other)
 
 
+class HalfFiniteRangeSet(RangeSet[T], Generic[T]):
+    """
+    This subclass is useful when dealing with half-finite intervals as we can offer stronger guarantees
+    than we can get with normal RangeSets - mostly around intersections being half-finite etc.
+    """
+
+    _ranges: Sequence[HalfFiniteRange[T]]
+
+    def __iter__(self) -> Iterator[HalfFiniteRange[T]]:
+        yield from self._ranges
+
+    def intersection(self, other: Range[T] | RangeSet[T]) -> "HalfFiniteRangeSet[T]":
+        return cast("HalfFiniteRangeSet[T]", super().intersection(other))
+
+    def pop(self) -> HalfFiniteRange[T]:
+        return cast(HalfFiniteRange[T], super().pop())
+
+    def __and__(self, other: RangeSet[T]) -> "HalfFiniteRangeSet[T]":
+        return self.intersection(other)
+
+
 class FiniteRangeSet(RangeSet[T]):
     """
     This subclass is useful when dealing with finite intervals as we can offer stronger guarantees
