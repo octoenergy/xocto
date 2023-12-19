@@ -2,7 +2,7 @@
 
 ## v4.9.2 - 2023-12-07
 
-- Add HalfFiniteRangeSet class to better support working with sets of such ranges
+- Add HalfFiniteRangeSet class to better support working with sets of such ranges [#130](https://github.com/octoenergy/xocto/pull/130)
 
 ## v4.9.1 - 2023-11-20
 
