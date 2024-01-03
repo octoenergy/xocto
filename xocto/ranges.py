@@ -7,6 +7,7 @@ import itertools
 import operator
 from typing import (
     Any,
+    Callable,
     Generic,
     Iterable,
     Iterator,
@@ -945,3 +946,56 @@ def any_overlapping(ranges: Iterable[Range[T]]) -> bool:
             return True
         range_set.add(range)
     return False
+
+
+def as_finite_datetime_periods(
+    periods: Iterable[HalfFiniteDatetimeRange | DatetimeRange],
+) -> Sequence[FiniteDatetimeRange]:
+    """
+    Casts the given date/time periods as finite periods.
+
+    This is useful when working with potentially infinite ranges that are
+    known to be finite e.g. due to intersection with a finite range.
+
+    Raises:
+        ValueError: If one or more periods is not finite.
+    """
+    finite_periods = []
+
+    for period in periods:
+        if period.start is None or period.end is None:
+            raise ValueError("Period is not finite at start or end or both")
+
+        finite_periods += [FiniteDatetimeRange(period.start, period.end)]
+
+    return finite_periods
+
+
+def as_date_periods(
+    periods: Iterable[FiniteDatetimeRange],
+    *,
+    date_converter: Callable[[datetime.datetime], datetime.date],
+) -> Sequence[FiniteDateRange]:
+    """
+    Converts the given date/time periods to date periods.
+
+    The given date converter is used to decide what date to ascribe to a
+    given date/time, since we lose timezone info in this conversion.
+
+    We need to decide what to do with partial days at the start and end:
+
+    - The period start will be treated as a whole day and included, even if
+    the start time is part way through the day.
+
+    - The period end date will be ignored and excluded, even if most of the
+    day is covered; the previous day is the end*.
+
+    *Date ranges are inclusive at their ends.
+    """
+    return [
+        FiniteDateRange(
+            date_converter(period.start),
+            date_converter(period.end) - datetime.timedelta(days=1),
+        )
+        for period in periods
+    ]

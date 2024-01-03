@@ -898,3 +898,54 @@ class TestFiniteDateRange:
             )
             union = range | other
             assert union == range
+
+
+class TestAsFiniteDatetimePeriods:
+    def test_converts(self):
+        actually_finite_range = ranges.DatetimeRange(
+            datetime.datetime(2020, 1, 1),
+            datetime.datetime(2020, 1, 5),
+        )
+
+        results = list(
+            ranges.as_finite_datetime_periods(
+                [actually_finite_range],
+            )
+        )
+
+        assert results == [
+            ranges.FiniteDatetimeRange(
+                actually_finite_range.start,
+                actually_finite_range.end,
+            )
+        ]
+
+    def test_errors_if_infinite(self):
+        with pytest.raises(ValueError) as exc_info:
+            ranges.as_finite_datetime_periods(
+                [
+                    ranges.DatetimeRange(datetime.datetime(2020, 1, 1), None),
+                ],
+            )
+
+        assert "Period is not finite at start or end or both" in str(exc_info.value)
+
+
+class TestAsDatePeriods:
+    def test_converts(self):
+        dt_range = ranges.FiniteDatetimeRange(
+            datetime.datetime(2020, 1, 1),
+            datetime.datetime(2020, 1, 5),
+        )
+
+        results = ranges.as_date_periods(
+            [dt_range],
+            date_converter=lambda dt: dt.date(),
+        )
+
+        assert results == [
+            ranges.FiniteDateRange(
+                datetime.date(2020, 1, 1),
+                datetime.date(2020, 1, 4),
+            )
+        ]
