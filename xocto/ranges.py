@@ -440,10 +440,6 @@ class Range(Generic[T]):
         return self.is_left_finite() and self.is_right_finite()
 
 
-# Type aliases for common range types
-DatetimeRange = Range[datetime.datetime]
-
-
 class FiniteRange(Range[T]):
     """
     A FiniteRange represents a range that MUST have finite endpoints (i.e. they cannot be None).
@@ -488,6 +484,11 @@ class HalfFiniteRange(Range[T]):
 
     def __and__(self, other: Range[T]) -> Optional["HalfFiniteRange[T]"]:
         return self.intersection(other)
+
+
+# Type aliases for common range types
+DatetimeRange = Range[datetime.datetime]
+HalfFiniteDatetimeRange = HalfFiniteRange[datetime.datetime]
 
 
 class RangeSet(Generic[T]):
