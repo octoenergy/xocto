@@ -302,55 +302,6 @@ class TestRange:
                 assert (a_difference | intersection | b_difference) == (a | b)  # type: ignore[operator]
 
 
-def _range_from_string(range_str: str) -> ranges.Range[int]:
-    """
-    Convenience method to make test declarations clearer.
-
-    Examples:
-    [1,2] => ranges.Range(1, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE)
-    """
-    left_bracket = range_str[0]
-    right_bracket = range_str[-1]
-    start_str, end_str = range_str[1:-1].split(",")
-
-    boundaries = {
-        ("[", "]"): ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE,
-        ("[", ")"): ranges.RangeBoundaries.INCLUSIVE_EXCLUSIVE,
-        ("(", "]"): ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE,
-        ("(", ")"): ranges.RangeBoundaries.EXCLUSIVE_EXCLUSIVE,
-    }[left_bracket, right_bracket]
-
-    if start_str == "None":
-        start = None
-    else:
-        start = int(start_str)
-
-    if end_str == "None":
-        end = None
-    else:
-        end = int(end_str)
-
-    return ranges.Range(start, end, boundaries=boundaries)
-
-
-def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[int]:
-    """
-    Convenience method to make test declarations clearer.
-
-    Examples:
-    {} => ranges.RangeSet()
-    {[1,2]} => ranges.RangeSet(
-        ranges.Range(1, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE)
-    )
-    {[1,2], (3,None)} => ranges.RangeSet(
-        ranges.Range(1, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE),
-        ranges.Range(3, None, boundaries=ranges.RangeBoundaries.EXCLUSIVE_EXCLUSIVE)
-    )
-    """
-    range_strs = re.findall(r"[\[\(][^\]\)]*[^\[\(][\]\)]", rangeset_str[1:-1])
-    return ranges.RangeSet([_range_from_string(range_str) for range_str in range_strs])
-
-
 class TestRangeSet:
     @pytest.mark.parametrize(
         "rangeset,expected_string",
@@ -932,3 +883,52 @@ class TestAsFiniteDatetimePeriods:
             )
 
         assert "Period is not finite at start or end or both" in str(exc_info.value)
+
+
+def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[int]:
+    """
+    Convenience method to make test declarations clearer.
+
+    Examples:
+    {} => ranges.RangeSet()
+    {[1,2]} => ranges.RangeSet(
+        ranges.Range(1, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE)
+    )
+    {[1,2], (3,None)} => ranges.RangeSet(
+        ranges.Range(1, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE),
+        ranges.Range(3, None, boundaries=ranges.RangeBoundaries.EXCLUSIVE_EXCLUSIVE)
+    )
+    """
+    range_strs = re.findall(r"[\[\(][^\]\)]*[^\[\(][\]\)]", rangeset_str[1:-1])
+    return ranges.RangeSet([_range_from_string(range_str) for range_str in range_strs])
+
+
+def _range_from_string(range_str: str) -> ranges.Range[int]:
+    """
+    Convenience method to make test declarations clearer.
+
+    Examples:
+    [1,2] => ranges.Range(1, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE)
+    """
+    left_bracket = range_str[0]
+    right_bracket = range_str[-1]
+    start_str, end_str = range_str[1:-1].split(",")
+
+    boundaries = {
+        ("[", "]"): ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE,
+        ("[", ")"): ranges.RangeBoundaries.INCLUSIVE_EXCLUSIVE,
+        ("(", "]"): ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE,
+        ("(", ")"): ranges.RangeBoundaries.EXCLUSIVE_EXCLUSIVE,
+    }[left_bracket, right_bracket]
+
+    if start_str == "None":
+        start = None
+    else:
+        start = int(start_str)
+
+    if end_str == "None":
+        end = None
+    else:
+        end = int(end_str)
+
+    return ranges.Range(start, end, boundaries=boundaries)
