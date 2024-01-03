@@ -945,3 +945,26 @@ def any_overlapping(ranges: Iterable[Range[T]]) -> bool:
             return True
         range_set.add(range)
     return False
+
+
+def as_finite_datetime_periods(
+    periods: Iterable[HalfFiniteDatetimeRange | DatetimeRange],
+) -> Sequence[FiniteDatetimeRange]:
+    """
+    Casts the given date/time periods as finite periods.
+
+    This is useful when working with potentially infinite ranges that are
+    known to be finite e.g. due to intersection with a finite range.
+
+    Raises:
+        ValueError: If one or more periods is not finite.
+    """
+    finite_periods = []
+
+    for period in periods:
+        if period.start is None or period.end is None:
+            raise ValueError("Period is not finite at start or end or both")
+
+        finite_periods += [FiniteDatetimeRange(period.start, period.end)]
+
+    return finite_periods
