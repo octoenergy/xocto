@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v4.9.3 - 2024-01-16
+
 - Add "as_finite_datetime_periods" fn [#134](https://github.com/octoenergy/xocto/pull/134)
 
 ## v4.9.2 - 2023-12-07
