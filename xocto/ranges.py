@@ -440,10 +440,6 @@ class Range(Generic[T]):
         return self.is_left_finite() and self.is_right_finite()
 
 
-# Type aliases for common range types
-DatetimeRange = Range[datetime.datetime]
-
-
 class FiniteRange(Range[T]):
     """
     A FiniteRange represents a range that MUST have finite endpoints (i.e. they cannot be None).
@@ -488,6 +484,11 @@ class HalfFiniteRange(Range[T]):
 
     def __and__(self, other: Range[T]) -> Optional["HalfFiniteRange[T]"]:
         return self.intersection(other)
+
+
+# Type aliases for common range types
+DatetimeRange = Range[datetime.datetime]
+HalfFiniteDatetimeRange = HalfFiniteRange[datetime.datetime]
 
 
 class RangeSet(Generic[T]):
@@ -944,3 +945,26 @@ def any_overlapping(ranges: Iterable[Range[T]]) -> bool:
             return True
         range_set.add(range)
     return False
+
+
+def as_finite_datetime_periods(
+    periods: Iterable[HalfFiniteDatetimeRange | DatetimeRange],
+) -> Sequence[FiniteDatetimeRange]:
+    """
+    Casts the given date/time periods as finite periods.
+
+    This is useful when working with potentially infinite ranges that are
+    known to be finite e.g. due to intersection with a finite range.
+
+    Raises:
+        ValueError: If one or more periods is not finite.
+    """
+    finite_periods = []
+
+    for period in periods:
+        if period.start is None or period.end is None:
+            raise ValueError("Period is not finite at start or end or both")
+
+        finite_periods += [FiniteDatetimeRange(period.start, period.end)]
+
+    return finite_periods

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add "as_finite_datetime_periods" fn [#134](https://github.com/octoenergy/xocto/pull/134)
+
 ## v4.9.2 - 2023-12-07
 
 - Add HalfFiniteRangeSet class to better support working with sets of such ranges [#130](https://github.com/octoenergy/xocto/pull/130)
