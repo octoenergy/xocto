@@ -1,5 +1,12 @@
 SECRET_KEY = "x"
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3"}}
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "xocto-dev",
+        "USER": "postgres",
+        "HOST": "localhost",
+    }
+}
 INSTALLED_APPS = ["xocto", "django.contrib.auth", "django.contrib.contenttypes"]
 USE_TZ = True
 TIME_ZONE = "Europe/London"
