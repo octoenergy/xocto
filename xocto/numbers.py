@@ -21,7 +21,7 @@ def quantise(
     0
     """
     if base <= 0:
-        raise ValueError("base must be greater than 0.")
+        raise ValueError("base must be greater than 0")
     
     rounded_result = base * (decimal.Decimal(number) / base).quantize(
         decimal.Decimal("1."), rounding=rounding
