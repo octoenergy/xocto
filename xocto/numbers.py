@@ -20,7 +20,9 @@ def quantise(
     >>> quantise(15, 30)
     0
     """
-    assert base > 0
+    if base <= 0:
+        raise ValueError("base must be greater than 0.")
+    
     rounded_result = base * (decimal.Decimal(number) / base).quantize(
         decimal.Decimal("1."), rounding=rounding
     )
@@ -118,7 +120,9 @@ def clip_to_range(
         >>> clip_to_range(1.5, minval=1.0, maxval=2.0)
         1.5
     """
-    assert not minval > maxval, "minval must not be greater than maxval"
+    if minval > maxval:
+        raise ValueError("minval must not be greater than maxval")
+
     if val < minval:
         return minval
     elif val > maxval:
