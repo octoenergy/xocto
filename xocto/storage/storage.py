@@ -118,13 +118,11 @@ class S3Object:
 
 @runtime_checkable
 class Clearable(Protocol):
-    def clear(self) -> None:
-        ...
+    def clear(self) -> None: ...
 
 
 class ReadableBinaryFile(Protocol):
-    def read(self, size: int = ...) -> bytes:
-        ...
+    def read(self, size: int = ...) -> bytes: ...
 
 
 class StreamingBodyIOAdapter(io.RawIOBase):
@@ -879,7 +877,7 @@ class S3FileStore(BaseS3FileStore):
             raise S3SelectUnexpectedResponse("Received invalid response from S3 Select")
 
         for event_stream in response["Payload"]:
-            if records := event_stream.get("Records"):  # type:ignore [attr-defined]
+            if records := event_stream.get("Records"):
                 yield records["Payload"].decode("utf-8")
 
     def _select_object_content_using_scan_range(
@@ -1799,7 +1797,7 @@ def outbound_flow_store() -> BaseS3FileStore:
 
 
 def from_uri(
-    uri: str
+    uri: str,
 ) -> FileSystemFileStore | S3SubdirectoryFileStore | MemoryFileStore:
     """
     :raises ValueError: if the URI does not contain a scheme for a supported storage system.
