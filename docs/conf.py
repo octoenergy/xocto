@@ -11,9 +11,15 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import pathlib
 import sys
+from datetime import datetime
 
 import django
+
+# Use pip-vendored tomli so we can read pyproject.toml
+# When we upgrade Python to 3.11 we can use tomllib directly
+from pip._vendor import tomli
 
 
 sys.path.insert(0, os.path.abspath(".."))  # for discovery of project modules
@@ -26,11 +32,13 @@ django.setup()
 # -- Project information -----------------------------------------------------
 
 project = "xocto"
-copyright = "2023, Kraken Tech"
+copyright = f"{datetime.now().year}, Kraken Tech"
 author = "Kraken Tech"
 
-# The full version, including alpha/beta/rc tags
-release = "2.3.0"
+# Fetch the version from pyproject.toml
+path = pathlib.Path(__file__).parent / ".." / "pyproject.toml"
+pyproject = tomli.loads(path.read_text())
+release = pyproject["project"]["version"]
 
 # -- General configuration ---------------------------------------------------
 
