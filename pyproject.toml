@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "xocto"
-version = "4.9.3"
+version = "4.10.0"
 requires-python = ">=3.9"
 description = "Kraken Technologies Python service utilities"
 readme = "README.md"
