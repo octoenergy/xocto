@@ -59,6 +59,29 @@ class TestFiniteDateRangeField:
             )
         ).exists()
 
+    def test_query_does_not_allow_tuple_values(self):
+        with pytest.raises(TypeError):
+            models.FiniteDateRangeModel.objects.filter(
+                finite_date_range=(
+                    datetime.date(2024, 1, 10),
+                    datetime.date(2024, 2, 9),
+                )
+            )
+        with pytest.raises(TypeError):
+            models.FiniteDateRangeModel.objects.filter(
+                finite_date_range__overlap=(
+                    datetime.date(2024, 1, 1),
+                    datetime.date(2024, 1, 15),
+                )
+            )
+        with pytest.raises(TypeError):
+            models.FiniteDateRangeModel.objects.filter(
+                finite_date_range__contains=(
+                    datetime.date(2024, 1, 11),
+                    datetime.date(2024, 1, 15),
+                )
+            )
+
     def test_serialization(self):
         obj = models.FiniteDateRangeModel.objects.create(
             finite_date_range=ranges.FiniteDateRange(
@@ -123,6 +146,29 @@ class TestFiniteDateTimeRangeField:
                 end=localtime.datetime(2024, 1, 15),
             )
         ).exists()
+
+    def test_query_does_not_allow_tuple_values(self):
+        with pytest.raises(TypeError):
+            models.FiniteDateTimeRangeModel.objects.filter(
+                finite_datetime_range=(
+                    localtime.datetime(2024, 1, 10),
+                    localtime.datetime(2024, 2, 9),
+                )
+            )
+        with pytest.raises(TypeError):
+            models.FiniteDateTimeRangeModel.objects.filter(
+                finite_datetime_range__overlap=(
+                    localtime.datetime(2024, 1, 1),
+                    localtime.datetime(2024, 1, 15),
+                )
+            )
+        with pytest.raises(TypeError):
+            models.FiniteDateTimeRangeModel.objects.filter(
+                finite_datetime_range__contains=(
+                    localtime.datetime(2024, 1, 11),
+                    localtime.datetime(2024, 1, 15),
+                )
+            )
 
     def test_serialization(self):
         obj = models.FiniteDateTimeRangeModel.objects.create(
@@ -233,6 +279,43 @@ class TestHalfFiniteDateTimeRangeField:
                 end=None,
             )
         ).exists()
+
+    def test_query_does_not_allow_tuple_values(self):
+        with pytest.raises(TypeError):
+            models.HalfFiniteDateTimeRangeModel.objects.filter(
+                half_finite_datetime_range=(
+                    localtime.datetime(2024, 1, 10),
+                    None,
+                )
+            )
+        with pytest.raises(TypeError):
+            models.HalfFiniteDateTimeRangeModel.objects.filter(
+                half_finite_datetime_range__overlap=(
+                    localtime.datetime(2024, 1, 1),
+                    localtime.datetime(2024, 1, 15),
+                )
+            )
+        with pytest.raises(TypeError):
+            models.HalfFiniteDateTimeRangeModel.objects.filter(
+                half_finite_datetime_range__overlap=(
+                    localtime.datetime(2024, 1, 1),
+                    None,
+                )
+            )
+        with pytest.raises(TypeError):
+            models.HalfFiniteDateTimeRangeModel.objects.filter(
+                half_finite_datetime_range__contains=(
+                    localtime.datetime(2024, 1, 11),
+                    localtime.datetime(2024, 1, 15),
+                )
+            )
+        with pytest.raises(TypeError):
+            models.HalfFiniteDateTimeRangeModel.objects.filter(
+                half_finite_datetime_range__contains=(
+                    localtime.datetime(2024, 1, 11),
+                    None,
+                )
+            )
 
     def test_serialization(self):
         obj = models.HalfFiniteDateTimeRangeModel.objects.create(

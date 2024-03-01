@@ -29,6 +29,10 @@ class FiniteDateRangeField(pg_fields.DateRangeField):
     ) -> Optional[pg_ranges.DateRange]:
         if value is None:
             return None
+        if not isinstance(value, ranges.FiniteDateRange):
+            raise TypeError(
+                "FiniteDateRangeField may only accept FiniteDateRange objects."
+            )
         return pg_ranges.DateRange(lower=value.start, upper=value.end, bounds="[]")
 
     def from_db_value(
@@ -56,6 +60,10 @@ class FiniteDateRangeField(pg_fields.DateRangeField):
         value: Optional[ranges.FiniteDateRange] = self.value_from_object(obj)
         if value is None:
             return None
+        if not isinstance(value, ranges.FiniteDateRange):
+            raise TypeError(
+                "FiniteDateRangeField may only accept FiniteDateRange objects."
+            )
         base_field = self.base_field
         start = pg_utils.AttributeSetter(base_field.attname, value.start)
         end = pg_utils.AttributeSetter(base_field.attname, value.end)
@@ -92,6 +100,10 @@ class FiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
     ) -> Optional[pg_ranges.DateTimeTZRange]:
         if value is None:
             return None
+        if not isinstance(value, ranges.FiniteDatetimeRange):
+            raise TypeError(
+                "FiniteDateTimeRangeField may only accept FiniteDatetimeRange objects."
+            )
         return pg_ranges.DateTimeTZRange(
             lower=value.start, upper=value.end, bounds="[)"
         )
@@ -119,6 +131,10 @@ class FiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
         value: Optional[ranges.FiniteDatetimeRange] = self.value_from_object(obj)
         if value is None:
             return None
+        if not isinstance(value, ranges.FiniteDatetimeRange):
+            raise TypeError(
+                "FiniteDateTimeRangeField may only accept FiniteDatetimeRange objects."
+            )
         base_field = self.base_field
         start = pg_utils.AttributeSetter(base_field.attname, value.start)
         end = pg_utils.AttributeSetter(base_field.attname, value.end)
@@ -143,6 +159,16 @@ class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
     ) -> Optional[pg_ranges.DateTimeTZRange]:
         if value is None:
             return None
+        if (
+            # HalfFiniteDatetimeRange is a subscripted generic and may not be checked with
+            # isinstance directly. So, we check for it's parent class and attribute values.
+            not isinstance(value, ranges.HalfFiniteRange)  # type: ignore [redundant-expr]
+            or not isinstance(value.start, datetime.datetime)  # type: ignore [redundant-expr]
+            or (value.end is not None and not isinstance(value.end, datetime.datetime))
+        ):
+            raise TypeError(
+                "HalfFiniteDateTimeRangeField may only accept HalfFiniteDatetimeRange objects."
+            )
         return pg_ranges.DateTimeTZRange(
             lower=value.start, upper=value.end, bounds="[)"
         )
@@ -172,6 +198,10 @@ class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
         value: Optional[ranges.HalfFiniteDatetimeRange] = self.value_from_object(obj)
         if value is None:
             return None
+        if not isinstance(value, ranges.HalfFiniteRange):
+            raise TypeError(
+                "HalfFiniteDateTimeRangeField may only accept HalfFiniteDatetimeRange objects."
+            )
         base_field = self.base_field
         start = pg_utils.AttributeSetter(base_field.attname, value.start)
         end = pg_utils.AttributeSetter(base_field.attname, value.end)

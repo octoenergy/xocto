@@ -24,6 +24,30 @@ not require any changes to the database schema. The migration file generated wil
 to the new fields, but since the underlying database type is the same, the migration will
 be a no-op.
 
+The standard Django query operators are almost the same as for the built-in types.
+They accept `xocto.ranges` as arguments, but don't support passing in a tuple of values:
+
+```python
+
+assert SalesPeriod.objects.filter(
+    period__contains=ranges.FiniteDateRange(
+        start=datetime.date(2020, 1, 10),
+        end=datetime.date(2020, 1, 20),
+    )
+).exists()
+
+assert SalesPeriod.objects.filter(
+    period__overlaps=ranges.FiniteDateRange(
+        start=datetime.date(2020, 1, 10),
+        end=datetime.date(2020, 1, 20),
+    )
+).exists()
+
+# ERROR! This will raise a TypeError
+SalesPeriod.objects.filter(period__overlaps=(datetime.date(2020, 1, 10), datetime.date(2020, 1, 20)))
+
+```
+
 #### FiniteDateRangeField
 
 Module: `xocto.fields.postgres.ranges.FiniteDateRangeField`\
