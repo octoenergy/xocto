@@ -118,13 +118,11 @@ class S3Object:
 
 @runtime_checkable
 class Clearable(Protocol):
-    def clear(self) -> None:
-        ...
+    def clear(self) -> None: ...
 
 
 class ReadableBinaryFile(Protocol):
-    def read(self, size: int = ...) -> bytes:
-        ...
+    def read(self, size: int = ...) -> bytes: ...
 
 
 class StreamingBodyIOAdapter(io.RawIOBase):
@@ -1799,7 +1797,7 @@ def outbound_flow_store() -> BaseS3FileStore:
 
 
 def from_uri(
-    uri: str
+    uri: str,
 ) -> FileSystemFileStore | S3SubdirectoryFileStore | MemoryFileStore:
     """
     :raises ValueError: if the URI does not contain a scheme for a supported storage system.
