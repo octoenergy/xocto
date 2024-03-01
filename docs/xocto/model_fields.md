@@ -19,6 +19,11 @@ use throughout an application, and requires lots of boilerplate code to work wit
 Alternatively, `xocto.ranges` are designed to be used throughout an application. These fields
 make it possible to interact with them directly from the Django ORM.
 
+Migrating from the Django range types to these range types is straightforward and does
+not require any changes to the database schema. The migration file generated will refer
+to the new fields, but since the underlying database type is the same, the migration will
+be a no-op.
+
 #### FiniteDateRangeField
 
 Module: `xocto.fields.postgres.ranges.FiniteDateRangeField`\
@@ -51,4 +56,39 @@ assert sales_period.period == ranges.FiniteDateRange(
     end=datetime.date(2020, 1, 31)
 )
 assert sales_period.period.start == datetime.date(2020, 1, 1)
+```
+
+
+#### FiniteDateTimeRangeField
+
+Module: `xocto.fields.postgres.ranges.FiniteDateTimeRangeField`\
+Bounds: `[)`\
+Type: [xocto.ranges.FiniteDatetimeRange](xocto.ranges.FiniteDatetimeRange)
+
+A field that represents an inclusive-exclusive `[)` ranges of timezone-aware
+datetimes. Both the start and end of the range must not be `None`.
+
+```python
+import datetime
+from django.db import models
+from xocto import ranges, localtime
+from xocto.fields.postgres import ranges as db_ranges
+
+class CalendarEntry(models.Model):
+    ...
+    event_time = db_ranges.FiniteDateTimeRangeField()
+
+calendar_entry = CalendarEntry.objects.create(
+    event_time=ranges.FiniteDatetimeRange(
+        start=localtime.datetime(2020, 1, 1, 14, 30),
+        end=localtime.datetime(2020, 1, 1, 15, 30)
+    ),
+    ...
+)
+
+assert calendar_entry.event_time == ranges.FiniteDatetimeRange(
+    start=localtime.datetime(2020, 1, 1, 14, 30),
+    end=localtime.datetime(2020, 1, 1, 15, 30)
+)
+assert calendar_entry.event_time.start == localtime.datetime(2020, 1, 1, 14, 30)
 ```

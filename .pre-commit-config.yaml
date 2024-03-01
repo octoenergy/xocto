@@ -34,7 +34,6 @@ repos:
         args: [ --fix ]
       # Run the formatter.
       - id: ruff-format
-        args: [ --fix ]
 
   - repo: local
     hooks:

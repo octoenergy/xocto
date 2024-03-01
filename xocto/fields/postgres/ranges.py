@@ -77,3 +77,54 @@ class FiniteDateRangeField(pg_fields.DateRangeField):
         if value.upper_inc:
             return value.upper
         return value.upper - datetime.timedelta(days=1)
+
+
+class FiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
+    """
+    A DateTimeRangeField with Inclusive-Exclusive [) bounds that aren't infinite.
+
+    Accepts and returns xocto.ranges.FiniteDatetimeRange objects. Values are always
+    timezone-aware, and will be converted to the timezone specified in django settings.
+    """
+
+    def get_prep_value(
+        self, value: Optional[ranges.FiniteDatetimeRange]
+    ) -> Optional[pg_ranges.DateTimeTZRange]:
+        if value is None:
+            return None
+        return pg_ranges.DateTimeTZRange(
+            lower=value.start, upper=value.end, bounds="[)"
+        )
+
+    def from_db_value(
+        self,
+        value: Optional[pg_ranges.DateTimeTZRange],
+        expression: object,
+        connection: object,
+    ) -> Optional[ranges.FiniteDatetimeRange]:
+        if value is None:
+            return None
+        return ranges.FiniteDatetimeRange(start=value.lower, end=value.upper)
+
+    def to_python(self, value: Optional[str]) -> Optional[ranges.FiniteDatetimeRange]:
+        if value is None:
+            return None
+        obj = json.loads(value)
+        return ranges.FiniteDatetimeRange(
+            start=self.base_field.to_python(obj["start"]),
+            end=self.base_field.to_python(obj["end"]),
+        )
+
+    def value_to_string(self, obj: models.Model) -> Optional[str]:
+        value: Optional[ranges.FiniteDatetimeRange] = self.value_from_object(obj)
+        if value is None:
+            return None
+        base_field = self.base_field
+        start = pg_utils.AttributeSetter(base_field.attname, value.start)
+        end = pg_utils.AttributeSetter(base_field.attname, value.end)
+        return json.dumps(
+            {
+                "start": base_field.value_to_string(start),
+                "end": base_field.value_to_string(end),
+            }
+        )
