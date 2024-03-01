@@ -163,3 +163,113 @@ class TestFiniteDateTimeRangeField:
             == finite_datetime_range_melb
         )
         assert obj.finite_datetime_range.start.tzinfo != TZ_MELB
+
+
+class TestHalfFiniteDateTimeRangeField:
+    def test_roundtrip(self):
+        half_finite_datetime_range = ranges.HalfFiniteDatetimeRange(
+            start=localtime.datetime(2024, 1, 10), end=None
+        )
+        obj = models.HalfFiniteDateTimeRangeModel.objects.create(
+            half_finite_datetime_range=half_finite_datetime_range
+        )
+        queried = models.HalfFiniteDateTimeRangeModel.objects.get(pk=obj.pk)
+        assert queried.half_finite_datetime_range == half_finite_datetime_range
+
+    def test_nullable(self):
+        obj = models.HalfFiniteDateTimeRangeModel.objects.create(
+            half_finite_datetime_range=ranges.HalfFiniteDatetimeRange(
+                start=localtime.datetime(2024, 1, 10),
+                end=None,
+            ),
+            half_finite_datetime_range_nullable=None,
+        )
+        queried = models.HalfFiniteDateTimeRangeModel.objects.get(pk=obj.pk)
+        assert queried.half_finite_datetime_range_nullable is None
+
+    def test_query(self):
+        half_finite_datetime_range = ranges.HalfFiniteDatetimeRange(
+            start=localtime.datetime(2024, 1, 10), end=None
+        )
+        models.HalfFiniteDateTimeRangeModel.objects.create(
+            half_finite_datetime_range=half_finite_datetime_range
+        )
+        assert models.HalfFiniteDateTimeRangeModel.objects.filter(
+            half_finite_datetime_range=half_finite_datetime_range
+        ).exists()
+        assert models.HalfFiniteDateTimeRangeModel.objects.filter(
+            half_finite_datetime_range__overlap=ranges.HalfFiniteDatetimeRange(
+                start=localtime.datetime(2024, 1, 1),
+                end=localtime.datetime(2024, 1, 15),
+            )
+        ).exists()
+        assert models.HalfFiniteDateTimeRangeModel.objects.filter(
+            half_finite_datetime_range__overlap=ranges.HalfFiniteDatetimeRange(
+                start=localtime.datetime(2024, 1, 1),
+                end=None,
+            )
+        ).exists()
+        assert models.HalfFiniteDateTimeRangeModel.objects.filter(
+            half_finite_datetime_range__contains=ranges.HalfFiniteDatetimeRange(
+                start=localtime.datetime(2024, 1, 11),
+                end=localtime.datetime(2024, 1, 15),
+            )
+        ).exists()
+        assert models.HalfFiniteDateTimeRangeModel.objects.filter(
+            half_finite_datetime_range__contains=ranges.HalfFiniteDatetimeRange(
+                start=localtime.datetime(2024, 1, 11),
+                end=None,
+            )
+        ).exists()
+        assert not models.HalfFiniteDateTimeRangeModel.objects.filter(
+            half_finite_datetime_range__contains=ranges.HalfFiniteDatetimeRange(
+                start=localtime.datetime(2024, 1, 5),
+                end=localtime.datetime(2024, 1, 15),
+            )
+        ).exists()
+        assert not models.HalfFiniteDateTimeRangeModel.objects.filter(
+            half_finite_datetime_range__contains=ranges.HalfFiniteDatetimeRange(
+                start=localtime.datetime(2024, 1, 5),
+                end=None,
+            )
+        ).exists()
+
+    def test_serialization(self):
+        obj = models.HalfFiniteDateTimeRangeModel.objects.create(
+            half_finite_datetime_range=ranges.HalfFiniteDatetimeRange(
+                start=localtime.datetime(2024, 1, 10),
+                end=localtime.datetime(2024, 2, 9),
+            )
+        )
+        dumped = serializers.serialize("json", [obj])
+        loaded = list(serializers.deserialize("json", dumped))
+        loaded_obj = loaded[0].object
+        assert obj == loaded_obj
+        assert obj.half_finite_datetime_range == loaded_obj.half_finite_datetime_range
+        assert (
+            obj.half_finite_datetime_range_nullable
+            == loaded_obj.half_finite_datetime_range_nullable
+        )
+
+    def test_timezone_conversions(self):
+        """
+        Timezones are converted correctly when round tripping.
+        """
+        half_finite_datetime_range_melb = ranges.HalfFiniteDatetimeRange(
+            start=datetime.datetime(2024, 1, 10, tzinfo=TZ_MELB),
+            end=None,
+        )
+        obj = models.HalfFiniteDateTimeRangeModel.objects.create(
+            half_finite_datetime_range=half_finite_datetime_range_melb,
+        )
+        half_finite_datetime_range_london = ranges.HalfFiniteDatetimeRange(
+            start=timezone.localtime(half_finite_datetime_range_melb.start),
+            end=None,
+        )
+        obj.refresh_from_db()
+        assert (
+            obj.half_finite_datetime_range
+            == half_finite_datetime_range_london
+            == half_finite_datetime_range_melb
+        )
+        assert obj.half_finite_datetime_range.start.tzinfo != TZ_MELB

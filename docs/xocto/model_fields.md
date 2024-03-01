@@ -92,3 +92,40 @@ assert calendar_entry.event_time == ranges.FiniteDatetimeRange(
 )
 assert calendar_entry.event_time.start == localtime.datetime(2020, 1, 1, 14, 30)
 ```
+
+
+#### HalfFiniteDateTimeRangeField
+
+Module: `xocto.fields.postgres.ranges.HalfFiniteDateTimeRangeField`\
+Bounds: `[)`\
+Type: [xocto.ranges.HalfFiniteDatetimeRange](xocto.ranges.HalfFiniteRange)
+
+> **_NOTE:_** docs can not link directly to `HalfFiniteDatetimeRange` at this stage as it's a type alias
+
+A field that represents an inclusive-exclusive `[)` ranges of timezone-aware
+datetimes. The end of the range may be open-ended, represented by `None`.
+
+```python
+import datetime
+from django.db import models
+from xocto import ranges, localtime
+from xocto.fields.postgres import ranges as db_ranges
+
+class Agreement(models.Model):
+    ...
+    period = db_ranges.HalfFiniteDateTimeRangeField()
+
+agreement = Agreement.objects.create(
+    period=ranges.HalfFiniteDatetimeRange(
+        start=localtime.datetime(2020, 1, 1, 14, 30),
+        end=None,
+    ),
+    ...
+)
+
+assert agreement.period == ranges.HalfFiniteDatetimeRange(
+    start=localtime.datetime(2020, 1, 1, 14, 30),
+    end=None
+)
+assert agreement.period.start == localtime.datetime(2020, 1, 1, 14, 30)
+```
