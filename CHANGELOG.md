@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## v4.10.0 - 2024-03-05
+
+- Updated dev dependencies like ruff, pytest, and mypy [#138](https://github.com/octoenergy/xocto/pull/138)
+- Updated doc dependencies to fix the build [#139](https://github.com/octoenergy/xocto/pull/139)
+- Added a new module `xocto.fields.postgres.ranges` to provide range fields that work with the `Range` classes from `xocto.ranges` [#136](https://github.com/octoenergy/xocto/pull/136)
+    - Tests now depend on postgres and psycopg2
+- Doc site should now build again correctly
+
 ## v4.9.3 - 2024-01-16
 
 - Add "as_finite_datetime_periods" fn [#134](https://github.com/octoenergy/xocto/pull/134)
