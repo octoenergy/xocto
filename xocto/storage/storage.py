@@ -877,7 +877,7 @@ class S3FileStore(BaseS3FileStore):
             raise S3SelectUnexpectedResponse("Received invalid response from S3 Select")
 
         for event_stream in response["Payload"]:
-            if records := event_stream.get("Records"):  # type:ignore [attr-defined]
+            if records := event_stream.get("Records"):
                 yield records["Payload"].decode("utf-8")
 
     def _select_object_content_using_scan_range(

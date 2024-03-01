@@ -17,10 +17,13 @@ repos:
       - id: trailing-whitespace      # Trims trailing whitespace.
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v1.1.1'
+    rev: 'v1.8.0'
     hooks:
       - id: mypy
-        additional_dependencies: ['types-requests']
+        additional_dependencies:
+          - types-requests
+          - types-python-dateutil
+          - mypy-boto3-s3
 
   - repo: local
     hooks:
