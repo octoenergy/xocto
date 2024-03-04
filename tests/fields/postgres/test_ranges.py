@@ -2,6 +2,7 @@ import datetime
 import zoneinfo
 
 import pytest
+from django.conf import settings
 from django.core import serializers
 from django.utils import timezone
 
@@ -10,8 +11,6 @@ from xocto import localtime, ranges
 
 
 pytestmark = pytest.mark.django_db
-
-TZ_MELB = zoneinfo.ZoneInfo("Australia/Melbourne")
 
 
 class TestFiniteDateRangeField:
@@ -191,6 +190,9 @@ class TestFiniteDateTimeRangeField:
         """
         Timezones are converted correctly when round tripping.
         """
+        TZ_MELB = zoneinfo.ZoneInfo("Australia/Melbourne")
+        TZ_DEFAULT = zoneinfo.ZoneInfo(settings.TIME_ZONE)
+
         finite_datetime_range_melb = ranges.FiniteDatetimeRange(
             start=datetime.datetime(2024, 1, 10, tzinfo=TZ_MELB),
             end=datetime.datetime(2024, 2, 9, tzinfo=TZ_MELB),
@@ -208,6 +210,7 @@ class TestFiniteDateTimeRangeField:
             == finite_datetime_range_london
             == finite_datetime_range_melb
         )
+        assert obj.finite_datetime_range.start.tzinfo == TZ_DEFAULT
         assert obj.finite_datetime_range.start.tzinfo != TZ_MELB
 
 
@@ -338,6 +341,8 @@ class TestHalfFiniteDateTimeRangeField:
         """
         Timezones are converted correctly when round tripping.
         """
+        TZ_MELB = zoneinfo.ZoneInfo("Australia/Melbourne")
+        TZ_DEFAULT = zoneinfo.ZoneInfo(settings.TIME_ZONE)
         half_finite_datetime_range_melb = ranges.HalfFiniteDatetimeRange(
             start=datetime.datetime(2024, 1, 10, tzinfo=TZ_MELB),
             end=None,
@@ -355,4 +360,5 @@ class TestHalfFiniteDateTimeRangeField:
             == half_finite_datetime_range_london
             == half_finite_datetime_range_melb
         )
+        assert obj.half_finite_datetime_range.start.tzinfo == TZ_DEFAULT
         assert obj.half_finite_datetime_range.start.tzinfo != TZ_MELB

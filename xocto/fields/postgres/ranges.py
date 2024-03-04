@@ -11,7 +11,7 @@ from django.contrib.postgres.fields import ranges as pg_ranges
 from django.contrib.postgres.fields import utils as pg_utils
 from django.db import models
 
-from xocto import ranges
+from xocto import localtime, ranges
 
 
 class FiniteDateRangeField(pg_fields.DateRangeField):
@@ -116,15 +116,18 @@ class FiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
     ) -> Optional[ranges.FiniteDatetimeRange]:
         if value is None:
             return None
-        return ranges.FiniteDatetimeRange(start=value.lower, end=value.upper)
+        return ranges.FiniteDatetimeRange(
+            start=localtime.as_localtime(value.lower),
+            end=localtime.as_localtime(value.upper),
+        )
 
     def to_python(self, value: Optional[str]) -> Optional[ranges.FiniteDatetimeRange]:
         if value is None:
             return None
         obj = json.loads(value)
         return ranges.FiniteDatetimeRange(
-            start=self.base_field.to_python(obj["start"]),
-            end=self.base_field.to_python(obj["end"]),
+            start=localtime.as_localtime(self.base_field.to_python(obj["start"])),
+            end=localtime.as_localtime(self.base_field.to_python(obj["end"])),
         )
 
     def value_to_string(self, obj: models.Model) -> Optional[str]:
@@ -181,7 +184,10 @@ class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
     ) -> Optional[ranges.HalfFiniteDatetimeRange]:
         if value is None:
             return None
-        return ranges.HalfFiniteDatetimeRange(start=value.lower, end=value.upper)
+        return ranges.HalfFiniteDatetimeRange(
+            start=localtime.as_localtime(value.lower),
+            end=localtime.as_localtime(value.upper) if value.upper else None,
+        )
 
     def to_python(
         self, value: Optional[str]
@@ -189,9 +195,10 @@ class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
         if value is None:
             return None
         obj = json.loads(value)
+        end = self.base_field.to_python(obj["end"])
         return ranges.HalfFiniteDatetimeRange(
-            start=self.base_field.to_python(obj["start"]),
-            end=self.base_field.to_python(obj["end"]),
+            start=localtime.as_localtime(self.base_field.to_python(obj["start"])),
+            end=localtime.as_localtime(end) if end else None,
         )
 
     def value_to_string(self, obj: models.Model) -> Optional[str]:
