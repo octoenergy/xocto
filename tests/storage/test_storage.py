@@ -616,7 +616,7 @@ class TestS3FileStore:
         )
 
     def test_fetch_file_contents_using_s3_select_with_parquet_fails_with_scan_range(
-        self
+        self,
     ):
         store = storage.S3FileStore("some-bucket")
 

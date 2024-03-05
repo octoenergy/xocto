@@ -5,6 +5,7 @@ Note:
     - Many comments have been taken directly from the boto3 [docs]
 (https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.select_object_content)
 """
+
 from __future__ import annotations
 
 import dataclasses

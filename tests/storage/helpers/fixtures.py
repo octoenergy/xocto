@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, AnyStr
+from typing import Any, Union
 
 
 def fixture_filepath(filepath: str) -> Path:
     return Path(__file__).parent.parent / "fixtures" / filepath
 
 
-def load_fixture(filepath: str, **kwargs: Any) -> AnyStr:
+def load_fixture(filepath: str, **kwargs: Any) -> Union[str, bytes]:
     """
     Return the contents of a fixture file.
 
