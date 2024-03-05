@@ -49,6 +49,7 @@ dev = [
   "mypy==1.8.0",
   "numpy==1.22.2",
   "pre-commit>=3.2.0",
+  "psycopg2>=2.8.4",
   "pyarrow-stubs==10.0.1.6",
   "pytest-django==4.8.0",
   "pytest-mock==3.12.0",

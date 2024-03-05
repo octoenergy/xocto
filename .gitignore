@@ -29,3 +29,6 @@ docs/_static
 
 # Ctags
 tags
+
+# Editor configs
+*.code-workspace
