@@ -143,7 +143,7 @@ class Range(Generic[T]):
         None
     """
 
-    __slots__ = [
+    __slots__ = (
         "start",
         "end",
         "boundaries",
@@ -151,7 +151,15 @@ class Range(Generic[T]):
         "_is_left_inclusive",
         "_is_right_exclusive",
         "_is_right_inclusive",
-    ]
+    )
+
+    start: Optional[T]
+    end: Optional[T]
+    boundaries: RangeBoundaries
+    _is_left_exclusive: bool
+    _is_left_inclusive: bool
+    _is_right_exclusive: bool
+    _is_right_inclusive: bool
 
     def __init__(
         self,
@@ -448,6 +456,9 @@ class FiniteRange(Range[T]):
     and then skip checking if the endpoints are None.
     """
 
+    __slots__ = ()
+
+    # Redefine types in base class
     start: T
     end: T
 
@@ -473,8 +484,13 @@ class HalfFiniteRange(Range[T]):
     HalfFiniteRange.
     """
 
+    __slots__ = ()
+
+    # Redefine types in base class
     start: T
-    boundaries = RangeBoundaries.INCLUSIVE_EXCLUSIVE
+
+    def __init__(self, start: T, end: Optional[T] = None):
+        super().__init__(start, end, boundaries=RangeBoundaries.INCLUSIVE_EXCLUSIVE)
 
     def intersection(self, other: Range[T]) -> Optional["HalfFiniteRange[T]"]:
         """
@@ -780,6 +796,8 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
     of time.
     """
 
+    __slots__ = ()
+
     def __init__(self, start: datetime.datetime, end: datetime.datetime):
         """
         Force the boundaries of the range to be [).
@@ -824,6 +842,8 @@ class FiniteDateRange(FiniteRange[datetime.date]):
     This subclass is a helper for a common usecase for ranges - representing finite intervals
     of whole days.
     """
+
+    __slots__ = ()
 
     def __init__(self, start: datetime.date, end: datetime.date):
         """
