@@ -7,6 +7,7 @@ import itertools
 import operator
 from typing import (
     Any,
+    Callable,
     Generic,
     Iterable,
     Iterator,
@@ -173,38 +174,44 @@ class Range(Generic[T]):
 
         Also set some convenience properties for internal use.
         """
-        self.start = start
-        self.end = end
         # Make sure that we are dealing with an enum in case the class was constructed with the
         # string representation of the boundaries
-        self.boundaries: RangeBoundaries = RangeBoundaries(boundaries)
+        range_boundaries: RangeBoundaries = RangeBoundaries(boundaries)
 
-        self._is_left_exclusive = self.boundaries in [
+        _is_left_exclusive = range_boundaries in [
             RangeBoundaries.EXCLUSIVE_EXCLUSIVE,
             RangeBoundaries.EXCLUSIVE_INCLUSIVE,
         ]
-        self._is_right_exclusive = self.boundaries in [
+        _is_right_exclusive = range_boundaries in [
             RangeBoundaries.EXCLUSIVE_EXCLUSIVE,
             RangeBoundaries.INCLUSIVE_EXCLUSIVE,
         ]
-        self._is_left_inclusive = not self._is_left_exclusive
-        self._is_right_inclusive = not self._is_right_exclusive
+        _is_left_inclusive = not _is_left_exclusive
+        _is_right_inclusive = not _is_right_exclusive
 
-        if self.start is None:
-            if self._is_left_inclusive:
+        if start is None:
+            if _is_left_inclusive:
                 raise ValueError("Range with unbounded start must be left-exclusive")
-        if self.end is None:
-            if self._is_right_inclusive:
+        if end is None:
+            if _is_right_inclusive:
                 raise ValueError("Range with unbounded end must be right-exclusive")
-        elif self.start is not None:
-            check_op = {
+        elif start is not None:
+            check_op: Callable[[Any, Any], bool] = {
                 RangeBoundaries.EXCLUSIVE_EXCLUSIVE: operator.lt,
                 RangeBoundaries.EXCLUSIVE_INCLUSIVE: operator.lt,
                 RangeBoundaries.INCLUSIVE_EXCLUSIVE: operator.lt,
                 RangeBoundaries.INCLUSIVE_INCLUSIVE: operator.le,
-            }[self.boundaries]
-            if not check_op(self.start, self.end):
+            }[range_boundaries]
+            if not check_op(start, end):
                 raise ValueError("Invalid boundaries for range")
+
+        object.__setattr__(self, "start", start)
+        object.__setattr__(self, "end", end)
+        object.__setattr__(self, "boundaries", range_boundaries)
+        object.__setattr__(self, "_is_left_exclusive", _is_left_exclusive)
+        object.__setattr__(self, "_is_left_inclusive", _is_left_inclusive)
+        object.__setattr__(self, "_is_right_exclusive", _is_right_exclusive)
+        object.__setattr__(self, "_is_right_inclusive", _is_right_inclusive)
 
     @classmethod
     def continuum(cls) -> Range[T]:
@@ -228,6 +235,12 @@ class Range(Generic[T]):
 
     def __repr__(self) -> str:
         return f"<Range: {str(self)}>"
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name in type(self).__slots__:
+            raise AttributeError("Can't set attributes")
+        else:
+            super().__setattr__(name, value)
 
     def __hash__(self) -> int:
         return hash((self.start, self.end, self.boundaries))

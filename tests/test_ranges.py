@@ -47,6 +47,18 @@ class TestRange:
             0, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE
         ) == ranges.Range(0, 2, boundaries="(]")
 
+    def test_is_immutable(self):
+        r = ranges.Range(0, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE)
+        with pytest.raises(AttributeError, match="Can't set attributes"):
+            r.start = 1
+
+    def test_additional_attributes_cant_be_created(self):
+        r = ranges.Range(0, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE)
+        with pytest.raises(
+            AttributeError, match="'Range' object has no attribute 'something_else'"
+        ):
+            r.something_else = 1
+
     def test_does_not_have_instance_dictionary(self):
         r = ranges.Range(0, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE)
         assert not hasattr(r, "__dict__")
