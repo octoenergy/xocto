@@ -47,6 +47,22 @@ class TestRange:
             0, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE
         ) == ranges.Range(0, 2, boundaries="(]")
 
+    def test_is_immutable(self):
+        r = ranges.Range(0, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE)
+        with pytest.raises(AttributeError, match="Can't set attributes"):
+            r.start = 1
+
+    def test_additional_attributes_cant_be_created(self):
+        r = ranges.Range(0, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE)
+        with pytest.raises(
+            AttributeError, match="'Range' object has no attribute 'something_else'"
+        ):
+            r.something_else = 1
+
+    def test_does_not_have_instance_dictionary(self):
+        r = ranges.Range(0, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE)
+        assert not hasattr(r, "__dict__")
+
     @pytest.mark.parametrize(
         "start,end,boundaries",
         [
@@ -455,6 +471,23 @@ class TestRangeSet:
         rangeset = _rangeset_from_string(rangeset_str)
         other_rangeset = _rangeset_from_string(other_rangeset_str)
         assert str(rangeset - other_rangeset) == expected_result_str
+
+
+class TestHalfFiniteRange:
+    def test_creation_uses_expected_defaults(self):
+        r = ranges.HalfFiniteRange(0)
+        assert 0 == r.start
+        assert r.end is None
+        assert ranges.RangeBoundaries.INCLUSIVE_EXCLUSIVE == r.boundaries
+
+    def test_creation(self):
+        r = ranges.HalfFiniteRange(1, 2)
+        assert 1 == r.start
+        assert 2 == r.end
+
+    def test_does_not_have_instance_dictionary(self):
+        r = ranges.HalfFiniteRange(0, 2)
+        assert not hasattr(r, "__dict__")
 
 
 ONE_DAY = datetime.timedelta(days=1)
