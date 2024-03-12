@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v4.10.1 - 2024-03-12
+
+- Updated build config to automatically include sub-packages [#143](https://github.com/octoenergy/xocto/pull/143)
+    - Makes available the new `xocto.fields` package in the distribution introduced in 4.10.0
+
 ## v4.10.0 - 2024-03-05
 
 - Updated dev dependencies like ruff, pytest, and mypy [#138](https://github.com/octoenergy/xocto/pull/138)
