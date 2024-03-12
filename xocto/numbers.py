@@ -4,7 +4,7 @@ import decimal
 import random
 from typing import TypeVar
 
-from . import types
+from xocto.types import generic
 
 
 def quantise(
@@ -100,11 +100,11 @@ T = TypeVar("T")
 
 
 def clip_to_range(
-    val: types.Comparable[T],
+    val: generic.Comparable[T],
     *,
-    minval: types.Comparable[T],
-    maxval: types.Comparable[T],
-) -> types.Comparable[T]:
+    minval: generic.Comparable[T],
+    maxval: generic.Comparable[T],
+) -> generic.Comparable[T]:
     """
     Clip the value to the min and max values given.
 

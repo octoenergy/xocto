@@ -19,7 +19,7 @@ from typing import (
     cast,
 )
 
-from . import types
+from xocto.types import generic
 
 
 class RangeBoundaries(enum.Enum):
@@ -44,7 +44,7 @@ class RangeBoundaries(enum.Enum):
         }[(left_exclusive, right_exclusive)]
 
 
-T = TypeVar("T", bound=types.Comparable)  # type: ignore[type-arg]
+T = TypeVar("T", bound=generic.Comparable)  # type: ignore[type-arg]
 
 
 @functools.total_ordering
