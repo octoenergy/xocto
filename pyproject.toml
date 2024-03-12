@@ -75,8 +75,9 @@ changelog = "https://github.com/octoenergy/xocto/blob/main/CHANGELOG.md"
 documentation = "https://xocto.readthedocs.io"
 issues = "https://github.com/octoenergy/xocto/issues"
 
-[tool.setuptools]
-packages = ["xocto", "xocto.events", "xocto.storage"]
+[tool.setuptools.packages.find]
+include = ["xocto*"]
+namespaces = false
 
 [tool.setuptools.package-data]
 "xocto" = ["py.typed"]
