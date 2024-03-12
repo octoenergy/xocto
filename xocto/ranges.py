@@ -7,7 +7,6 @@ import itertools
 import operator
 from typing import (
     Any,
-    Callable,
     Generic,
     Iterable,
     Iterator,
@@ -144,7 +143,7 @@ class Range(Generic[T]):
         None
     """
 
-    __slots__ = (
+    __slots__ = [
         "start",
         "end",
         "boundaries",
@@ -152,15 +151,7 @@ class Range(Generic[T]):
         "_is_left_inclusive",
         "_is_right_exclusive",
         "_is_right_inclusive",
-    )
-
-    start: Optional[T]
-    end: Optional[T]
-    boundaries: RangeBoundaries
-    _is_left_exclusive: bool
-    _is_left_inclusive: bool
-    _is_right_exclusive: bool
-    _is_right_inclusive: bool
+    ]
 
     def __init__(
         self,
@@ -174,44 +165,38 @@ class Range(Generic[T]):
 
         Also set some convenience properties for internal use.
         """
+        self.start = start
+        self.end = end
         # Make sure that we are dealing with an enum in case the class was constructed with the
         # string representation of the boundaries
-        range_boundaries: RangeBoundaries = RangeBoundaries(boundaries)
+        self.boundaries: RangeBoundaries = RangeBoundaries(boundaries)
 
-        _is_left_exclusive = range_boundaries in [
+        self._is_left_exclusive = self.boundaries in [
             RangeBoundaries.EXCLUSIVE_EXCLUSIVE,
             RangeBoundaries.EXCLUSIVE_INCLUSIVE,
         ]
-        _is_right_exclusive = range_boundaries in [
+        self._is_right_exclusive = self.boundaries in [
             RangeBoundaries.EXCLUSIVE_EXCLUSIVE,
             RangeBoundaries.INCLUSIVE_EXCLUSIVE,
         ]
-        _is_left_inclusive = not _is_left_exclusive
-        _is_right_inclusive = not _is_right_exclusive
+        self._is_left_inclusive = not self._is_left_exclusive
+        self._is_right_inclusive = not self._is_right_exclusive
 
-        if start is None:
-            if _is_left_inclusive:
+        if self.start is None:
+            if self._is_left_inclusive:
                 raise ValueError("Range with unbounded start must be left-exclusive")
-        if end is None:
-            if _is_right_inclusive:
+        if self.end is None:
+            if self._is_right_inclusive:
                 raise ValueError("Range with unbounded end must be right-exclusive")
-        elif start is not None:
-            check_op: Callable[[Any, Any], bool] = {
+        elif self.start is not None:
+            check_op = {
                 RangeBoundaries.EXCLUSIVE_EXCLUSIVE: operator.lt,
                 RangeBoundaries.EXCLUSIVE_INCLUSIVE: operator.lt,
                 RangeBoundaries.INCLUSIVE_EXCLUSIVE: operator.lt,
                 RangeBoundaries.INCLUSIVE_INCLUSIVE: operator.le,
-            }[range_boundaries]
-            if not check_op(start, end):
+            }[self.boundaries]
+            if not check_op(self.start, self.end):
                 raise ValueError("Invalid boundaries for range")
-
-        object.__setattr__(self, "start", start)
-        object.__setattr__(self, "end", end)
-        object.__setattr__(self, "boundaries", range_boundaries)
-        object.__setattr__(self, "_is_left_exclusive", _is_left_exclusive)
-        object.__setattr__(self, "_is_left_inclusive", _is_left_inclusive)
-        object.__setattr__(self, "_is_right_exclusive", _is_right_exclusive)
-        object.__setattr__(self, "_is_right_inclusive", _is_right_inclusive)
 
     @classmethod
     def continuum(cls) -> Range[T]:
@@ -235,12 +220,6 @@ class Range(Generic[T]):
 
     def __repr__(self) -> str:
         return f"<Range: {str(self)}>"
-
-    def __setattr__(self, name: str, value: Any) -> None:
-        if name in type(self).__slots__:
-            raise AttributeError("Can't set attributes")
-        else:
-            super().__setattr__(name, value)
 
     def __hash__(self) -> int:
         return hash((self.start, self.end, self.boundaries))
@@ -469,9 +448,6 @@ class FiniteRange(Range[T]):
     and then skip checking if the endpoints are None.
     """
 
-    __slots__ = ()
-
-    # Redefine types in base class
     start: T
     end: T
 
@@ -497,13 +473,8 @@ class HalfFiniteRange(Range[T]):
     HalfFiniteRange.
     """
 
-    __slots__ = ()
-
-    # Redefine types in base class
     start: T
-
-    def __init__(self, start: T, end: Optional[T] = None):
-        super().__init__(start, end, boundaries=RangeBoundaries.INCLUSIVE_EXCLUSIVE)
+    boundaries = RangeBoundaries.INCLUSIVE_EXCLUSIVE
 
     def intersection(self, other: Range[T]) -> Optional["HalfFiniteRange[T]"]:
         """
@@ -809,8 +780,6 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
     of time.
     """
 
-    __slots__ = ()
-
     def __init__(self, start: datetime.datetime, end: datetime.datetime):
         """
         Force the boundaries of the range to be [).
@@ -855,8 +824,6 @@ class FiniteDateRange(FiniteRange[datetime.date]):
     This subclass is a helper for a common usecase for ranges - representing finite intervals
     of whole days.
     """
-
-    __slots__ = ()
 
     def __init__(self, start: datetime.date, end: datetime.date):
         """
