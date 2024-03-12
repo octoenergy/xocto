@@ -1,8 +1,4 @@
-"""
-Utility types to save having to redefine the same things over and over.
-"""
-
-from typing import Any, Generic, Protocol, Tuple, TypeVar, Union
+from typing import Generic, Tuple, TypeVar, Union
 
 from django.contrib.auth import models as auth_models
 from django.db import models
@@ -33,26 +29,6 @@ OptionalOneToOneField = Union[
 
 # A type variable to describe the Django model choices kwarg
 Choices = Tuple[Tuple[str, str], ...]
-
-
-T = TypeVar("T", covariant=True)
-
-
-class Comparable(Protocol[T]):
-    """
-    Just a very basic way of describing an object that can be compared to another using some
-    basic operations.
-    """
-
-    def __eq__(self, other: Any) -> bool: ...
-
-    def __lt__(self, other: Any) -> bool: ...
-
-    def __le__(self, other: Any) -> bool: ...
-
-    def __gt__(self, other: Any) -> bool: ...
-
-    def __ge__(self, other: Any) -> bool: ...
 
 
 class AuthenticatedRequest(HttpRequest, Generic[User]):

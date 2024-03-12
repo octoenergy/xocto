@@ -10,12 +10,13 @@ Utility types to save having to redefine the same things over and over.
 
 ```{eval-rst}
 
-.. autodata:: xocto.types.Model
-.. autodata:: xocto.types.ForeignKey
-.. autodata:: xocto.types.OneToOneField
-.. autodata:: xocto.types.OptionalForeignKey
-.. autodata:: xocto.types.Choices
-.. autodata:: xocto.types.T
+.. autodata:: xocto.types.django.Model
+.. autodata:: xocto.types.django.ForeignKey
+.. autodata:: xocto.types.django.OneToOneField
+.. autodata:: xocto.types.django.OptionalForeignKey
+.. autodata:: xocto.types.django.Choices
+.. autodata:: xocto.types.generic.T
+.. autodata:: xocto.types.generic.Comparable
 ```
 
 ## API Reference
@@ -29,5 +30,3 @@ Utility types to save having to redefine the same things over and over.
    :undoc-members:
    :show-inheritance:
 ```
-
-
