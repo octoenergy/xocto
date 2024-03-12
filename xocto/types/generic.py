@@ -6,8 +6,7 @@ T = TypeVar("T", covariant=True)
 
 class Comparable(Protocol[T]):
     """
-    Just a very basic way of describing an object that can be compared to another using some
-    basic operations.
+    A way of describing an object that can be compared to another using some basic operations.
     """
 
     def __eq__(self, other: Any) -> bool: ...
