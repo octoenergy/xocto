@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## v5.0.0 - Unreleased
+
+- [Breaking] Range types are now (mostly) immutable [#142](https://github.com/octoenergy/xocto/pull/142)
+    - start, end, and bounds can no longer be modified after creation
+- [Breaking] The `types` module is now split into a package containing `types.generic` and `types.django` [#144](https://github.com/octoenergy/xocto/pull/144)
+    - `xocto.numbers` and `xocto.ranges` can now be imported without configuring Django
+
+
 ## v4.10.2 - 2024-03-13
 
 - Yanked v4.10.1 due to unintentional inclusion of breaking changes. This release is identical to v4.10.1, but with the breaking changes from [#142](https://github.com/octoenergy/xocto/pull/142) removed.
