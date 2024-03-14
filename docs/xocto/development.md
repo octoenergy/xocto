@@ -67,7 +67,7 @@ where:
 
 Create a pull request that:
 
-1. Adds release notes to `CHANGELOG.md`.
+1. Moves the latest unreleased changes in `CHANGELOG.md` to the next version number.
 
 2. Update the `version` constant in `pyproject.toml`, following the
    [semver.org](https://semver.org/) specification.
