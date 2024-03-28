@@ -1226,7 +1226,11 @@ class TestLocalFileStore:
         assert result_df.shape == (1, 2)
 
         assert result_df["string_column"][0] == "A"
-        assert result_df["array_column"][0] == [1, 2, 3]
+        assert tuple(result_df["array_column"][0]) == (
+            1,
+            2,
+            3,
+        )
 
     def test_query_dataframe_with_sql_with_capitalised_object_in_query(self):
         dummy_df = pd.DataFrame(self.sample_dataframe)
