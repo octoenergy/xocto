@@ -4,7 +4,7 @@ Adapter fields for postgres range types that return xocto.Range python objects.
 
 import datetime
 import json
-from typing import Optional
+from typing import Any, Optional, Union
 
 from django.contrib.postgres import fields as pg_fields
 from django.contrib.postgres.fields import ranges as pg_ranges
@@ -25,15 +25,21 @@ class FiniteDateRangeField(pg_fields.DateRangeField):
     """
 
     def get_prep_value(
-        self, value: Optional[ranges.FiniteDateRange]
-    ) -> Optional[pg_ranges.DateRange]:
+        self, value: Any
+    ) -> Optional[Union[pg_ranges.DateRange, datetime.date]]:
         if value is None:
             return None
-        if not isinstance(value, ranges.FiniteDateRange):
-            raise TypeError(
-                "FiniteDateRangeField may only accept FiniteDateRange objects."
-            )
-        return pg_ranges.DateRange(lower=value.start, upper=value.end, bounds="[]")
+        if isinstance(value, ranges.FiniteDateRange):
+            return pg_ranges.DateRange(lower=value.start, upper=value.end, bounds="[]")
+        if (
+            isinstance(value, datetime.date)
+            # Don't allow datetime (datetime is a subclass of date!)
+            and not isinstance(value, datetime.datetime)
+        ):
+            return value
+        raise TypeError(
+            "FiniteDateRangeField may only accept FiniteDateRange or date objects."
+        )
 
     def from_db_value(
         self,
@@ -96,16 +102,18 @@ class FiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
     """
 
     def get_prep_value(
-        self, value: Optional[ranges.FiniteDatetimeRange]
-    ) -> Optional[pg_ranges.DateTimeTZRange]:
+        self, value: Any
+    ) -> Optional[Union[pg_ranges.DateTimeTZRange, datetime.datetime]]:
         if value is None:
             return None
-        if not isinstance(value, ranges.FiniteDatetimeRange):
-            raise TypeError(
-                "FiniteDateTimeRangeField may only accept FiniteDatetimeRange objects."
+        if isinstance(value, ranges.FiniteDatetimeRange):
+            return pg_ranges.DateTimeTZRange(
+                lower=value.start, upper=value.end, bounds="[)"
             )
-        return pg_ranges.DateTimeTZRange(
-            lower=value.start, upper=value.end, bounds="[)"
+        if isinstance(value, datetime.datetime):
+            return value
+        raise TypeError(
+            "FiniteDateTimeRangeField may only accept FiniteDatetimeRange or datetime objects."
         )
 
     def from_db_value(
@@ -158,16 +166,18 @@ class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
     """
 
     def get_prep_value(
-        self, value: Optional[ranges.HalfFiniteDatetimeRange]
-    ) -> Optional[pg_ranges.DateTimeTZRange]:
+        self, value: Any
+    ) -> Optional[Union[pg_ranges.DateTimeTZRange, datetime.datetime]]:
         if value is None:
             return None
-        if not self._is_half_finite_datetime_range(value):
-            raise TypeError(
-                "HalfFiniteDateTimeRangeField may only accept HalfFiniteDatetimeRange objects."
+        if self._is_half_finite_datetime_range(value):
+            return pg_ranges.DateTimeTZRange(
+                lower=value.start, upper=value.end, bounds="[)"
             )
-        return pg_ranges.DateTimeTZRange(
-            lower=value.start, upper=value.end, bounds="[)"
+        if isinstance(value, datetime.datetime):
+            return value
+        raise TypeError(
+            "HalfFiniteDateTimeRangeField may only accept HalfFiniteDateTimeRangeField or datetime objects."
         )
 
     def from_db_value(

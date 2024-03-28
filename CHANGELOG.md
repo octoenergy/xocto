@@ -8,7 +8,7 @@
     - start, end, and bounds can no longer be modified after creation
 - [Breaking] The `types` module is now split into a package containing `types.generic` and `types.django` [#144](https://github.com/octoenergy/xocto/pull/144)
     - `xocto.numbers` and `xocto.ranges` can now be imported without configuring Django
-
+- Postgres range database fields now allow querying by a single value.
 
 ## v4.10.2 - 2024-03-13
 
