@@ -162,13 +162,7 @@ class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
     ) -> Optional[pg_ranges.DateTimeTZRange]:
         if value is None:
             return None
-        if (
-            # HalfFiniteDatetimeRange is a subscripted generic and may not be checked with
-            # isinstance directly. So, we check for it's parent class and attribute values.
-            not isinstance(value, ranges.HalfFiniteRange)  # type: ignore [redundant-expr]
-            or not isinstance(value.start, datetime.datetime)  # type: ignore [redundant-expr]
-            or (value.end is not None and not isinstance(value.end, datetime.datetime))
-        ):
+        if not self._is_half_finite_datetime_range(value):
             raise TypeError(
                 "HalfFiniteDateTimeRangeField may only accept HalfFiniteDatetimeRange objects."
             )
@@ -218,3 +212,14 @@ class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
                 "end": base_field.value_to_string(end),
             }
         )
+
+    def _is_half_finite_datetime_range(self, value: Any) -> bool:
+        # HalfFiniteDatetimeRange is a subscripted generic and may not be checked with
+        # isinstance directly. So, we check for it's parent class and attribute values.
+        if not isinstance(value, ranges.HalfFiniteRange):
+            return False
+        if not isinstance(value.start, datetime.datetime):
+            return False
+        if value.end is not None and not isinstance(value.end, datetime.datetime):
+            return False
+        return True
