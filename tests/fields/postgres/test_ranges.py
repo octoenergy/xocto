@@ -80,21 +80,30 @@ class TestFiniteDateRangeField:
         ).exists()
 
     def test_query_does_not_allow_tuple_values(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="FiniteDateRangeField may only accept FiniteDateRange or date objects",
+        ):
             models.FiniteDateRangeModel.objects.filter(
                 finite_date_range=(
                     datetime.date(2024, 1, 10),
                     datetime.date(2024, 2, 9),
                 )
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="FiniteDateRangeField may only accept FiniteDateRange or date objects",
+        ):
             models.FiniteDateRangeModel.objects.filter(
                 finite_date_range__overlap=(
                     datetime.date(2024, 1, 1),
                     datetime.date(2024, 1, 15),
                 )
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="FiniteDateRangeField may only accept FiniteDateRange or date objects",
+        ):
             models.FiniteDateRangeModel.objects.filter(
                 finite_date_range__contains=(
                     datetime.date(2024, 1, 11),
@@ -186,21 +195,30 @@ class TestFiniteDateTimeRangeField:
         ).exists()
 
     def test_query_does_not_allow_tuple_values(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="FiniteDateTimeRangeField may only accept FiniteDatetimeRange or datetime objects",
+        ):
             models.FiniteDateTimeRangeModel.objects.filter(
                 finite_datetime_range=(
                     localtime.datetime(2024, 1, 10),
                     localtime.datetime(2024, 2, 9),
                 )
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="FiniteDateTimeRangeField may only accept FiniteDatetimeRange or datetime objects",
+        ):
             models.FiniteDateTimeRangeModel.objects.filter(
                 finite_datetime_range__overlap=(
                     localtime.datetime(2024, 1, 1),
                     localtime.datetime(2024, 1, 15),
                 )
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="FiniteDateTimeRangeField may only accept FiniteDatetimeRange or datetime objects",
+        ):
             models.FiniteDateTimeRangeModel.objects.filter(
                 finite_datetime_range__contains=(
                     localtime.datetime(2024, 1, 11),
@@ -338,35 +356,50 @@ class TestHalfFiniteDateTimeRangeField:
         ).exists()
 
     def test_query_does_not_allow_tuple_values(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="HalfFiniteDateTimeRangeField may only accept HalfFiniteDateTimeRangeField or datetime objects",
+        ):
             models.HalfFiniteDateTimeRangeModel.objects.filter(
                 half_finite_datetime_range=(
                     localtime.datetime(2024, 1, 10),
                     None,
                 )
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="HalfFiniteDateTimeRangeField may only accept HalfFiniteDateTimeRangeField or datetime objects",
+        ):
             models.HalfFiniteDateTimeRangeModel.objects.filter(
                 half_finite_datetime_range__overlap=(
                     localtime.datetime(2024, 1, 1),
                     localtime.datetime(2024, 1, 15),
                 )
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="HalfFiniteDateTimeRangeField may only accept HalfFiniteDateTimeRangeField or datetime objects",
+        ):
             models.HalfFiniteDateTimeRangeModel.objects.filter(
                 half_finite_datetime_range__overlap=(
                     localtime.datetime(2024, 1, 1),
                     None,
                 )
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="HalfFiniteDateTimeRangeField may only accept HalfFiniteDateTimeRangeField or datetime objects",
+        ):
             models.HalfFiniteDateTimeRangeModel.objects.filter(
                 half_finite_datetime_range__contains=(
                     localtime.datetime(2024, 1, 11),
                     localtime.datetime(2024, 1, 15),
                 )
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError,
+            match="HalfFiniteDateTimeRangeField may only accept HalfFiniteDateTimeRangeField or datetime objects",
+        ):
             models.HalfFiniteDateTimeRangeModel.objects.filter(
                 half_finite_datetime_range__contains=(
                     localtime.datetime(2024, 1, 11),
