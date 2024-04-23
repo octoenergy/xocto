@@ -83,3 +83,35 @@ make tag
 ```
 
 This will trigger a Github action to publish the package to PyPI.
+
+### Backporting a fix
+
+If you've committed a bug fix that you'd like to release as a patch to a previous
+version (say, we've moved from 1.0.0 to 1.2.0 but you'd like to release a 1.0.1),
+then you can follow this recipe:
+
+1. Checkout the tag of the version you want to backport to:
+
+```sh
+git checkout v1.0.0
+```
+
+2. Then cherry-pick the specific commit you want to backport:
+
+```sh
+git cherry-pick <commit-hash>
+```
+
+3. Next, follow the release process as defined above. Add the release note, bump
+   the version to v1.0.1, and push the tag.
+
+4. Repeat the process for any other versions you want to backport to, such as
+   v1.1.0, ensuring that the changelog is updated to reflect v1.0.1 in each
+   version you're updating.
+
+5. Finally, update the changelog on `main` to reflect the newly backported versions.
+
+Backporting should be used sparingly, as it can result in a non-linear change
+history as release tags diverge. Only critical bug fixes should be backported,
+and usually only when a new major version with backward compatible changes has
+been released inbetween the fix and backport target.
