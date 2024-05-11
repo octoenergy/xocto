@@ -1351,7 +1351,7 @@ class LocalFileStore(BaseS3FileStore):
         # N.B. This is a bit brittle, and will only work if the following things are also in place:
         # - settings.MEDIA_ROOT and settings.MEDIA_URL need to be set.
         # - Django must be configured to serve locally uploaded file as per these instructions:
-        #   https://docs.djangoproject.com/en/2.2/howto/static-files/#serving-files-uploaded-by-a-user-during-development
+        #   https://docs.djangoproject.com/en/4.2/howto/static-files/#serving-files-uploaded-by-a-user-during-development
         # - A custom storage_root is not passed to the LocalFileStore constructor.
         if key_path.startswith(self.storage_root):
             url_path = key_path.split(self.storage_root)[1]
