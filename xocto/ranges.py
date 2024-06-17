@@ -830,6 +830,23 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         assert base_intersection.boundaries == RangeBoundaries.INCLUSIVE_EXCLUSIVE
         return FiniteDatetimeRange(base_intersection.start, base_intersection.end)
 
+    def union(self, other: Range[datetime.datetime]) -> Optional["FiniteDatetimeRange"]:
+        """
+        Unions between two FiniteDatetimeRanges should produce a FiniteDatetimeRange.
+        """
+        try:
+            base_union = super().union(other)
+        except ValueError:
+            return None
+
+        if base_union is None:
+            return None
+
+        assert base_union.boundaries == RangeBoundaries.INCLUSIVE_EXCLUSIVE
+        assert base_union.start is not None
+        assert base_union.end is not None
+        return FiniteDatetimeRange(base_union.start, base_union.end)
+
     def __and__(
         self, other: Range[datetime.datetime]
     ) -> Optional["FiniteDatetimeRange"]:
