@@ -887,6 +887,54 @@ class TestFiniteDateRange:
             assert 3 in subject
 
 
+class TestFiniteDatetimeRangeUnion:
+    def test_union_of_touching_ranges(self):
+        range = ranges.FiniteDatetimeRange(
+            start=datetime.datetime(2000, 1, 1),
+            end=datetime.datetime(2000, 1, 2),
+        )
+        other = ranges.FiniteDatetimeRange(
+            start=datetime.datetime(2000, 1, 2),
+            end=datetime.datetime(2000, 1, 3),
+        )
+
+        union = range | other
+
+        assert union == ranges.FiniteDatetimeRange(
+            start=datetime.datetime(2000, 1, 1),
+            end=datetime.datetime(2000, 1, 3),
+        )
+
+    def test_union_of_disjoint_ranges(self):
+        range = ranges.FiniteDateRange(
+            start=datetime.datetime(2000, 1, 1),
+            end=datetime.datetime(2000, 1, 2),
+        )
+        other = ranges.FiniteDatetimeRange(
+            start=datetime.datetime(2020, 1, 1),
+            end=datetime.datetime(2020, 1, 2),
+        )
+
+        assert range | other is None
+
+    def test_union_of_overlapping_ranges(self):
+        range = ranges.FiniteDatetimeRange(
+            start=datetime.datetime(2000, 1, 1),
+            end=datetime.datetime(2000, 1, 3),
+        )
+        other = ranges.FiniteDatetimeRange(
+            start=datetime.datetime(2000, 1, 2),
+            end=datetime.datetime(2000, 1, 4),
+        )
+
+        union = range | other
+
+        assert union == ranges.FiniteDatetimeRange(
+            start=datetime.datetime(2000, 1, 1),
+            end=datetime.datetime(2000, 1, 4),
+        )
+
+
 class TestAsFiniteDatetimePeriods:
     def test_converts(self):
         actually_finite_range = ranges.DatetimeRange(
