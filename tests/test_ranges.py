@@ -967,7 +967,6 @@ class TestAsFiniteDatetimePeriods:
         assert "Period is not finite at start or end or both" in str(exc_info.value)
 
 
-@pytest.mark.xfail(reason="Regression test")
 class TestRangeCopy:
     def test_range_copy(self):
         r1 = ranges.Range(1, 2)
@@ -978,6 +977,23 @@ class TestRangeCopy:
         r1 = ranges.Range(1, 2)
         r2 = copy.deepcopy(r1)
         assert r1 == r2
+
+    @pytest.mark.parametrize(
+        "obj",
+        [
+            ranges.Range(1, 2),
+            ranges.FiniteDateRange(
+                datetime.date(2000, 1, 1), datetime.date(2000, 1, 2)
+            ),
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2000, 1, 1), datetime.datetime(2000, 1, 2)
+            ),
+            ranges.HalfFiniteRange(1, 2),
+        ],
+        ids=("range", "date_range", "datetime_range", "half_finite_range"),
+    )
+    def test_copies(self, obj):
+        assert obj == copy.copy(obj) == copy.deepcopy(obj)
 
 
 def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[int]:
