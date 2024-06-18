@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v5.0.1 - 2024-06-18
+
+- Implements `__copy__` and `__deepcopy__` on Range types [#160](https://github.com/octoenergy/xocto/pull/160/)
+
 ## v5.0.0 - 2024-06-18
 
 - [Breaking] Range types are now (mostly) immutable [#142](https://github.com/octoenergy/xocto/pull/142)
