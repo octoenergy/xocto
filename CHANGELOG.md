@@ -2,13 +2,15 @@
 
 ## Unreleased
 
-## v5.0.0 - Unreleased
+## v5.0.0 - 2024-06-18
 
 - [Breaking] Range types are now (mostly) immutable [#142](https://github.com/octoenergy/xocto/pull/142)
     - start, end, and bounds can no longer be modified after creation
 - [Breaking] The `types` module is now split into a package containing `types.generic` and `types.django` [#144](https://github.com/octoenergy/xocto/pull/144)
     - `xocto.numbers` and `xocto.ranges` can now be imported without configuring Django
-- Postgres range database fields now allow querying by a single value.
+- Postgres range database fields now allow querying by a single value [#150](https://github.com/octoenergy/xocto/pull/150)
+- `Storage.fetch_file` now supports fetching a range [#154](https://github.com/octoenergy/xocto/pull/154/)
+- Enables `FiniteDatetimeRange` to be unioned with more than two ranges [#155](https://github.com/octoenergy/xocto/pull/155)
 
 ## v4.10.2 - 2024-03-13
 
