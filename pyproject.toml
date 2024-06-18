@@ -54,7 +54,7 @@ dev = [
   "pytest-django==4.8.0",
   "pytest-mock==3.12.0",
   "pytest==8.0.2",
-  "ruff==0.3.0",
+  "ruff==0.4.9",
   "time-machine==2.13.0",
   "twine==4.0.2",
   "types-openpyxl==3.0.4.5",
