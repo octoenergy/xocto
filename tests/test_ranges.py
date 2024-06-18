@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import datetime
 import re
 from typing import Any
@@ -964,6 +965,19 @@ class TestAsFiniteDatetimePeriods:
             )
 
         assert "Period is not finite at start or end or both" in str(exc_info.value)
+
+
+@pytest.mark.xfail(reason="Regression test")
+class TestRangeCopy:
+    def test_range_copy(self):
+        r1 = ranges.Range(1, 2)
+        r2 = copy.copy(r1)
+        assert r1 == r2
+
+    def test_range_deepcopy(self):
+        r1 = ranges.Range(1, 2)
+        r2 = copy.deepcopy(r1)
+        assert r1 == r2
 
 
 def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[int]:
