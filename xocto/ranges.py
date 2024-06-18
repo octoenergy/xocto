@@ -285,6 +285,22 @@ class Range(Generic[T]):
         """
         return self._is_inside_left_bound(item) and self._is_inside_right_bound(item)
 
+    def __copy__(self) -> Range[T]:
+        """
+        Return self.
+
+        Ranges are immutable, so there is no need to create a copy.
+        """
+        return self
+
+    def __deepcopy__(self, memo: dict[Any, Any]) -> Range[T]:
+        """
+        Return self.
+
+        Ranges are immutable, so there is no need to create a copy.
+        """
+        return self
+
     def _is_inside_left_bound(self, item: T) -> bool:
         """
         Check if the provided item is inside our left bound.
