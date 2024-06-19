@@ -19,7 +19,11 @@ from typing import (
     cast,
 )
 
+from dateutil import relativedelta
+
 from xocto.types import generic
+
+from . import localtime
 
 
 class RangeBoundaries(enum.Enum):
@@ -1034,3 +1038,32 @@ def as_finite_datetime_periods(
         finite_periods += [FiniteDatetimeRange(period.start, period.end)]
 
     return finite_periods
+
+
+def iterate_over_months(
+    period: FiniteDatetimeRange, *, tz: datetime.tzinfo
+) -> Iterator[FiniteDatetimeRange]:
+    """
+    Generate a sequence of finite datetime ranges spanning months during the period.
+
+    Ranges span each whole month between the start and end times, inclusive.
+
+    ie: given a period of (15/01, 15/03) -> [
+        (15/01->01/02),
+        (01/02->01/03),
+        (01/03->15/03)
+    ]
+    """
+    start_at = localtime.as_localtime(period.start, tz=tz)
+    end_at = localtime.as_localtime(period.end, tz=tz)
+
+    while True:
+        next_start = start_at + relativedelta.relativedelta(months=1, day=1)
+        this_end = next_start
+
+        if end_at <= this_end:
+            yield FiniteDatetimeRange(start_at, end_at)
+            return
+
+        yield FiniteDatetimeRange(start_at, this_end)
+        start_at = next_start

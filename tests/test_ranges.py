@@ -9,7 +9,7 @@ import pytest
 from hypothesis import assume, given
 from hypothesis.strategies import composite, integers, none, one_of, sampled_from
 
-from xocto import ranges
+from xocto import localtime, ranges
 
 
 @composite
@@ -994,6 +994,133 @@ class TestRangeCopy:
     )
     def test_copies(self, obj):
         assert obj == copy.copy(obj) == copy.deepcopy(obj)
+
+
+class TestIterateOverMonths:
+    @pytest.mark.parametrize(
+        "row",
+        [
+            {
+                "period": ranges.FiniteDatetimeRange(
+                    datetime.datetime(2023, 6, 12, tzinfo=localtime.UTC),
+                    datetime.datetime(2023, 6, 26, tzinfo=localtime.UTC),
+                ),
+                "expected": [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2023, 6, 12, tzinfo=localtime.UTC),
+                        datetime.datetime(2023, 6, 26, tzinfo=localtime.UTC),
+                    )
+                ],
+                "id": "within-one-month",
+            },
+            {
+                "period": ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 5, 12, tzinfo=localtime.UTC),
+                    datetime.datetime(2021, 6, 26, tzinfo=localtime.UTC),
+                ),
+                "expected": [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 5, 12, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 6, 1, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 6, 1, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 6, 26, tzinfo=localtime.UTC),
+                    ),
+                ],
+                "id": "spanning-two-months",
+            },
+            {
+                "period": ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 4, 12, tzinfo=localtime.UTC),
+                    datetime.datetime(2021, 6, 26, tzinfo=localtime.UTC),
+                ),
+                "expected": [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 4, 12, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 5, 1, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 5, 1, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 6, 1, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 6, 1, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 6, 26, tzinfo=localtime.UTC),
+                    ),
+                ],
+                "id": "spanning-three-months",
+            },
+            {
+                "period": ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 1, 31, 0, 0, tzinfo=localtime.UTC),
+                    datetime.datetime(2022, 2, 1, 0, 0, tzinfo=localtime.UTC),
+                ),
+                "expected": [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 1, 31, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 2, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 2, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 3, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 3, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 4, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 4, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 5, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 5, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 6, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 6, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 7, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 7, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 8, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 8, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 9, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 9, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 10, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 10, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 11, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 11, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 12, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 12, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2022, 1, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2022, 1, 1, 0, 0, tzinfo=localtime.UTC),
+                        datetime.datetime(2022, 2, 1, 0, 0, tzinfo=localtime.UTC),
+                    ),
+                ],
+                "id": "spanning-thirteen-months",
+            },
+        ],
+        ids=lambda row: row["id"],
+    )
+    def test_yields_correct_ranges(self, row):
+        result = list(
+            ranges.iterate_over_months(period=row["period"], tz=localtime.UTC)
+        )
+
+        assert result == row["expected"]
 
 
 def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[int]:
