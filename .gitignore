@@ -32,3 +32,11 @@ tags
 
 # Editor configs
 *.code-workspace
+
+# Python virtual environment folders
+.venv/
+env/
+venv/
+
+# Config file for direnv shell extension for per-directory environments
+.envrc
