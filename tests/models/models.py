@@ -1,5 +1,6 @@
 from django.db import models
 
+from xocto.fields.postgres import ltree
 from xocto.fields.postgres import ranges as range_fields
 
 
@@ -18,3 +19,8 @@ class HalfFiniteDateTimeRangeModel(models.Model):
     half_finite_datetime_range_nullable = range_fields.HalfFiniteDateTimeRangeField(
         null=True
     )
+
+
+class TreeModel(models.Model):
+    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+    path = ltree.LtreeField()
