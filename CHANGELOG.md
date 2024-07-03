@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v5.1.0 - 2024-07-03
+
+- Add `ranges.iterate_over_months` function [#163](https://github.com/octoenergy/xocto/pull/163)
+
 ## v5.0.1 - 2024-06-18
 
 - Implements `__copy__` and `__deepcopy__` on Range types [#160](https://github.com/octoenergy/xocto/pull/160/)
