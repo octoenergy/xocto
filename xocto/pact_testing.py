@@ -35,12 +35,12 @@ def pact_service(
     pact_broker_password: str,
     pact_consumer_name: str,
     pact_provider_name: str,
-    pact_version: str,
+    pact_consumer_version: str,
     publish_to_broker: bool,
     pact_log_path: str = "pact_logs",
 ) -> pact.Pact:
     service = pact.Consumer(
-        name=pact_consumer_name, tag_with_git_branch=True, version=pact_version
+        name=pact_consumer_name, tag_with_git_branch=True, version=pact_consumer_version
     ).has_pact_with(
         pact.Provider(pact_provider_name),
         publish_to_broker=publish_to_broker,
