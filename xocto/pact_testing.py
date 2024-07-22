@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import json
 import os
 import subprocess
@@ -7,6 +8,17 @@ from typing import Any
 
 import pact
 import requests
+
+
+@dataclasses.dataclass(frozen=True)  # Use kw_only=True once we're on Python 3.10.
+class PactOptions:
+    broker_url: str
+    broker_username: str
+    broker_password: str
+    consumer_name: str
+    provider_name: str
+    consumer_version: str
+    log_path: str
 
 
 class PactConsumerClient:
@@ -29,26 +41,19 @@ class PactConsumerClient:
         return response.json()
 
 
-def pact_service(
-    pact_broker_url: str,
-    pact_broker_username: str,
-    pact_broker_password: str,
-    pact_consumer_name: str,
-    pact_provider_name: str,
-    pact_consumer_version: str,
-    publish_to_broker: bool,
-    pact_log_path: str = "pact_logs",
-) -> pact.Pact:
+def pact_service(*, options: PactOptions, publish_to_broker: bool) -> pact.Pact:
     service = pact.Consumer(
-        name=pact_consumer_name, tag_with_git_branch=True, version=pact_consumer_version
+        name=options.consumer_name,
+        tag_with_git_branch=True,
+        version=options.consumer_version,
     ).has_pact_with(
-        pact.Provider(pact_provider_name),
+        pact.Provider(options.provider_name),
         publish_to_broker=publish_to_broker,
-        broker_base_url=pact_broker_url,
-        broker_username=pact_broker_username,
-        broker_password=pact_broker_password,
-        pact_dir=pact_log_path,
-        log_dir=pact_log_path,
+        broker_base_url=options.broker_url,
+        broker_username=options.broker_username,
+        broker_password=options.broker_password,
+        pact_dir=options.log_path,
+        log_dir=options.log_path,
     )
 
     return service
