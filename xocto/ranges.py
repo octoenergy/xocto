@@ -876,8 +876,48 @@ class FiniteDateRange(FiniteRange[datetime.date]):
         if base_intersection is None:
             return None
 
-        assert base_intersection.boundaries == RangeBoundaries.INCLUSIVE_INCLUSIVE
         return FiniteDateRange(base_intersection.start, base_intersection.end)
+
+    def difference(self, other: Range[datetime.date]) -> Optional["FiniteDateRange"]:
+        """
+        Difference between two FiniteDateRanges should produce a FiniteDateRange.
+        """
+        if self.is_disjoint(other):
+            return self
+
+        boundaries = RangeBoundaries.INCLUSIVE_INCLUSIVE
+
+        if (self.start is None and other.start is not None) or (
+            self.start is not None
+            and other.start is not None
+            and not other._is_inside_left_bound(self.start)
+            and self._is_inside_left_bound(other.start)
+        ):
+            lower_part: Optional["Range[T]"] = Range(
+                self.start, other.start, boundaries=boundaries
+            )
+        else:
+            lower_part = None
+
+        if (self.end is None and other.end is not None) or (
+            self.end is not None
+            and other.end is not None
+            and not other._is_inside_right_bound(self.end)
+            and self._is_inside_right_bound(other.end)
+        ):
+            upper_part: Optional["Range[T]"] = Range(
+                other.end, self.end, boundaries=boundaries
+            )
+        else:
+            upper_part = None
+
+        if lower_part is None and upper_part is None:
+            return None
+        elif lower_part is not None and upper_part is not None:
+            return RangeSet([lower_part, upper_part])
+        else:
+            return lower_part or upper_part
+
 
     def union(self, other: Range[datetime.date]) -> Optional["FiniteDateRange"]:
         """
