@@ -22,6 +22,7 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
 ]
 license = {text = "MIT"}
 dependencies = [
@@ -47,10 +48,10 @@ dev = [
   "moto[s3,sqs]",
   "mypy-boto3-s3",
   "mypy",
-  "numpy",
+  "numpy>=1.26.4",
   "pre-commit",
   "psycopg2",
-  "pyarrow-stubs",
+  "pyarrow-stubs>=10.0.1.9",
   "pytest-django",
   "pytest-mock",
   "pytest",
@@ -209,6 +210,8 @@ section-order = [
 filterwarnings = [
     "error::RuntimeWarning",
     "error::DeprecationWarning",
+    "ignore:datetime.datetime.utcfromtimestamp\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning",
+    "ignore:datetime.datetime.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning",
     "ignore:defusedxml.lxml:DeprecationWarning:zeep",
     "ignore:Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3:DeprecationWarning:(graphene|singledispatch)",
     # https://github.com/ktosiek/pytest-freezegun/issues/35

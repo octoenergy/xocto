@@ -136,7 +136,7 @@ nh3==0.2.18
     # via readme-renderer
 nodeenv==1.9.1
     # via pre-commit
-numpy==1.22.2
+numpy==1.26.4
     # via
     #   xocto (pyproject.toml)
     #   pandas
@@ -175,7 +175,7 @@ psycopg2==2.9.9
     # via xocto (pyproject.toml)
 pyarrow==17.0.0
     # via xocto (pyproject.toml)
-pyarrow-stubs==10.0.1.6
+pyarrow-stubs==10.0.1.9
     # via xocto (pyproject.toml)
 pycparser==2.22
     # via cffi
