@@ -46,6 +46,15 @@ of this workflow:
 This is why typically in shared projects version releases are separated into
 their own pull requests.
 
+## Altering dependencies
+
+* Edit `pyproject.toml`.
+* `make sync_requirements` to refresh `requirements.txt`.
+* `make install test format_check lint_check mypy`.
+
+When you are ready, commit both `pyproject.toml` and
+`requirements.txt`.
+
 ## Publishing
 
 ### Version number
