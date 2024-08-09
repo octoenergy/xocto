@@ -25,6 +25,8 @@ botocore==1.29.53
     #   s3transfer
 bytecode==0.15.1
     # via ddtrace
+cachetools==5.4.0
+    # via tox
 cattrs==23.2.3
     # via ddtrace
 certifi==2024.7.4
@@ -35,12 +37,16 @@ cffi==1.17.0
     #   pact-python
 cfgv==3.4.0
     # via pre-commit
+chardet==5.2.0
+    # via tox
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via
     #   pact-python
     #   uvicorn
+colorama==0.4.6
+    # via tox
 cryptography==43.0.0
     # via moto
 ddsketch==3.0.1
@@ -70,7 +76,9 @@ exceptiongroup==1.2.2
 fastapi==0.112.0
     # via pact-python
 filelock==3.15.4
-    # via virtualenv
+    # via
+    #   tox
+    #   virtualenv
 h11==0.14.0
     # via uvicorn
 hypothesis==6.62.1
@@ -138,7 +146,11 @@ openpyxl==3.1.5
 opentelemetry-api==1.16.0
     # via ddtrace
 packaging==24.1
-    # via pytest
+    # via
+    #   pyproject-api
+    #   pytest
+    #   tox
+    #   tox-uv
 pact-python==2.2.1
     # via xocto (pyproject.toml)
 pandas==2.0.3
@@ -146,9 +158,13 @@ pandas==2.0.3
 pkginfo==1.11.1
     # via twine
 platformdirs==4.2.2
-    # via virtualenv
+    # via
+    #   tox
+    #   virtualenv
 pluggy==1.5.0
-    # via pytest
+    # via
+    #   pytest
+    #   tox
 pre-commit==3.8.0
     # via xocto (pyproject.toml)
 protobuf==5.27.3
@@ -171,6 +187,8 @@ pygments==2.18.0
     # via
     #   readme-renderer
     #   rich
+pyproject-api==1.7.1
+    # via tox
 pytest==8.0.2
     # via
     #   xocto (pyproject.toml)
@@ -242,7 +260,15 @@ time-machine==2.14.1
 tomli==2.0.1
     # via
     #   mypy
+    #   pyproject-api
     #   pytest
+    #   tox
+tox==4.17.1
+    # via
+    #   xocto (pyproject.toml)
+    #   tox-uv
+tox-uv==1.11.1
+    # via xocto (pyproject.toml)
 twine==4.0.2
     # via xocto (pyproject.toml)
 types-openpyxl==3.0.4.5
@@ -269,6 +295,7 @@ typing-extensions==4.12.2
     #   pydantic
     #   pydantic-core
     #   starlette
+    #   tox-uv
     #   uvicorn
 tzdata==2024.1
     # via pandas
@@ -278,10 +305,14 @@ urllib3==1.26.19
     #   requests
     #   responses
     #   twine
+uv==0.2.34
+    # via tox-uv
 uvicorn==0.30.5
     # via pact-python
 virtualenv==20.26.3
-    # via pre-commit
+    # via
+    #   pre-commit
+    #   tox
 werkzeug==3.0.3
     # via moto
 wheel==0.38.4

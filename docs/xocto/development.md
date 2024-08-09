@@ -55,6 +55,17 @@ their own pull requests.
 When you are ready, commit both `pyproject.toml` and
 `requirements.txt`.
 
+## tox
+
+Run [tox](https://tox.wiki/) to test the package on supported versions
+of Python.
+
+Each versions of Python listed in `tox.ini` must be present on your
+system. On Linux it is probably easiest to build each version from
+source, using `make altinstall`.
+If you use Mac you can install each version using homebrew e.g.,
+`brew install python@3.9`.
+
 ## Publishing
 
 ### Version number
