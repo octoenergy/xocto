@@ -270,6 +270,23 @@ class TestFiniteDateTimeRangeField:
         assert obj.finite_datetime_range.start.tzinfo == TZ_DEFAULT
         assert obj.finite_datetime_range.start.tzinfo != TZ_MELB
 
+    @pytest.mark.xfail(
+        raises=ValueError,
+        reason="DST issue",
+        strict=True,
+    )
+    def test_dst_issue(self):
+        dst_missing_hour = ranges.FiniteDatetimeRange(
+            start=datetime.datetime(2021, 10, 31, 0, tzinfo=datetime.timezone.utc),
+            end=datetime.datetime(2021, 10, 31, 1, tzinfo=datetime.timezone.utc),
+        )
+        models.FiniteDateTimeRangeModel.objects.create(
+            finite_datetime_range=dst_missing_hour,
+        )
+        # Unable to get the data because the datetime (stored as UTC) is converted to a DST timezone
+        # and then both start and end == datetime.datetime(2021, 10, 31, 1,)
+        models.FiniteDateTimeRangeModel.objects.get()
+
 
 class TestHalfFiniteDateTimeRangeField:
     def test_roundtrip(self):
