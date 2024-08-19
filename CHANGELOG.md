@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- [Breaking] Use parameter object for passing options to `pact_service`.
+  Rename parameter `pact_version` to `consumer_version`.
+  [#167](https://github.com/octoenergy/xocto/pull/167)
+
 ## v5.1.0 - 2024-07-03
 
 - Add `ranges.iterate_over_months` function [#163](https://github.com/octoenergy/xocto/pull/163)
