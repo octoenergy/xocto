@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import datetime
 import re
+import zoneinfo
 from typing import Any
 
 import pytest
@@ -472,6 +473,21 @@ class TestRangeSet:
         rangeset = _rangeset_from_string(rangeset_str)
         other_rangeset = _rangeset_from_string(other_rangeset_str)
         assert str(rangeset - other_rangeset) == expected_result_str
+
+    def test_datetime_daylight_savings(self):
+        utc_start_time = datetime.datetime(
+            2024, 10, 27, 00, 59, tzinfo=zoneinfo.ZoneInfo(key="UTC")
+        )
+        utc_end_time = utc_start_time + datetime.timedelta(hours=1)
+        local_start_time = utc_start_time.astimezone(
+            zoneinfo.ZoneInfo(key="Europe/Amsterdam")
+        )
+        local_end_time = utc_end_time.astimezone(
+            zoneinfo.ZoneInfo(key="Europe/Amsterdam")
+        )
+
+        period = ranges.FiniteDatetimeRange(local_start_time, local_end_time)
+        assert period.seconds == 3600  # 1 hour
 
 
 class TestHalfFiniteRange:

@@ -833,8 +833,13 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
 
     def __init__(self, start: datetime.datetime, end: datetime.datetime):
         """
-        Force the boundaries of the range to be [).
+        Force the boundaries of the range to be [),
+        and in UTC to avoid daylight-saving issues.
         """
+        if start.tzinfo is not None:
+            start = start.astimezone(datetime.timezone.utc)
+        if end.tzinfo is not None:
+            end = end.astimezone(datetime.timezone.utc)
         super().__init__(start, end, boundaries=RangeBoundaries.INCLUSIVE_EXCLUSIVE)
 
     def intersection(

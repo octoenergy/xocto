@@ -248,7 +248,7 @@ class TestFiniteDateTimeRangeField:
         Timezones are converted correctly when round tripping.
         """
         TZ_MELB = zoneinfo.ZoneInfo("Australia/Melbourne")
-        TZ_DEFAULT = zoneinfo.ZoneInfo(settings.TIME_ZONE)
+        TZ_DEFAULT = datetime.timezone.utc
 
         finite_datetime_range_melb = ranges.FiniteDatetimeRange(
             start=datetime.datetime(2024, 1, 10, tzinfo=TZ_MELB),
