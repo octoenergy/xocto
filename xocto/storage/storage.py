@@ -1013,10 +1013,12 @@ class S3SubdirectoryFileStore(S3FileStore):
         return objects, next_token
 
     def list_files(self, namespace: str = "") -> Iterable[str]:
+        path_trim = 0
         if self.path:
+            path_trim = len(self.path) + 1
             namespace = os.path.join(self.path, namespace)
         full_paths = super().list_files(namespace)
-        yield from (path[len(self.path) + 1 :] for path in full_paths)
+        yield from (path[path_trim:] for path in full_paths)
 
     def copy(self, *, s3_object: S3Object, destination: str) -> S3Object:
         if self.path:

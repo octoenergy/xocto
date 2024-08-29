@@ -175,7 +175,6 @@ class TestS3SubdirectoryFileStore:
             Prefix="folder/a/b"
         )
 
-    @pytest.mark.xfail(reason="Expose bug when listing files with no bucket path")
     @mock.patch.object(storage.S3FileStore, "_get_boto_bucket")
     def test_list_files_no_path(self, get_boto_bucket):
         get_boto_bucket.return_value = mock.Mock(
