@@ -175,6 +175,29 @@ class TestS3SubdirectoryFileStore:
             Prefix="folder/a/b"
         )
 
+    @pytest.mark.xfail(reason="Expose bug when listing files with no bucket path")
+    @mock.patch.object(storage.S3FileStore, "_get_boto_bucket")
+    def test_list_files_no_path(self, get_boto_bucket):
+        get_boto_bucket.return_value = mock.Mock(
+            **{
+                "objects.filter.return_value": [
+                    mock.Mock(key="folder/a/b/"),
+                    mock.Mock(key="folder/a/b/foo.txt"),
+                    mock.Mock(key="folder/a/b/bar.txt"),
+                ]
+            }
+        )
+        store = storage.S3SubdirectoryFileStore("s3://some-bucket")
+
+        assert list(store.list_files(namespace="folder/a/b")) == [
+            "folder/a/b/foo.txt",
+            "folder/a/b/bar.txt",
+        ]
+        # Should be called including the subdirectory path.
+        get_boto_bucket.return_value.objects.filter.assert_called_once_with(
+            Prefix="folder/a/b"
+        )
+
     @mock.patch.object(storage.S3FileStore, "_get_boto_object")
     def test_fetch_file_fetches_given_path(self, get_boto_object):
         """Fetch file should act on the given path.
