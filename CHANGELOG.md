@@ -2,9 +2,13 @@
 
 ## Unreleased
 
+
+## v6.0.0 - 2024-08-30
+
 - [Breaking] Use parameter object for passing options to `pact_service`.
   Rename parameter `pact_version` to `consumer_version`.
-  [#167](https://github.com/octoenergy/xocto/pull/167)
+  [#166](https://github.com/octoenergy/xocto/pull/166)
+- Fix bug with `list_files`  method in `S3SubdirectoryFileStore` [#171] (https://github.com/octoenergy/xocto/pull/171)
 
 ## v5.1.0 - 2024-07-03
 
