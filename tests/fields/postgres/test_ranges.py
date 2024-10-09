@@ -5,7 +5,6 @@ import pytest
 from dateutil import relativedelta
 from django.conf import settings
 from django.core import serializers
-from django.utils import timezone
 
 from tests.models import models
 from xocto import localtime, ranges
@@ -247,6 +246,7 @@ class TestFiniteDateTimeRangeField:
         """
         Timezones are converted correctly when round tripping.
         """
+        TZ_UTC = zoneinfo.ZoneInfo("UTC")
         TZ_MELB = zoneinfo.ZoneInfo("Australia/Melbourne")
         TZ_DEFAULT = zoneinfo.ZoneInfo(settings.TIME_ZONE)
 
@@ -256,18 +256,27 @@ class TestFiniteDateTimeRangeField:
         )
         obj = models.FiniteDateTimeRangeModel.objects.create(
             finite_datetime_range=finite_datetime_range_melb,
+            finite_datetime_range_utc=finite_datetime_range_melb,
         )
         finite_datetime_range_london = ranges.FiniteDatetimeRange(
-            start=timezone.localtime(finite_datetime_range_melb.start),
-            end=timezone.localtime(finite_datetime_range_melb.end),
+            start=localtime.as_localtime(finite_datetime_range_melb.start),
+            end=localtime.as_localtime(finite_datetime_range_melb.end),
+        )
+        finite_datetime_range_utc = ranges.FiniteDatetimeRange(
+            start=localtime.as_utc(finite_datetime_range_melb.start),
+            end=localtime.as_utc(finite_datetime_range_melb.end),
         )
         obj.refresh_from_db()
         assert (
             obj.finite_datetime_range
+            == obj.finite_datetime_range_utc
             == finite_datetime_range_london
             == finite_datetime_range_melb
+            == finite_datetime_range_utc
         )
         assert obj.finite_datetime_range.start.tzinfo == TZ_DEFAULT
+        assert obj.finite_datetime_range.start.tzinfo != TZ_MELB
+        assert obj.finite_datetime_range_utc.start.tzinfo == TZ_UTC
         assert obj.finite_datetime_range.start.tzinfo != TZ_MELB
 
 
@@ -428,24 +437,35 @@ class TestHalfFiniteDateTimeRangeField:
         """
         Timezones are converted correctly when round tripping.
         """
+        TZ_UTC = zoneinfo.ZoneInfo("UTC")
         TZ_MELB = zoneinfo.ZoneInfo("Australia/Melbourne")
         TZ_DEFAULT = zoneinfo.ZoneInfo(settings.TIME_ZONE)
+
         half_finite_datetime_range_melb = ranges.HalfFiniteDatetimeRange(
             start=datetime.datetime(2024, 1, 10, tzinfo=TZ_MELB),
             end=None,
         )
         obj = models.HalfFiniteDateTimeRangeModel.objects.create(
             half_finite_datetime_range=half_finite_datetime_range_melb,
+            half_finite_datetime_range_utc=half_finite_datetime_range_melb,
         )
-        half_finite_datetime_range_london = ranges.HalfFiniteDatetimeRange(
-            start=timezone.localtime(half_finite_datetime_range_melb.start),
+        half_finite_datetime_range_london = ranges.FiniteDatetimeRange(
+            start=localtime.as_localtime(half_finite_datetime_range_melb.start),
+            end=None,
+        )
+        half_finite_datetime_range_utc = ranges.FiniteDatetimeRange(
+            start=localtime.as_utc(half_finite_datetime_range_melb.start),
             end=None,
         )
         obj.refresh_from_db()
         assert (
             obj.half_finite_datetime_range
+            == obj.half_finite_datetime_range_utc
             == half_finite_datetime_range_london
             == half_finite_datetime_range_melb
+            == half_finite_datetime_range_utc
         )
         assert obj.half_finite_datetime_range.start.tzinfo == TZ_DEFAULT
         assert obj.half_finite_datetime_range.start.tzinfo != TZ_MELB
+        assert obj.half_finite_datetime_range_utc.start.tzinfo == TZ_UTC
+        assert obj.half_finite_datetime_range_utc.start.tzinfo != TZ_MELB

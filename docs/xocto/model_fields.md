@@ -92,7 +92,8 @@ Type: [xocto.ranges.FiniteDatetimeRange](xocto.ranges.FiniteDatetimeRange)
 A field that represents an inclusive-exclusive `[)` ranges of timezone-aware
 datetimes. Both the start and end of the range must not be `None`.
 
-The values returned from the database will always be converted to the local timezone
+The values returned from the database will be converted to `timezone` if
+provided. If not provided, the values will be converted to the local timezone
 as per the `TIME_ZONE` setting in `settings.py`.
 
 ```python
@@ -132,7 +133,8 @@ Type: [xocto.ranges.HalfFiniteDatetimeRange](xocto.ranges.HalfFiniteRange)
 A field that represents an inclusive-exclusive `[)` ranges of timezone-aware
 datetimes. The end of the range may be open-ended, represented by `None`.
 
-The values returned from the database will always be converted to the local timezone
+The values returned from the database will be converted to `timezone` if
+provided. If not provided, the values will be converted to the local timezone
 as per the `TIME_ZONE` setting in `settings.py`.
 
 ```python
