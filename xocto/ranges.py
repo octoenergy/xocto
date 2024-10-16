@@ -954,6 +954,37 @@ class FiniteDateRange(FiniteRange[datetime.date]):
             Range(start=other_start, end=other_end, boundaries=other.boundaries)
         )
 
+    @classmethod
+    def parse(cls, range_str: str) -> FiniteDateRange:
+        """
+        Coverts a str into a FiniteDateRange.
+
+        :raises ValueError:
+            If the range string has incorrect boundaries.
+            If the range string has an incorrect number of parts.
+            If the range is not finite.
+
+        >>> FiniteDateRange.parse("[2021-01-01,2021-01-02]")
+        FiniteDateRange(start=datetime.date(2021, 1, 1), end=datetime.date(2021, 1, 2))
+        """
+        left_bracket = range_str[0]
+        right_bracket = range_str[-1]
+        if left_bracket + right_bracket != RangeBoundaries.INCLUSIVE_INCLUSIVE.value:
+            raise ValueError("Incorrect boundaries")
+
+        parts = range_str[1:-1].split(",")
+        if len(parts) != 2:
+            raise ValueError("String format is invalid")
+
+        start_str, end_str = parts
+        if not (start_str and end_str):
+            raise ValueError("Range is not finite")
+
+        return FiniteDateRange(
+            start=localtime.parse_date(start_str),
+            end=localtime.parse_date(end_str),
+        )
+
     def __and__(self, other: Range[datetime.date]) -> Optional["FiniteDateRange"]:
         return self.intersection(other)
 

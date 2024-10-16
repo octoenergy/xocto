@@ -701,6 +701,57 @@ class TestFiniteDateRange:
             )
             assert range.is_disjoint(other) is True
 
+    class TestParse:
+        def test_valid_range(self):
+            assert ranges.FiniteDateRange.parse(
+                "[2020-01-01,2020-01-03]"
+            ) == ranges.FiniteDateRange(
+                start=datetime.date(2020, 1, 1),
+                end=datetime.date(2020, 1, 3),
+            )
+
+        @pytest.mark.parametrize(
+            "left_bracket, right_bracket",
+            [
+                pytest.param("[", ")", id="inclusive-exclusive"),
+                pytest.param("(", "]", id="exclusive-inclusive"),
+                pytest.param("(", ")", id="exclusive-exclusive"),
+            ],
+        )
+        def test_incorrect_boundaries(self, left_bracket, right_bracket):
+            with pytest.raises(ValueError) as exc_info:
+                ranges.FiniteDateRange.parse(
+                    f"{left_bracket}2020-01-01,2020-01-03{right_bracket}"
+                )
+            assert "Incorrect boundaries" in str(exc_info.value)
+
+        @pytest.mark.parametrize(
+            "range_str",
+            [
+                pytest.param("[]", id="no-date"),
+                pytest.param("[2020-01-03]", id="single-date"),
+                pytest.param("[2020-01-01,2020-01-03,2020-01-05]", id="too-many-dates"),
+            ],
+        )
+        def test_invalid_range(self, range_str):
+            with pytest.raises(ValueError) as exc_info:
+                ranges.FiniteDateRange.parse(range_str)
+            assert "String format is invalid" in str(exc_info.value)
+
+        @pytest.mark.parametrize(
+            "range_str",
+            [
+                pytest.param("[,2020-01-03]", id="missing-start"),
+                pytest.param("[2020-01-01,]", id="missing-end"),
+                pytest.param("[,]", id="missing-dates"),
+            ],
+        )
+        def test_infinite_range(self, range_str):
+            with pytest.raises(ValueError) as exc_info:
+                ranges.FiniteDateRange.parse(range_str)
+
+            assert "Range is not finite" in str(exc_info.value)
+
     class TestUnion:
         @pytest.mark.parametrize(
             "range, other",
