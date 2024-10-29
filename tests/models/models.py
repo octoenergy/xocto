@@ -18,11 +18,23 @@ class FiniteDateTimeRangeModel(models.Model):
     )
 
 
+class FiniteDateTimeRangeUTCModel(models.Model):
+    finite_datetime_range = range_fields.FiniteDateTimeRangeField(
+        timezone=zoneinfo.ZoneInfo("UTC"), null=True
+    )
+
+
 class HalfFiniteDateTimeRangeModel(models.Model):
     half_finite_datetime_range = range_fields.HalfFiniteDateTimeRangeField()
     half_finite_datetime_range_nullable = range_fields.HalfFiniteDateTimeRangeField(
         null=True
     )
     half_finite_datetime_range_utc = range_fields.HalfFiniteDateTimeRangeField(
+        timezone=zoneinfo.ZoneInfo("UTC"), null=True
+    )
+
+
+class HalfFiniteDateTimeRangeUTCModel(models.Model):
+    half_finite_datetime_range = range_fields.HalfFiniteDateTimeRangeField(
         timezone=zoneinfo.ZoneInfo("UTC"), null=True
     )

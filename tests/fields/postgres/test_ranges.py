@@ -279,6 +279,28 @@ class TestFiniteDateTimeRangeField:
         assert obj.finite_datetime_range_utc.start.tzinfo == TZ_UTC
         assert obj.finite_datetime_range.start.tzinfo != TZ_MELB
 
+    def test_timezone_conversions_and_dst_issue(self):
+        TZ_UTC = zoneinfo.ZoneInfo("UTC")
+
+        dst_missing_hour = ranges.FiniteDatetimeRange(
+            start=datetime.datetime(2021, 10, 31, 0, tzinfo=TZ_UTC),
+            end=datetime.datetime(2021, 10, 31, 1, tzinfo=TZ_UTC),
+        )
+        utc_obj = models.FiniteDateTimeRangeUTCModel.objects.create(
+            finite_datetime_range=dst_missing_hour,
+        )
+        local_obj = models.FiniteDateTimeRangeModel.objects.create(
+            finite_datetime_range=dst_missing_hour,
+        )
+
+        # No issue getting this object as the range is configurated as UTC
+        utc_obj.refresh_from_db()
+
+        # Unable to get this object because the datetime (stored as UTC) is converted to a DST timezone
+        # and then both start and end == datetime.datetime(2021, 10, 31, 1,) raising a ValueError
+        with pytest.raises(ValueError):
+            local_obj.refresh_from_db()
+
 
 class TestHalfFiniteDateTimeRangeField:
     def test_roundtrip(self):
@@ -469,3 +491,25 @@ class TestHalfFiniteDateTimeRangeField:
         assert obj.half_finite_datetime_range.start.tzinfo != TZ_MELB
         assert obj.half_finite_datetime_range_utc.start.tzinfo == TZ_UTC
         assert obj.half_finite_datetime_range_utc.start.tzinfo != TZ_MELB
+
+    def test_timezone_conversions_and_dst_issue(self):
+        TZ_UTC = zoneinfo.ZoneInfo("UTC")
+
+        dst_missing_hour = ranges.HalfFiniteDatetimeRange(
+            start=datetime.datetime(2021, 10, 31, 0, tzinfo=TZ_UTC),
+            end=datetime.datetime(2021, 10, 31, 1, tzinfo=TZ_UTC),
+        )
+        utc_obj = models.HalfFiniteDateTimeRangeUTCModel.objects.create(
+            half_finite_datetime_range=dst_missing_hour,
+        )
+        local_obj = models.HalfFiniteDateTimeRangeModel.objects.create(
+            half_finite_datetime_range=dst_missing_hour,
+        )
+
+        # No issue getting this object as the range is configurated as UTC
+        utc_obj.refresh_from_db()
+
+        # Unable to get this object because the datetime (stored as UTC) is converted to a DST timezone
+        # and then both start and end == datetime.datetime(2021, 10, 31, 1,) raising a ValueError
+        with pytest.raises(ValueError):
+            local_obj.refresh_from_db()
