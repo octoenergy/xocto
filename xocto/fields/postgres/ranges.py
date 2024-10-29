@@ -93,7 +93,18 @@ class FiniteDateRangeField(pg_fields.DateRangeField):
         return value.upper - datetime.timedelta(days=1)
 
 
-class FiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
+class _LocaliserMixin:
+    def __init__(
+        self, *args: Any, timezone: Optional[datetime.tzinfo] = None, **kwargs: Any
+    ):
+        super().__init__(*args, **kwargs)
+        self._timezone = timezone
+
+    def localise(self, value: datetime.datetime) -> datetime.datetime:
+        return localtime.as_localtime(value, self._timezone)
+
+
+class FiniteDateTimeRangeField(_LocaliserMixin, pg_fields.DateTimeRangeField):
     """
     A DateTimeRangeField with Inclusive-Exclusive [) bounds that aren't infinite.
 
@@ -125,8 +136,8 @@ class FiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
         if value is None:
             return None
         return ranges.FiniteDatetimeRange(
-            start=localtime.as_localtime(value.lower),
-            end=localtime.as_localtime(value.upper),
+            start=self.localise(value.lower),
+            end=self.localise(value.upper),
         )
 
     def to_python(self, value: Optional[str]) -> Optional[ranges.FiniteDatetimeRange]:
@@ -134,8 +145,8 @@ class FiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
             return None
         obj = json.loads(value)
         return ranges.FiniteDatetimeRange(
-            start=localtime.as_localtime(self.base_field.to_python(obj["start"])),
-            end=localtime.as_localtime(self.base_field.to_python(obj["end"])),
+            start=self.localise(self.base_field.to_python(obj["start"])),
+            end=self.localise(self.base_field.to_python(obj["end"])),
         )
 
     def value_to_string(self, obj: models.Model) -> Optional[str]:
@@ -157,7 +168,7 @@ class FiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
         )
 
 
-class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
+class HalfFiniteDateTimeRangeField(_LocaliserMixin, pg_fields.DateTimeRangeField):
     """
     A DateTimeRangeField with Inclusive-Exclusive [) bounds that allows an infinite/open upper bound.
 
@@ -189,8 +200,8 @@ class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
         if value is None:
             return None
         return ranges.HalfFiniteDatetimeRange(
-            start=localtime.as_localtime(value.lower),
-            end=localtime.as_localtime(value.upper) if value.upper else None,
+            start=self.localise(value.lower),
+            end=self.localise(value.upper) if value.upper else None,
         )
 
     def to_python(
@@ -201,8 +212,8 @@ class HalfFiniteDateTimeRangeField(pg_fields.DateTimeRangeField):
         obj = json.loads(value)
         end = self.base_field.to_python(obj["end"])
         return ranges.HalfFiniteDatetimeRange(
-            start=localtime.as_localtime(self.base_field.to_python(obj["start"])),
-            end=localtime.as_localtime(end) if end else None,
+            start=self.localise(self.base_field.to_python(obj["start"])),
+            end=self.localise(end) if end else None,
         )
 
     def value_to_string(self, obj: models.Model) -> Optional[str]:
