@@ -3,6 +3,10 @@
 ## Unreleased
 
 
+## v6.1.0 - 2024-08-30
+
+- Add optional `timezone` parameter to datetime-based range fields [#174] (https://github.com/octoenergy/xocto/pull/174)
+
 ## v6.0.0 - 2024-08-30
 
 - [Breaking] Use parameter object for passing options to `pact_service`.
