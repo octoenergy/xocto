@@ -1,7 +1,9 @@
 install:
-	pip install pip==23.3.1
-	pip install -e '.[dev,docs]'
+	pip install uv==0.2.34
+	uv pip install -r requirements.txt --editable .
 
+sync_requirements:
+	uv pip compile --output-file=requirements.txt --extra=dev pyproject.toml
 
 # CI step wrappers
 
