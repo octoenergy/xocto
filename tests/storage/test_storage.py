@@ -1009,15 +1009,6 @@ class TestLocalFileStore:
         fetch_url = store.fetch_url("/media-root/bucket-name/some/key")
         assert fetch_url == "/media-url/bucket-name/some/key"
 
-    @pytest.mark.xfail
-    @override_settings(MEDIA_ROOT="/media-root/", MEDIA_URL="/media-url/")
-    def test_fetch_url_with_key_path_containing_root_and_bucket_returns_incorrect_url(
-        self,
-    ):
-        store = storage.LocalFileStore("bucket-name")
-        fetch_url = store.fetch_url("/media-root/bucket-name/some/key")
-        assert fetch_url == "/media-url/bucket-name//some/key"
-
     @mock.patch.object(storage.LocalFileStore, "_filepath_for_key_path")
     def test_fetch_csv_file_contents_using_s3_select(self, mock__filepath_for_key_path):
         store = storage.LocalFileStore("my_bucket")
