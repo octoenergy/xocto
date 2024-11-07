@@ -587,10 +587,12 @@ class S3FileStore(BaseS3FileStore):
         self,
         key_path: str,
         raw_sql: str,
-        input_serializer: s3_select.CSVInputSerializer
-        | s3_select.ParquetInputSerializer,
-        output_serializer: s3_select.CSVOutputSerializer
-        | s3_select.JSONOutputSerializer,
+        input_serializer: (
+            s3_select.CSVInputSerializer | s3_select.ParquetInputSerializer
+        ),
+        output_serializer: (
+            s3_select.CSVOutputSerializer | s3_select.JSONOutputSerializer
+        ),
         compression_type: s3_select.CompressionType | None = None,
         scan_range: s3_select.ScanRange | None = None,
         chunk_size: int | None = None,
@@ -606,9 +608,11 @@ class S3FileStore(BaseS3FileStore):
         if isinstance(input_serializer, s3_select.CSVInputSerializer):
             serialization = s3_select.get_serializers_for_csv_file(
                 input_serializer=input_serializer,
-                compression_type=compression_type
-                if compression_type is not None
-                else s3_select.CompressionType.NONE,
+                compression_type=(
+                    compression_type
+                    if compression_type is not None
+                    else s3_select.CompressionType.NONE
+                ),
                 output_serializer=output_serializer,
                 scan_range=scan_range,
             )
@@ -1188,10 +1192,12 @@ class LocalFileStore(BaseS3FileStore):
         self,
         key_path: str,
         raw_sql: str,
-        input_serializer: s3_select.CSVInputSerializer
-        | s3_select.ParquetInputSerializer,
-        output_serializer: s3_select.CSVOutputSerializer
-        | s3_select.JSONOutputSerializer,
+        input_serializer: (
+            s3_select.CSVInputSerializer | s3_select.ParquetInputSerializer
+        ),
+        output_serializer: (
+            s3_select.CSVOutputSerializer | s3_select.JSONOutputSerializer
+        ),
         compression_type: s3_select.CompressionType | None = None,
         scan_range: s3_select.ScanRange | None = None,
         chunk_size: int | None = None,
@@ -1367,7 +1373,7 @@ class LocalFileStore(BaseS3FileStore):
             url_path = key_path.split(self.storage_root)[1]
             # Remove the bucket name from the url path, because it's already going to be added
             # to the fetch URL.
-            url_path = url_path.replace(self.bucket_name, "")
+            url_path = url_path.replace(f"{self.bucket_name}/", "")
         else:
             # This won't give a working url, but at least it won't raise an exception.
             url_path = key_path
