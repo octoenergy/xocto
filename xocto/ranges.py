@@ -1085,3 +1085,34 @@ def iterate_over_months(
 
         yield FiniteDatetimeRange(start_at, this_end)
         start_at = next_start
+
+
+def date_range_for_midnight_range(
+    range: FiniteDatetimeRange,
+) -> FiniteDateRange:
+    """
+    Returns the date range of a midnight-aligned datetime range.
+
+    This can be useful where a range is available at datetime granularity,
+    but is used in functions that operate at date granularity.
+
+    Raises:
+        ValueError:
+            If the range boundaries are in different timezeones.
+            If the range boundaries are not midnight-aligned.
+    """
+    # First check range timezone is uniform.
+    if range.start.tzinfo != range.end.tzinfo:
+        raise ValueError("Start and end in different timezones")
+
+    # Check datetimes are both midnight-aligned.
+    if range.start.time() != datetime.time(0, 0):
+        raise ValueError("Start of range is not midnight-aligned")
+
+    if range.end.time() != datetime.time(0, 0):
+        raise ValueError("End of range is not midnight-aligned")
+
+    return FiniteDateRange(
+        range.start.date(),
+        range.end.date() - datetime.timedelta(days=1),
+    )
