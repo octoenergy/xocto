@@ -318,6 +318,34 @@ class TestRange:
                 # Ignore types here as structuring this to appease mypy would make it v ugly.
                 assert (a_difference | intersection | b_difference) == (a | b)  # type: ignore[operator]
 
+    class TestCopy:
+        def test_range_copy(self):
+            r1 = ranges.Range(1, 2)
+            r2 = copy.copy(r1)
+            assert r1 == r2
+
+        def test_range_deepcopy(self):
+            r1 = ranges.Range(1, 2)
+            r2 = copy.deepcopy(r1)
+            assert r1 == r2
+
+        @pytest.mark.parametrize(
+            "obj",
+            [
+                ranges.Range(1, 2),
+                ranges.FiniteDateRange(
+                    datetime.date(2000, 1, 1), datetime.date(2000, 1, 2)
+                ),
+                ranges.FiniteDatetimeRange(
+                    datetime.datetime(2000, 1, 1), datetime.datetime(2000, 1, 2)
+                ),
+                ranges.HalfFiniteRange(1, 2),
+            ],
+            ids=("range", "date_range", "datetime_range", "half_finite_range"),
+        )
+        def test_copies(self, obj):
+            assert obj == copy.copy(obj) == copy.deepcopy(obj)
+
 
 class TestRangeSet:
     @pytest.mark.parametrize(
@@ -888,52 +916,53 @@ class TestFiniteDateRange:
             assert 3 in subject
 
 
-class TestFiniteDatetimeRangeUnion:
-    def test_union_of_touching_ranges(self):
-        range = ranges.FiniteDatetimeRange(
-            start=datetime.datetime(2000, 1, 1),
-            end=datetime.datetime(2000, 1, 2),
-        )
-        other = ranges.FiniteDatetimeRange(
-            start=datetime.datetime(2000, 1, 2),
-            end=datetime.datetime(2000, 1, 3),
-        )
+class TestFiniteDatetimeRange:
+    class TestUnion:
+        def test_union_of_touching_ranges(self):
+            range = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 1),
+                end=datetime.datetime(2000, 1, 2),
+            )
+            other = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 2),
+                end=datetime.datetime(2000, 1, 3),
+            )
 
-        union = range | other
+            union = range | other
 
-        assert union == ranges.FiniteDatetimeRange(
-            start=datetime.datetime(2000, 1, 1),
-            end=datetime.datetime(2000, 1, 3),
-        )
+            assert union == ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 1),
+                end=datetime.datetime(2000, 1, 3),
+            )
 
-    def test_union_of_disjoint_ranges(self):
-        range = ranges.FiniteDateRange(
-            start=datetime.datetime(2000, 1, 1),
-            end=datetime.datetime(2000, 1, 2),
-        )
-        other = ranges.FiniteDatetimeRange(
-            start=datetime.datetime(2020, 1, 1),
-            end=datetime.datetime(2020, 1, 2),
-        )
+        def test_union_of_disjoint_ranges(self):
+            range = ranges.FiniteDateRange(
+                start=datetime.datetime(2000, 1, 1),
+                end=datetime.datetime(2000, 1, 2),
+            )
+            other = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2020, 1, 1),
+                end=datetime.datetime(2020, 1, 2),
+            )
 
-        assert range | other is None
+            assert range | other is None
 
-    def test_union_of_overlapping_ranges(self):
-        range = ranges.FiniteDatetimeRange(
-            start=datetime.datetime(2000, 1, 1),
-            end=datetime.datetime(2000, 1, 3),
-        )
-        other = ranges.FiniteDatetimeRange(
-            start=datetime.datetime(2000, 1, 2),
-            end=datetime.datetime(2000, 1, 4),
-        )
+        def test_union_of_overlapping_ranges(self):
+            range = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 1),
+                end=datetime.datetime(2000, 1, 3),
+            )
+            other = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 2),
+                end=datetime.datetime(2000, 1, 4),
+            )
 
-        union = range | other
+            union = range | other
 
-        assert union == ranges.FiniteDatetimeRange(
-            start=datetime.datetime(2000, 1, 1),
-            end=datetime.datetime(2000, 1, 4),
-        )
+            assert union == ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 1),
+                end=datetime.datetime(2000, 1, 4),
+            )
 
 
 class TestAsFiniteDatetimePeriods:
@@ -965,35 +994,6 @@ class TestAsFiniteDatetimePeriods:
             )
 
         assert "Period is not finite at start or end or both" in str(exc_info.value)
-
-
-class TestRangeCopy:
-    def test_range_copy(self):
-        r1 = ranges.Range(1, 2)
-        r2 = copy.copy(r1)
-        assert r1 == r2
-
-    def test_range_deepcopy(self):
-        r1 = ranges.Range(1, 2)
-        r2 = copy.deepcopy(r1)
-        assert r1 == r2
-
-    @pytest.mark.parametrize(
-        "obj",
-        [
-            ranges.Range(1, 2),
-            ranges.FiniteDateRange(
-                datetime.date(2000, 1, 1), datetime.date(2000, 1, 2)
-            ),
-            ranges.FiniteDatetimeRange(
-                datetime.datetime(2000, 1, 1), datetime.datetime(2000, 1, 2)
-            ),
-            ranges.HalfFiniteRange(1, 2),
-        ],
-        ids=("range", "date_range", "datetime_range", "half_finite_range"),
-    )
-    def test_copies(self, obj):
-        assert obj == copy.copy(obj) == copy.deepcopy(obj)
 
 
 class TestIterateOverMonths:
