@@ -886,6 +886,24 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         """
         return int((self.end - self.start).total_seconds())
 
+    def localize(self, tz: datetime.tzinfo) -> FiniteDatetimeRange:
+        """
+        Returns the range with boundaries adjusted to the specified timezone.
+
+        See datetime.astimezone for more details.
+
+        Raises:
+            ValueError:
+                If one or both boundaries are naive (no timezone).
+        """
+        if not self.start.tzinfo or not self.end.tzinfo:
+            raise ValueError("Cannot localize range with naive boundaries")
+
+        return FiniteDatetimeRange(
+            self.start.astimezone(tz),
+            self.end.astimezone(tz),
+        )
+
 
 class FiniteDateRange(FiniteRange[datetime.date]):
     """
