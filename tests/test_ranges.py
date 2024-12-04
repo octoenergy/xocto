@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import datetime
 import re
+import zoneinfo
 from typing import Any
 
 import pytest
@@ -963,6 +964,34 @@ class TestFiniteDatetimeRange:
                 start=datetime.datetime(2000, 1, 1),
                 end=datetime.datetime(2000, 1, 4),
             )
+
+    class TestLocalize:
+        def test_converts_timezone(self):
+            # Create a datetime range in Sydney, which is
+            # 7 hours ahead of Dubai (target timezone).
+            source_tz = zoneinfo.ZoneInfo("Australia/Sydney")  # GMT+11
+            target_tz = zoneinfo.ZoneInfo("Asia/Dubai")  # GMT+4
+
+            dt_range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1, hour=7, tzinfo=source_tz),
+                datetime.datetime(2020, 1, 10, hour=7, tzinfo=source_tz),
+            )
+
+            assert dt_range.localize(target_tz) == ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1, tzinfo=target_tz),
+                datetime.datetime(2020, 1, 10, tzinfo=target_tz),
+            )
+
+        def test_errors_if_naive(self):
+            tz = zoneinfo.ZoneInfo("Europe/London")
+
+            with pytest.raises(ValueError) as exc_info:
+                ranges.FiniteDatetimeRange(
+                    datetime.datetime(2020, 1, 1),
+                    datetime.datetime(2020, 1, 10),
+                ).localize(tz)
+
+            assert "naive" in str(exc_info.value)
 
 
 class TestAsFiniteDatetimePeriods:
