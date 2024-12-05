@@ -982,6 +982,38 @@ class TestFiniteDatetimeRange:
                 datetime.datetime(2020, 1, 10, tzinfo=target_tz),
             )
 
+        def test_errors_converting_over_dst_gain_hour(self):
+            utc_tz = zoneinfo.ZoneInfo("UTC")
+            london_tz = zoneinfo.ZoneInfo("Europe/London")
+
+            # Create a range in London over the hour that is "gained"
+            # when Daylight Savings Time (DST) starts - at 1AM.
+            dt_range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 3, 29, hour=1, tzinfo=london_tz),
+                datetime.datetime(2020, 3, 29, hour=2, tzinfo=london_tz),
+            )
+
+            # Converting to UTC should error due to the period being
+            # empty: removing the "fake hour" means 2AM => 1AM.
+            with pytest.raises(ValueError):
+                assert dt_range.localize(utc_tz)
+
+        def test_errors_converting_over_dst_loss_hour(self):
+            utc_tz = zoneinfo.ZoneInfo("UTC")
+            london_tz = zoneinfo.ZoneInfo("Europe/London")
+
+            # Create a range in UTC over the hour before Daylight Savings
+            # Time (DST) ends - at 2AM.
+            dt_range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 10, 25, hour=0, tzinfo=utc_tz),
+                datetime.datetime(2020, 10, 25, hour=1, tzinfo=utc_tz),
+            )
+
+            # Converting to London timezone should error due to the period
+            # being empty: both times map to 1AM.
+            with pytest.raises(ValueError):
+                assert dt_range.localize(london_tz)
+
         def test_errors_if_naive(self):
             tz = zoneinfo.ZoneInfo("Europe/London")
 
