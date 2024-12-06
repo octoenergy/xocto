@@ -442,7 +442,9 @@ def is_last_day_of_month(_date: datetime_.date) -> bool:
     return False
 
 
-def start_of_month(dt: datetime_.datetime | None = None) -> datetime_.datetime:
+def start_of_month(
+    dt: datetime_.datetime | datetime_.date | None = None,
+) -> datetime_.datetime:
     """
     Return the start datetime of the month for dt passed - or of current month.
     """
@@ -451,7 +453,9 @@ def start_of_month(dt: datetime_.datetime | None = None) -> datetime_.datetime:
     return midnight(dt + relativedelta(day=1))
 
 
-def end_of_month(dt: datetime_.datetime | None = None) -> datetime_.datetime:
+def end_of_month(
+    dt: datetime_.datetime | datetime_.date | None = None,
+) -> datetime_.datetime:
     """
     Return the start datetime of the next month for dt passed - or of next month.
     """
@@ -460,22 +464,30 @@ def end_of_month(dt: datetime_.datetime | None = None) -> datetime_.datetime:
     return midnight(dt + relativedelta(day=1, months=1))
 
 
-def first_day_of_month(dt: datetime_.datetime | None = None) -> datetime_.date:
+def first_day_of_month(
+    dt: datetime_.datetime | datetime_.date | None = None,
+) -> datetime_.date:
     """
     Return the start date of the month for dt passed - or of current month.
     """
     if dt is None:
         dt = now()
-    return (dt + relativedelta(day=1)).date()
+    if isinstance(dt, datetime_.datetime):
+        return (dt + relativedelta(day=1)).date()
+    return dt + relativedelta(day=1)
 
 
-def last_day_of_month(dt: datetime_.datetime | None = None) -> datetime_.date:
+def last_day_of_month(
+    dt: datetime_.datetime | datetime_.date | None = None,
+) -> datetime_.date:
     """
     Return the last date of the month for dt passed - or of current month.
     """
     if dt is None:
         dt = now()
-    return (dt + relativedelta(day=31)).date()
+    if isinstance(dt, datetime_.datetime):
+        return (dt + relativedelta(day=31)).date()
+    return dt + relativedelta(day=31)
 
 
 def is_n_days_until_end_of_month(n_days: int) -> bool:

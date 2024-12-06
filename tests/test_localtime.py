@@ -565,6 +565,10 @@ class TestStartOfMonth:
                 localtime.datetime(2017, 3, 31, 11, 29, 59),
                 localtime.datetime(2017, 3, 1, 0, 0, 0),
             ),
+            (
+                factories.date("2016-12-5"),
+                localtime.datetime(2016, 12, 1, 0, 0, 0),
+            ),
         ],
     )
     def test_start_of_month(self, dt, result):
@@ -582,6 +586,10 @@ class TestEndOfMonth:
             (
                 localtime.datetime(2017, 3, 31, 11, 29, 59),
                 localtime.datetime(2017, 4, 1, 0, 0, 0),
+            ),
+            (
+                factories.date("2016-12-5"),
+                localtime.datetime(2017, 1, 1, 0, 0, 0),
             ),
         ],
     )
