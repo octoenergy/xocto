@@ -13,6 +13,41 @@ from django.utils import timezone
 from . import numbers, ranges
 
 
+# Note [Non-existent datetimes]
+#
+# Python datetimes can be constructed for times that don't
+# actually exist in certain timezones, due to clock changes
+# at Daylight Savings Time (DST) boundaries.
+#
+# For example, 1AM on 29/02/2020 doesn't exist in GBR as the
+# clocks go forwards one hour - to 2AM - at this time. But
+#
+#     datetime(2020, 2, 29, hours=1, tzinfo=london_tz)
+#
+# does not error, even though it is invalid. This can cause
+# problems comparing with other datetimes e.g.
+#
+#     datetime(2020, 2, 29, hours=2, tzinfo=london_tz) -
+#     datetime(2020, 2, 29, hours=1, tzinfo=london_tz)
+#     => timedelta(hours=1)  <== WRONG (should be 0)
+#
+#     with pytest.raises(ValueError):  # empty range
+#         FiniteDatetimeRange(
+#             localtime.as_utc(datetime(2020, 2, 29, hours=2, tzinfo=london_tz)),
+#             localtime.as_utc(datetime(2020, 2, 29, hours=1, tzinfo=london_tz)),
+#         )
+#
+# Although such datetimes are unlikely to be created directly,
+# they may be created from other code in "datetime" e.g.
+#
+#     datetime(2020, 2, 29, tzinfo=london_tz) + timedelta(hours=1)
+#     => datetime(2020, 2, 29, hours=1, tzinfo=london_tz)
+#
+# To ensure a datetime exists in its timezone, convert it
+# to UTC (a timezone without DST) and back again e.g.
+#
+#     localtime.as_localtime(localtime.as_utc(my_dt), tz=target_tz)
+
 # Timezone aware datetime in the far future.
 far_future = timezone.make_aware(datetime_.datetime.max - datetime_.timedelta(days=2))
 
@@ -35,6 +70,8 @@ def as_localtime(
     Convert a tz aware datetime to localtime.
 
     Wrapper for the `django.utils.timezone` function, taking the same arguments.
+
+    Warning: See Note [Non-existent datetimes]
     """
     return timezone.localtime(dt, timezone=tz)
 
