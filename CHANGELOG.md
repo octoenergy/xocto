@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v6.2.0 - 2024-12-11
+
+- Add `ranges.date_range_for_midnight_range` [#178] (https://github.com/octoenergy/xocto/pull/178)
+- Add `FiniteDatetimeRange.localize` [#178] (https://github.com/octoenergy/xocto/pull/178)
 
 ## v6.1.0 - 2024-08-30
 
