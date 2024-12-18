@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add `FiniteDatetimeRange.as_date_range` [#181](https://github.com/octoenergy/xocto/pull/181)
+- [Breaking] Remove `ranges.date_range_for_midnight_range` (replaced by FiniteDatetimeRange.as_date_range)[#181] (https://github.com/octoenergy/xocto/pull/181)
+
 ## v6.2.0 - 2024-12-11
 
 - Add `ranges.date_range_for_midnight_range` [#178] (https://github.com/octoenergy/xocto/pull/178)

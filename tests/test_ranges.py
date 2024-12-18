@@ -1028,6 +1028,53 @@ class TestFiniteDatetimeRange:
 
             assert "naive" in str(exc_info.value)
 
+    class TestAsDateRange:
+        def test_returns_date_range(self):
+            dt_range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1),
+                datetime.datetime(2020, 1, 10),
+            )
+
+            assert dt_range.as_date_range() == ranges.FiniteDateRange(
+                datetime.date(2020, 1, 1),
+                datetime.date(2020, 1, 9),
+            )
+
+        def test_errors_if_different_timezones(self):
+            dt_range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1, tzinfo=zoneinfo.ZoneInfo("Asia/Dubai")),
+                datetime.datetime(
+                    2020, 1, 10, tzinfo=zoneinfo.ZoneInfo("Australia/Sydney")
+                ),
+            )
+
+            with pytest.raises(ValueError) as exc_info:
+                dt_range.as_date_range()
+
+            assert "Start and end in different timezones" in str(exc_info.value)
+
+        def test_errors_if_start_not_midnight(self):
+            dt_range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1, hour=1),
+                datetime.datetime(2020, 1, 10),
+            )
+
+            with pytest.raises(ValueError) as exc_info:
+                dt_range.as_date_range()
+
+            assert "Start of range is not midnight-aligned" in str(exc_info.value)
+
+        def test_errors_if_end_not_midnight(self):
+            dt_range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1),
+                datetime.datetime(2020, 1, 10, hour=1),
+            )
+
+            with pytest.raises(ValueError) as exc_info:
+                dt_range.as_date_range()
+
+            assert "End of range is not midnight-aligned" in str(exc_info.value)
+
 
 class TestAsFiniteDatetimePeriods:
     def test_converts(self):
@@ -1185,54 +1232,6 @@ class TestIterateOverMonths:
         )
 
         assert result == row["expected"]
-
-
-class TestDateRangeForMidnightRange:
-    def test_returns_date_range(self):
-        dt_range = ranges.FiniteDatetimeRange(
-            datetime.datetime(2020, 1, 1),
-            datetime.datetime(2020, 1, 10),
-        )
-
-        assert ranges.date_range_for_midnight_range(dt_range) == ranges.FiniteDateRange(
-            datetime.date(2020, 1, 1),
-            datetime.date(2020, 1, 9),
-        )
-
-    def test_errors_if_different_timezones(self):
-        dt_range = ranges.FiniteDatetimeRange(
-            datetime.datetime(2020, 1, 1, tzinfo=zoneinfo.ZoneInfo("Asia/Dubai")),
-            datetime.datetime(
-                2020, 1, 10, tzinfo=zoneinfo.ZoneInfo("Australia/Sydney")
-            ),
-        )
-
-        with pytest.raises(ValueError) as exc_info:
-            ranges.date_range_for_midnight_range(dt_range)
-
-        assert "Start and end in different timezones" in str(exc_info.value)
-
-    def test_errors_if_start_not_midnight(self):
-        dt_range = ranges.FiniteDatetimeRange(
-            datetime.datetime(2020, 1, 1, hour=1),
-            datetime.datetime(2020, 1, 10),
-        )
-
-        with pytest.raises(ValueError) as exc_info:
-            ranges.date_range_for_midnight_range(dt_range)
-
-        assert "Start of range is not midnight-aligned" in str(exc_info.value)
-
-    def test_errors_if_end_not_midnight(self):
-        dt_range = ranges.FiniteDatetimeRange(
-            datetime.datetime(2020, 1, 1),
-            datetime.datetime(2020, 1, 10, hour=1),
-        )
-
-        with pytest.raises(ValueError) as exc_info:
-            ranges.date_range_for_midnight_range(dt_range)
-
-        assert "End of range is not midnight-aligned" in str(exc_info.value)
 
 
 def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[int]:
