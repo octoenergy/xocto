@@ -1054,14 +1054,16 @@ def get_finite_datetime_ranges_from_timestamps(
 
 def any_overlapping(ranges: Iterable[Range[T]]) -> bool:
     """Return true if any of the passed Ranges are overlapping."""
-    ranges = list(ranges)
+    # We're deliberately not using RangeSet here for better performance.
+    # See https://github.com/octoenergy/xocto/pull/184.
     if not ranges:
         return False
-    range_set = RangeSet[T]([ranges[0]])
+    ranges = sorted(ranges)
+    prev_range: Range[T] = ranges[0]
     for range in ranges[1:]:
-        if range_set.intersection(range):
+        if prev_range.intersection(range):
             return True
-        range_set.add(range)
+        prev_range = range
     return False
 
 
