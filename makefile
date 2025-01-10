@@ -17,7 +17,7 @@ test:
 	py.test  --benchmark-skip
 
 benchmark:
-	py.test  --benchmark-only
+	py.test  --benchmark-only --benchmark-autosave --benchmark-compare
 
 mypy:
 	mypy
