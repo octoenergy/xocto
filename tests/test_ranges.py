@@ -589,6 +589,17 @@ class TestBreakPeriodsOnTimestamp:
 
 
 class TestAnyOverlapping:
+    def test_does_not_modify_ranges(self):
+        # The implementation of `any_overlapping` relies on sorting.
+        # Let's make sure that the ranges passed in are unchanged.
+        ranges_ = [
+            ranges.Range(1, 2),
+            ranges.Range(0, 1),
+        ]
+        ranges_copy = ranges_.copy()
+        assert not ranges.any_overlapping(ranges_)
+        assert ranges_ == ranges_copy
+
     @pytest.mark.parametrize(
         "ranges_",
         [
@@ -613,6 +624,7 @@ class TestAnyOverlapping:
     )
     def test_returns_true_if_and_ranges_overlap(self, ranges_):
         assert ranges.any_overlapping(ranges_)
+        assert ranges.any_overlapping(reversed(ranges_))
 
     @pytest.mark.parametrize(
         "ranges_",
@@ -631,9 +643,91 @@ class TestAnyOverlapping:
     )
     def test_returns_false_if_no_ranges_overlap(self, ranges_):
         assert not ranges.any_overlapping(ranges_)
+        assert not ranges.any_overlapping(reversed(ranges_))
 
     def test_returns_false_for_empty_set_of_ranges(self):
         assert not ranges.any_overlapping([])
+
+
+class TestAnyGaps:
+    def test_does_not_modify_ranges(self):
+        # The implementation of `any_gaps` relies on sorting.
+        # Let's make sure that the ranges passed in are unchanged.
+        ranges_ = [
+            ranges.Range(1, 2),
+            ranges.Range(0, 1),
+        ]
+        ranges_copy = ranges_.copy()
+        assert not ranges.any_gaps(ranges_)
+        assert ranges_ == ranges_copy
+
+    @pytest.mark.parametrize(
+        "ranges_",
+        [
+            [
+                ranges.Range(0, 1),
+                ranges.Range(2, 3),
+            ],
+            [
+                ranges.Range(
+                    0, 1, boundaries=ranges.RangeBoundaries.INCLUSIVE_EXCLUSIVE
+                ),
+                ranges.Range(
+                    1, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE
+                ),
+            ],
+            [
+                ranges.Range(0, 2),
+                ranges.Range(4, 6),
+                ranges.Range(1, 3),
+            ],
+        ],
+    )
+    def test_returns_true_if_gaps(self, ranges_):
+        assert ranges.any_gaps(ranges_)
+        assert ranges.any_gaps(reversed(ranges_))
+
+    @pytest.mark.parametrize(
+        "ranges_",
+        [
+            [
+                ranges.Range(0, 1),
+                ranges.Range(1, 2),
+            ],
+            [
+                ranges.Range(
+                    0, 1, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE
+                ),
+                ranges.Range(
+                    1, 2, boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE
+                ),
+            ],
+            [
+                ranges.Range(0, 2),
+                ranges.Range(1, 3),
+            ],
+            [
+                ranges.Range(0, 3),
+                ranges.Range(1, 2),
+            ],
+            [
+                ranges.Range(0, 5),
+                ranges.Range(1, 2),
+                ranges.Range(3, 4),
+            ],
+            [
+                ranges.Range(0, 2),
+                ranges.Range(4, 6),
+                ranges.Range(2, 4),
+            ],
+        ],
+    )
+    def test_returns_false_if_no_gaps(self, ranges_):
+        assert not ranges.any_gaps(ranges_)
+        assert not ranges.any_gaps(reversed(ranges_))
+
+    def test_returns_false_for_empty_set_of_ranges(self):
+        assert not ranges.any_gaps([])
 
 
 class TestFiniteDateRange:
