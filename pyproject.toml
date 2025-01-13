@@ -51,6 +51,7 @@ dev = [
   "pre-commit>=3.7.1",
   "psycopg2>=2.8.4",
   "pyarrow-stubs==10.0.1.6",
+  "pytest-benchmark==5.0.1",
   "pytest-django==4.8.0",
   "pytest-mock==3.12.0",
   "pytest==8.0.2",

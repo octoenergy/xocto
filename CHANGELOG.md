@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Improve the performance of the `ranges.any_overlapping` function
+  (with some benchmark showing a >100x speed up) [#184](https://github.com/octoenergy/xocto/pull/184).
+
 ## V7.0.0 - 2024-12-19
 
 - Add `FiniteDatetimeRange.as_date_range` [#181](https://github.com/octoenergy/xocto/pull/181)

@@ -597,6 +597,13 @@ class TestAnyOverlapping:
                 ranges.Range(1, 3),
             ],
             [
+                ranges.Range(0, 2),
+                ranges.Range(
+                    4, 5
+                ),  # Added this to ensure the overlapping ranges are not adjacent.
+                ranges.Range(1, 3),
+            ],
+            [
                 ranges.Range(
                     0, 2, boundaries=ranges.RangeBoundaries.INCLUSIVE_INCLUSIVE
                 ),

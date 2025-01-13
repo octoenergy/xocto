@@ -1,3 +1,5 @@
+.benchmarks/
+
 # Byte-compiled / optimized files
 *.py[cod]
 __pycache__
