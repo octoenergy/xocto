@@ -589,6 +589,17 @@ class TestBreakPeriodsOnTimestamp:
 
 
 class TestAnyOverlapping:
+    def test_does_not_modify_ranges(self):
+        # The implementation of `any_overlapping` relies on sorting.
+        # Let's make sure that the ranges passed in are unchanged.
+        ranges_ = [
+            ranges.Range(1, 2),
+            ranges.Range(0, 1),
+        ]
+        ranges_copy = ranges_.copy()
+        assert not ranges.any_overlapping(ranges_)
+        assert ranges_ == ranges_copy
+
     @pytest.mark.parametrize(
         "ranges_",
         [
