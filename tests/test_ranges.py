@@ -624,6 +624,7 @@ class TestAnyOverlapping:
     )
     def test_returns_true_if_and_ranges_overlap(self, ranges_):
         assert ranges.any_overlapping(ranges_)
+        assert ranges.any_overlapping(reversed(ranges_))
 
     @pytest.mark.parametrize(
         "ranges_",
@@ -642,6 +643,7 @@ class TestAnyOverlapping:
     )
     def test_returns_false_if_no_ranges_overlap(self, ranges_):
         assert not ranges.any_overlapping(ranges_)
+        assert not ranges.any_overlapping(reversed(ranges_))
 
     def test_returns_false_for_empty_set_of_ranges(self):
         assert not ranges.any_overlapping([])
