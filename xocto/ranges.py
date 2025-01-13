@@ -1067,6 +1067,11 @@ def any_overlapping(ranges: Iterable[Range[T]]) -> bool:
     return False
 
 
+def any_gaps(ranges: Iterable[Range[T]]) -> bool:
+    """Return true if there are gaps between the passed Ranges."""
+    return len(RangeSet(ranges)) > 1
+
+
 def as_finite_datetime_periods(
     periods: Iterable[HalfFiniteDatetimeRange | DatetimeRange],
 ) -> Sequence[FiniteDatetimeRange]:
