@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## V7.1.0 - 2025-01-13
+
 - Add `ranges.any_gaps` function [#185](https://github.com/octoenergy/xocto/pull/185).
 - Improve the performance of the `ranges.any_overlapping` function
   (with some benchmark showing a >100x speed up) [#184](https://github.com/octoenergy/xocto/pull/184).
