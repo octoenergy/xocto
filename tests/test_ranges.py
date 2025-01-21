@@ -1019,6 +1019,60 @@ class TestFiniteDateRange:
 
 
 class TestFiniteDatetimeRange:
+    @pytest.mark.parametrize(
+        "r1, r2, expected",
+        [
+            [
+                ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 1),
+                    end=datetime.datetime(2000, 1, 3),
+                ),
+                ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 2),
+                    end=datetime.datetime(2000, 1, 4),
+                ),
+                True,
+            ],
+            [
+                ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 2),
+                    end=datetime.datetime(2000, 1, 4),
+                ),
+                ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 1),
+                    end=datetime.datetime(2000, 1, 3),
+                ),
+                False,
+            ],
+            [
+                ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 1),
+                    end=datetime.datetime(2000, 1, 3),
+                ),
+                ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 1),
+                    end=datetime.datetime(2000, 1, 5),
+                ),
+                # False, since only `start` is considered.
+                False,
+            ],
+            [
+                ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 1),
+                    end=datetime.datetime(2000, 1, 3),
+                ),
+                ranges.Range(
+                    start=None,
+                    end=datetime.datetime(3000, 1, 1),
+                    boundaries=ranges.RangeBoundaries.EXCLUSIVE_EXCLUSIVE,
+                ),
+                False,
+            ],
+        ],
+    )
+    def test__lt__(self, r1, r2, expected):
+        assert (r1 < r2) is expected
+
     class TestUnion:
         def test_union_of_touching_ranges(self):
             range = ranges.FiniteDatetimeRange(
