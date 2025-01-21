@@ -843,6 +843,16 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         """
         Intersections with finite ranges will always be finite.
         """
+        if isinstance(other, FiniteDatetimeRange):
+            # We're deliberately overriding the base class here for better performance.
+            # We can simplify the implementation since we know we're dealing with finite
+            # ranges with INCLUSIVE_EXCLUSIVE bounds.
+            left, right = (self, other) if self.start < other.start else (other, self)
+            if left.end <= right.start:
+                return None
+            else:
+                return FiniteDatetimeRange(right.start, min(left.end, right.end))
+
         base_intersection = super().intersection(other)
         if base_intersection is None:
             return None
@@ -854,6 +864,16 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         """
         Unions between two FiniteDatetimeRanges should produce a FiniteDatetimeRange.
         """
+        if isinstance(other, FiniteDatetimeRange):
+            # We're deliberately overriding the base class here for better performance.
+            # We can simplify the implementation since we know we're dealing with finite
+            # ranges with INCLUSIVE_EXCLUSIVE bounds.
+            left, right = (self, other) if self.start < other.start else (other, self)
+            if left.end < right.start:
+                return None
+            else:
+                return FiniteDatetimeRange(left.start, max(left.end, right.end))
+
         try:
             base_union = super().union(other)
         except ValueError:
