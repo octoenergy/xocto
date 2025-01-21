@@ -837,6 +837,15 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         """
         super().__init__(start, end, boundaries=RangeBoundaries.INCLUSIVE_EXCLUSIVE)
 
+    def __lt__(self, other: Range[datetime.datetime]) -> bool:
+        # We're deliberately overriding the base class here for better performance.
+        if other.start is None:
+            # We don't need to check anything more if the other range
+            # is open-ended
+            return False
+        else:
+            return self.start < other.start
+
     def intersection(
         self, other: Range[datetime.datetime]
     ) -> Optional["FiniteDatetimeRange"]:
