@@ -86,3 +86,17 @@ class TestFiniteDatetimeRange:
             datetime.datetime(2020, 1, 1),
             datetime.datetime(2020, 1, 4),
         )
+
+    def test_sorting(self, benchmark):
+        sorted_ranges_ = []
+        dt = datetime.datetime(2020, 1, 1)
+        for _ in range(100_000):
+            sorted_ranges_.append(
+                ranges.FiniteDatetimeRange(dt, dt + datetime.timedelta(hours=1))
+            )
+            dt += datetime.timedelta(hours=1)
+
+        ranges_ = _shuffled(sorted_ranges_)
+
+        result = benchmark(lambda: sorted(ranges_))
+        assert result == sorted_ranges_
