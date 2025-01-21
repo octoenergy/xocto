@@ -1030,11 +1030,13 @@ class TestFiniteDatetimeRange:
                 end=datetime.datetime(2000, 1, 3),
             )
 
-            union = range | other
-
-            assert union == ranges.FiniteDatetimeRange(
-                start=datetime.datetime(2000, 1, 1),
-                end=datetime.datetime(2000, 1, 3),
+            assert (
+                range | other
+                == other | range
+                == ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 1),
+                    end=datetime.datetime(2000, 1, 3),
+                )
             )
 
         def test_union_of_disjoint_ranges(self):
@@ -1047,7 +1049,7 @@ class TestFiniteDatetimeRange:
                 end=datetime.datetime(2020, 1, 2),
             )
 
-            assert range | other is None
+            assert (range | other is None) and (other | range is None)
 
         def test_union_of_overlapping_ranges(self):
             range = ranges.FiniteDatetimeRange(
@@ -1059,11 +1061,57 @@ class TestFiniteDatetimeRange:
                 end=datetime.datetime(2000, 1, 4),
             )
 
-            union = range | other
+            assert (
+                range | other
+                == other | range
+                == ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 1),
+                    end=datetime.datetime(2000, 1, 4),
+                )
+            )
 
-            assert union == ranges.FiniteDatetimeRange(
+    class TestIntersection:
+        def test_intersection_of_touching_ranges(self):
+            range = ranges.FiniteDatetimeRange(
                 start=datetime.datetime(2000, 1, 1),
+                end=datetime.datetime(2000, 1, 2),
+            )
+            other = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 2),
+                end=datetime.datetime(2000, 1, 3),
+            )
+
+            assert (range & other is None) and (other & range is None)
+
+        def test_intersection_of_disjoint_ranges(self):
+            range = ranges.FiniteDateRange(
+                start=datetime.datetime(2000, 1, 1),
+                end=datetime.datetime(2000, 1, 2),
+            )
+            other = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2020, 1, 1),
+                end=datetime.datetime(2020, 1, 2),
+            )
+
+            assert (range & other is None) and (other & range is None)
+
+        def test_intersection_of_overlapping_ranges(self):
+            range = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 1),
+                end=datetime.datetime(2000, 1, 3),
+            )
+            other = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 2),
                 end=datetime.datetime(2000, 1, 4),
+            )
+
+            assert (
+                range & other
+                == other & range
+                == ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2000, 1, 2),
+                    end=datetime.datetime(2000, 1, 3),
+                )
             )
 
     class TestLocalize:
