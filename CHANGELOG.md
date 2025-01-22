@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Improve the performance of `FiniteDatetimeRange.intersection`,
+  `FiniteDatetimeRange.union` and `FiniteDatetimeRange.__lt__` [#187](https://github.com/octoenergy/xocto/pull/187).
+
 ## V7.1.0 - 2025-01-13
 
 - Add `ranges.any_gaps` function [#185](https://github.com/octoenergy/xocto/pull/185).
