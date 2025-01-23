@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## V7.1.1 - 2025-01-22
+
 - Improve the performance of `FiniteDatetimeRange.intersection`,
   `FiniteDatetimeRange.union` and `FiniteDatetimeRange.__lt__` [#187](https://github.com/octoenergy/xocto/pull/187).
 
