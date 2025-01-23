@@ -916,6 +916,23 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
     ) -> Optional["FiniteDatetimeRange"]:
         return self.intersection(other)
 
+    @overload
+    def __or__(self, other: FiniteDatetimeRange) -> Optional[FiniteDatetimeRange]: ...
+
+    @overload
+    def __or__(
+        self, other: HalfFiniteDatetimeRange
+    ) -> Optional[HalfFiniteDatetimeRange]: ...
+
+    @overload
+    def __or__(self, other: DatetimeRange) -> Optional[DatetimeRange]: ...
+
+    def __or__(
+        self,
+        other: DatetimeRange,
+    ) -> Optional[DatetimeRange]:
+        return self.union(other)
+
     @property
     def days(self) -> int:
         """
