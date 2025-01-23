@@ -17,6 +17,7 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    overload,
 )
 
 from dateutil import relativedelta
@@ -869,10 +870,21 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         assert base_intersection.boundaries == RangeBoundaries.INCLUSIVE_EXCLUSIVE
         return FiniteDatetimeRange(base_intersection.start, base_intersection.end)
 
-    def union(self, other: Range[datetime.datetime]) -> Optional["FiniteDatetimeRange"]:
-        """
-        Unions between two FiniteDatetimeRanges should produce a FiniteDatetimeRange.
-        """
+    @overload
+    def union(self, other: FiniteDatetimeRange) -> Optional[FiniteDatetimeRange]: ...
+
+    @overload
+    def union(
+        self, other: HalfFiniteDatetimeRange
+    ) -> Optional[HalfFiniteDatetimeRange]: ...
+
+    @overload
+    def union(self, other: DatetimeRange) -> Optional[DatetimeRange]: ...
+
+    def union(
+        self,
+        other: DatetimeRange,
+    ) -> Optional[DatetimeRange]:
         if isinstance(other, FiniteDatetimeRange):
             # We're deliberately overriding the base class here for better performance.
             # We can simplify the implementation since we know we're dealing with finite
@@ -882,19 +894,22 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
                 return None
             else:
                 return FiniteDatetimeRange(left.start, max(left.end, right.end))
-
-        try:
+        elif _is_half_finite_datetime_range(other):
             base_union = super().union(other)
-        except ValueError:
-            return None
-
-        if base_union is None:
-            return None
-
-        assert base_union.boundaries == RangeBoundaries.INCLUSIVE_EXCLUSIVE
-        assert base_union.start is not None
-        assert base_union.end is not None
-        return FiniteDatetimeRange(base_union.start, base_union.end)
+            if base_union is None:
+                return None
+            # * base_union is of type DatetimeRange (alias for Range[datetime.datetime]).
+            # * We know that base_union will have boundaries INCLUSIVE_EXCLUSIVE, since
+            #   both self and other are INCLUSIVE_EXCLUSIVE.
+            # * We know that base_union.start can't be None, since both self and other
+            #   have finite starts.
+            # * base_union.end might be None, if other.end was None.
+            # => It's safe to return a HalfFiniteDatetimeRange here.
+            return HalfFiniteDatetimeRange(
+                cast(datetime.datetime, base_union.start), base_union.end
+            )
+        else:
+            return super().union(other)
 
     def __and__(
         self, other: Range[datetime.datetime]
@@ -1151,3 +1166,19 @@ def iterate_over_months(
 
         yield FiniteDatetimeRange(start_at, this_end)
         start_at = next_start
+
+
+# Subscripted generics may not be used with isinstance directly.
+# TODO: A TypeGuard would be nicer, once we drop Python 3.9.
+def _is_datetime_range(value: Any) -> bool:
+    return (
+        isinstance(value, Range)
+        and (value.start is None or isinstance(value.start, datetime.datetime))
+        and (value.end is None or isinstance(value.end, datetime.datetime))
+    )
+
+
+# Subscripted generics may not be used with isinstance directly.
+# TODO: A TypeGuard would be nicer, once we drop Python 3.9.
+def _is_half_finite_datetime_range(value: Any) -> bool:
+    return _is_datetime_range(value) and isinstance(value, HalfFiniteRange)

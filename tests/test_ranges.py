@@ -1124,7 +1124,6 @@ class TestFiniteDatetimeRange:
                 )
             )
 
-        @pytest.mark.xfail
         @pytest.mark.parametrize(
             "range_, other, expected_union",
             [
@@ -1162,7 +1161,6 @@ class TestFiniteDatetimeRange:
         def test_union_with_half_finite_range(self, range_, other, expected_union):
             assert range_ | other == other | range_ == expected_union
 
-        @pytest.mark.xfail
         def test_union_with_continuum(self):
             range = ranges.FiniteDatetimeRange(
                 datetime.datetime(2020, 1, 1),
