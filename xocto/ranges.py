@@ -20,6 +20,7 @@ from typing import (
 )
 
 from dateutil import relativedelta
+from django.utils import timezone
 
 from xocto.types import generic
 
@@ -871,6 +872,10 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         self, other: Range[datetime.datetime]
     ) -> Optional["FiniteDatetimeRange"]:
         return self.intersection(other)
+
+    @property
+    def is_naive(self) -> bool:
+        return timezone.is_naive(self.start)
 
     @property
     def days(self) -> int:

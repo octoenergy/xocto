@@ -1382,3 +1382,100 @@ def _range_from_string(range_str: str) -> ranges.Range[int]:
         end = int(end_str)
 
     return ranges.Range(start, end, boundaries=boundaries)
+
+
+def test_demo_datetime_ranges_issue():
+    TZ_UTC = zoneinfo.ZoneInfo("UTC")
+    TZ_LONDON = zoneinfo.ZoneInfo("Europe/London")
+
+    # This range is clearly 31 days.
+    range_london = ranges.FiniteDatetimeRange(
+        datetime.datetime(2024, 3, 1, tzinfo=TZ_LONDON),
+        datetime.datetime(2024, 4, 1, tzinfo=TZ_LONDON),
+    )
+    assert range_london.days == 31
+
+    # This range has inconsistent tzinfo.
+    # It's unclear how many days this represents.
+    range_utc = ranges.FiniteDatetimeRange(
+        datetime.datetime(2024, 3, 1, tzinfo=TZ_LONDON),
+        datetime.datetime(2024, 3, 31, hour=23, tzinfo=TZ_UTC),
+    )
+    assert range_utc.days == 30
+    # ...but!
+    assert range_utc == range_london
+    assert range_utc.days != range_london.days
+
+    # But surely we'd never create ranges with mixed tzinfo, would we?
+    # Yes - via intersections / unions!
+
+    r1 = ranges.FiniteDatetimeRange(
+        datetime.datetime(2024, 3, 1, tzinfo=TZ_LONDON),
+        datetime.datetime(2024, 4, 1, tzinfo=TZ_LONDON),
+    )
+    r2 = ranges.FiniteDatetimeRange(
+        datetime.datetime(2024, 3, 1, tzinfo=TZ_UTC),
+        datetime.datetime(2024, 3, 31, hour=23, tzinfo=TZ_UTC),
+    )
+    assert r1 == r2
+
+    # * `r1 & r2` is not exactly equal to `r2 & r1`
+    _assert_exactly_equal(
+        r1 & r2,
+        ranges.FiniteDatetimeRange(
+            datetime.datetime(2024, 3, 1, tzinfo=TZ_LONDON),
+            datetime.datetime(2024, 4, 1, tzinfo=TZ_LONDON),
+        ),
+    )
+    _assert_exactly_equal(
+        r2 & r1,
+        ranges.FiniteDatetimeRange(
+            datetime.datetime(2024, 3, 1, tzinfo=TZ_UTC),
+            datetime.datetime(2024, 3, 31, hour=23, tzinfo=TZ_UTC),
+        ),
+    )
+    assert r1 == r2 == (r1 & r2) == (r2 & r1)
+    # The number of days is different!
+    assert (r1 & r2).days == 31
+    assert (r2 & r1).days == 30
+
+    # * `r1 | r2` is not exactly equal to `r2 | r1`
+    # * `r1 | r2` and `r2 | r1` have mixed tzinfo.
+    _assert_exactly_equal(
+        r1 | r2,
+        ranges.FiniteDatetimeRange(
+            datetime.datetime(2024, 3, 1, tzinfo=TZ_UTC),
+            datetime.datetime(2024, 4, 1, tzinfo=TZ_LONDON),
+        ),
+    )
+    _assert_exactly_equal(
+        r2 | r1,
+        ranges.FiniteDatetimeRange(
+            datetime.datetime(2024, 3, 1, tzinfo=TZ_LONDON),
+            datetime.datetime(2024, 3, 31, hour=23, tzinfo=TZ_UTC),
+        ),
+    )
+    assert r1 == r2 == (r1 | r2) == (r2 | r1)
+    # Both have only 30 days!
+    assert (r1 | r2).days == 30
+    assert (r2 | r1).days == 30
+    assert r1.days != (r1 | r2).days
+
+
+def _assert_exactly_equal(
+    r1: ranges.FiniteDatetimeRange, r2: ranges.FiniteDatetimeRange
+) -> None:
+    for range_field in ["start", "end"]:
+        for dt_field in [
+            "year",
+            "month",
+            "day",
+            "hour",
+            "minute",
+            "second",
+            "microsecond",
+            "tzinfo",
+        ]:
+            assert getattr(getattr(r1, range_field), dt_field) == getattr(
+                getattr(r2, range_field), dt_field
+            )
