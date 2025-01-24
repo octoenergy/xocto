@@ -915,7 +915,13 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         """
         Return the number of days between the start and end of the range.
         """
-        return (self.end - self.start).days
+        range_ = self
+        if self.is_tz_aware and self.start.tzinfo != self.end.tzinfo:
+            tzinfo = self.start.tzinfo
+            # We know this can't be None since `self.is_tz_aware` returned True.
+            assert tzinfo is not None
+            range_ = self.localize(tzinfo)
+        return (range_.end - range_.start).days
 
     @property
     def seconds(self) -> int:

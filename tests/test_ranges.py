@@ -1293,6 +1293,61 @@ class TestFiniteDatetimeRange:
             )
             assert range.is_tz_aware
 
+    class TestDays:
+        TZ_UTC = datetime.timezone.utc
+        TZ_LONDON = zoneinfo.ZoneInfo("Europe/London")
+        TZ_BERLIN = zoneinfo.ZoneInfo("Europe/Berlin")
+
+        def test_naive_range(self):
+            assert (
+                ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 1, 1),
+                    datetime.datetime(2022, 1, 1),
+                ).days
+                == 365
+            )
+
+        def test_tz_aware_range(self):
+            assert (
+                ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 1, 1, tzinfo=self.TZ_LONDON),
+                    datetime.datetime(2022, 1, 1, tzinfo=self.TZ_LONDON),
+                ).days
+                == 365
+            )
+
+        def test_tz_aware_range_mixed_tzs(self):
+            assert (
+                ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 1, 1, tzinfo=self.TZ_LONDON),
+                    datetime.datetime(2022, 1, 1, hour=1, tzinfo=self.TZ_BERLIN),
+                ).days
+                == 365
+            )
+            assert (
+                ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 1, 1, tzinfo=self.TZ_BERLIN),
+                    datetime.datetime(2021, 12, 31, hour=23, tzinfo=self.TZ_LONDON),
+                ).days
+                == 365
+            )
+
+        def test_tz_aware_range_mixed_tzs_dst(self):
+            assert (
+                ranges.FiniteDatetimeRange(
+                    datetime.datetime(2024, 3, 31, tzinfo=self.TZ_LONDON),
+                    datetime.datetime(2024, 3, 31, hour=23, tzinfo=self.TZ_UTC),
+                ).days
+                == 1
+            )
+            assert (
+                ranges.FiniteDatetimeRange(
+                    datetime.datetime(2024, 10, 27, tzinfo=self.TZ_LONDON),
+                    datetime.datetime(2024, 10, 28, hour=1, tzinfo=self.TZ_UTC),
+                ).days
+                == 1
+            )
+
 
 class TestAsFiniteDatetimePeriods:
     def test_converts(self):
