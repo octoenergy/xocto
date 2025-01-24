@@ -1278,6 +1278,21 @@ class TestFiniteDatetimeRange:
 
             assert "End of range is not midnight-aligned" in str(exc_info.value)
 
+    class TestIsTzAware:
+        def test_returns_true_for_aware_range(self):
+            range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1),
+                datetime.datetime(2021, 1, 1),
+            )
+            assert not range.is_tz_aware
+
+        def test_returns_false_for_naive_range(self):
+            range = ranges.FiniteDatetimeRange(
+                localtime.datetime(2020, 1, 1),
+                localtime.datetime(2021, 1, 1),
+            )
+            assert range.is_tz_aware
+
 
 class TestAsFiniteDatetimePeriods:
     def test_converts(self):

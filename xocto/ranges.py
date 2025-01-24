@@ -902,6 +902,15 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         return self.intersection(other)
 
     @property
+    def is_tz_aware(self) -> bool:
+        start_is_aware = self.start.tzinfo is not None
+        end_is_aware = self.start.tzinfo is not None
+        # Sanity check, it should be impossibe to create such a range,
+        # The ordering check in __init__ prevents this.
+        assert not (start_is_aware ^ end_is_aware)
+        return start_is_aware and end_is_aware
+
+    @property
     def days(self) -> int:
         """
         Return the number of days between the start and end of the range.
