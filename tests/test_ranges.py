@@ -1084,6 +1084,7 @@ class TestFiniteDatetimeRange:
                 end=datetime.datetime(2000, 1, 3),
             )
 
+            assert isinstance(range | other, ranges.FiniteDatetimeRange)
             assert (
                 range | other
                 == other | range
@@ -1115,6 +1116,7 @@ class TestFiniteDatetimeRange:
                 end=datetime.datetime(2000, 1, 4),
             )
 
+            assert isinstance(range | other, ranges.FiniteDatetimeRange)
             assert (
                 range | other
                 == other | range
@@ -1159,6 +1161,7 @@ class TestFiniteDatetimeRange:
             ],
         )
         def test_union_with_half_finite_range(self, range_, other, expected_union):
+            assert ranges._is_half_finite_datetime_range(range_ | other)
             assert range_ | other == other | range_ == expected_union
 
         def test_union_with_continuum(self):
@@ -1168,6 +1171,7 @@ class TestFiniteDatetimeRange:
             )
             other = ranges.DatetimeRange.continuum()
 
+            assert ranges._is_datetime_range(range | other)
             assert range | other == other | range == ranges.DatetimeRange.continuum()
 
     class TestIntersection:
