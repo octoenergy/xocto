@@ -1019,6 +1019,15 @@ class TestFiniteDateRange:
 
 
 class TestFiniteDatetimeRange:
+    def test_cannot_construct_with_inconsistent_tzinfo(self):
+        with pytest.raises(ranges.InconsistentTzInfo):
+            tz_london = zoneinfo.ZoneInfo("Europe/London")
+            tz_berlin = zoneinfo.ZoneInfo("Europe/Berlin")
+            ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1, tzinfo=tz_london),
+                datetime.datetime(2021, 1, 1, tzinfo=tz_berlin),
+            )
+
     @pytest.mark.parametrize(
         "r1, r2, expected",
         [
@@ -1242,19 +1251,6 @@ class TestFiniteDatetimeRange:
                 datetime.date(2020, 1, 1),
                 datetime.date(2020, 1, 9),
             )
-
-        def test_errors_if_different_timezones(self):
-            dt_range = ranges.FiniteDatetimeRange(
-                datetime.datetime(2020, 1, 1, tzinfo=zoneinfo.ZoneInfo("Asia/Dubai")),
-                datetime.datetime(
-                    2020, 1, 10, tzinfo=zoneinfo.ZoneInfo("Australia/Sydney")
-                ),
-            )
-
-            with pytest.raises(ValueError) as exc_info:
-                dt_range.as_date_range()
-
-            assert "Start and end in different timezones" in str(exc_info.value)
 
         def test_errors_if_start_not_midnight(self):
             dt_range = ranges.FiniteDatetimeRange(

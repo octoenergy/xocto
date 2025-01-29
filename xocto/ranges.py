@@ -832,13 +832,21 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
     of time.
     """
 
-    __slots__ = ()
+    tzinfo: Optional[datetime.tzinfo]
+    is_tz_aware: bool
+
+    __slots__ = ("tzinfo", "is_tz_aware")
 
     def __init__(self, start: datetime.datetime, end: datetime.datetime):
         """
         Force the boundaries of the range to be [).
         """
         super().__init__(start, end, boundaries=RangeBoundaries.INCLUSIVE_EXCLUSIVE)
+
+        # Calling `get_tzinfo` will check that the tzinfo is consistently defined.
+        tzinfo = get_tzinfo(self)
+        object.__setattr__(self, "tzinfo", tzinfo)
+        object.__setattr__(self, "is_tz_aware", tzinfo is not None)
 
     def __lt__(self, other: Range[datetime.datetime]) -> bool:
         # We're deliberately overriding the base class here for better performance.
