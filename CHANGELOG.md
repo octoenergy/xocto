@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Allow the `union` operation between `FiniteDatetimeRange` and `HalfFiniteDatetimeRange` 
+  (and other `DatetimeRange`s) [#189](https://github.com/octoenergy/xocto/pull/189/).
+
 ## V7.1.1 - 2025-01-22
 
 - Improve the performance of `FiniteDatetimeRange.intersection`,
