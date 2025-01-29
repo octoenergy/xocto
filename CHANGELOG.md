@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- [Breaking] Prevent intersection/union of `FiniteDatetimeRange` with datetime 
+  range of inconsistent tzinfo [#194](https://github.com/octoenergy/xocto/pull/194).
+- [Breaking] Prevent construction of `FiniteDatetimeRange` with mixed 
+  tzinfo [#194](https://github.com/octoenergy/xocto/pull/194).
+- Add `ranges.get_tzinfo` function to get the tzinfo of a datetime range [#194](https://github.com/octoenergy/xocto/pull/194).
+
 ## V7.1.1 - 2025-01-22
 
 - Improve the performance of `FiniteDatetimeRange.intersection`,
