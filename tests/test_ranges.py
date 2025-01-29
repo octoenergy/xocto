@@ -1162,6 +1162,16 @@ class TestFiniteDatetimeRange:
         def test_union_with_half_finite_range(self, range_, other, expected_union):
             assert range_ | other == other | range_ == expected_union
 
+        @pytest.mark.xfail
+        def test_union_with_continuum(self):
+            range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1),
+                datetime.datetime(2022, 1, 1),
+            )
+            other = ranges.DatetimeRange.continuum()
+
+            assert range | other == other | range == ranges.DatetimeRange.continuum()
+
     class TestIntersection:
         def test_intersection_of_touching_ranges(self):
             range = ranges.FiniteDatetimeRange(
