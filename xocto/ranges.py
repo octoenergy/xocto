@@ -936,8 +936,12 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
             ValueError:
                 If one or both boundaries are naive (no timezone).
         """
-        if not self.start.tzinfo or not self.end.tzinfo:
+        if not self.is_tz_aware:
             raise ValueError("Cannot localize range with naive boundaries")
+
+        if tz == self.tzinfo:
+            # Ranges are immutable so we can just return self.
+            return self
 
         return FiniteDatetimeRange(
             self.start.astimezone(tz),
