@@ -13,6 +13,10 @@ from hypothesis.strategies import composite, integers, none, one_of, sampled_fro
 from xocto import localtime, ranges
 
 
+TZ_LONDON = zoneinfo.ZoneInfo("Europe/London")
+TZ_BERLIN = zoneinfo.ZoneInfo("Europe/Berlin")
+
+
 @composite
 def valid_integer_range(draw):
     boundaries = draw(sampled_from(ranges.RangeBoundaries))
@@ -1021,11 +1025,9 @@ class TestFiniteDateRange:
 class TestFiniteDatetimeRange:
     def test_cannot_construct_with_inconsistent_tzinfo(self):
         with pytest.raises(ranges.InconsistentTzInfo):
-            tz_london = zoneinfo.ZoneInfo("Europe/London")
-            tz_berlin = zoneinfo.ZoneInfo("Europe/Berlin")
             ranges.FiniteDatetimeRange(
-                datetime.datetime(2020, 1, 1, tzinfo=tz_london),
-                datetime.datetime(2021, 1, 1, tzinfo=tz_berlin),
+                datetime.datetime(2020, 1, 1, tzinfo=TZ_LONDON),
+                datetime.datetime(2021, 1, 1, tzinfo=TZ_BERLIN),
             )
 
     @pytest.mark.parametrize(
@@ -1133,6 +1135,27 @@ class TestFiniteDatetimeRange:
                 )
             )
 
+        @pytest.mark.parametrize(
+            "other_range_model",
+            [
+                ranges.FiniteDatetimeRange,
+                ranges.DatetimeRange,
+            ],
+        )
+        def test_cannot_take_union_of_ranges_with_inconsistent_tzinfo(
+            self, other_range_model
+        ):
+            range = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 1, tzinfo=TZ_LONDON),
+                end=datetime.datetime(2000, 1, 3, tzinfo=TZ_LONDON),
+            )
+            other = other_range_model(
+                start=datetime.datetime(2000, 1, 2, tzinfo=TZ_BERLIN),
+                end=datetime.datetime(2000, 1, 4, tzinfo=TZ_BERLIN),
+            )
+            with pytest.raises(ranges.InconsistentTzInfo):
+                _ = range | other
+
     class TestIntersection:
         def test_intersection_of_touching_ranges(self):
             range = ranges.FiniteDatetimeRange(
@@ -1176,6 +1199,27 @@ class TestFiniteDatetimeRange:
                     end=datetime.datetime(2000, 1, 3),
                 )
             )
+
+        @pytest.mark.parametrize(
+            "other_range_model",
+            [
+                ranges.FiniteDatetimeRange,
+                ranges.DatetimeRange,
+            ],
+        )
+        def test_cannot_take_intersection_of_ranges_with_inconsistent_tzinfo(
+            self, other_range_model
+        ):
+            range = ranges.FiniteDatetimeRange(
+                start=datetime.datetime(2000, 1, 1, tzinfo=TZ_LONDON),
+                end=datetime.datetime(2000, 1, 3, tzinfo=TZ_LONDON),
+            )
+            other = other_range_model(
+                start=datetime.datetime(2000, 1, 2, tzinfo=TZ_BERLIN),
+                end=datetime.datetime(2000, 1, 4, tzinfo=TZ_BERLIN),
+            )
+            with pytest.raises(ranges.InconsistentTzInfo):
+                _ = range & other
 
     class TestLocalize:
         def test_converts_timezone(self):

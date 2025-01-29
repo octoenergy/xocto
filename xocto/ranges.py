@@ -867,11 +867,20 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
             # We're deliberately overriding the base class here for better performance.
             # We can simplify the implementation since we know we're dealing with finite
             # ranges with INCLUSIVE_EXCLUSIVE bounds.
+            if self.tzinfo != other.tzinfo:
+                raise InconsistentTzInfo(
+                    "inconsistent tzinfo for datetime range intersection"
+                )
             left, right = (self, other) if self.start < other.start else (other, self)
             if left.end <= right.start:
                 return None
             else:
                 return FiniteDatetimeRange(right.start, min(left.end, right.end))
+
+        if self.tzinfo != get_tzinfo(other):
+            raise InconsistentTzInfo(
+                "inconsistent tzinfo for datetime range intersection"
+            )
 
         base_intersection = super().intersection(other)
         if base_intersection is None:
@@ -888,11 +897,16 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
             # We're deliberately overriding the base class here for better performance.
             # We can simplify the implementation since we know we're dealing with finite
             # ranges with INCLUSIVE_EXCLUSIVE bounds.
+            if self.tzinfo != other.tzinfo:
+                raise InconsistentTzInfo("inconsistent tzinfo for datetime range union")
             left, right = (self, other) if self.start < other.start else (other, self)
             if left.end < right.start:
                 return None
             else:
                 return FiniteDatetimeRange(left.start, max(left.end, right.end))
+
+        if self.tzinfo != get_tzinfo(other):
+            raise InconsistentTzInfo("inconsistent tzinfo for datetime range union")
 
         try:
             base_union = super().union(other)
