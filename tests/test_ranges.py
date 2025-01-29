@@ -1437,6 +1437,50 @@ class TestIterateOverMonths:
         assert result == row["expected"]
 
 
+class TestGetTzInfo:
+    def test_returns_none_for_naive_range(self):
+        r = ranges.DatetimeRange(
+            datetime.datetime(2020, 1, 1), datetime.datetime(2021, 1, 1)
+        )
+        assert ranges.get_tzinfo(r) is None
+
+    def test_returns_tzinfo_for_aware_range(self):
+        tz_berlin = zoneinfo.ZoneInfo("Europe/Berlin")
+        r = ranges.DatetimeRange(
+            datetime.datetime(2020, 1, 1, tzinfo=tz_berlin),
+            datetime.datetime(2021, 1, 1, tzinfo=tz_berlin),
+        )
+        assert ranges.get_tzinfo(r) == tz_berlin
+
+    def test_returns_tzinfo_of_start_for_half_open_range(self):
+        tz_berlin = zoneinfo.ZoneInfo("Europe/Berlin")
+        r = ranges.DatetimeRange(datetime.datetime(2020, 1, 1, tzinfo=tz_berlin), None)
+        assert ranges.get_tzinfo(r) == tz_berlin
+
+    def test_returns_tzinfo_of_end_for_half_open_range(self):
+        tz_berlin = zoneinfo.ZoneInfo("Europe/Berlin")
+        r = ranges.DatetimeRange(
+            None,
+            datetime.datetime(2020, 1, 1, tzinfo=tz_berlin),
+            boundaries=ranges.RangeBoundaries.EXCLUSIVE_INCLUSIVE,
+        )
+        assert ranges.get_tzinfo(r) == tz_berlin
+
+    def test_returns_none_for_continuum(self):
+        r = ranges.DatetimeRange.continuum()
+        assert ranges.get_tzinfo(r) is None
+
+    def test_raises_for_inconsistent_tzinfo(self):
+        tz_london = zoneinfo.ZoneInfo("Europe/London")
+        tz_berlin = zoneinfo.ZoneInfo("Europe/Berlin")
+        r = ranges.DatetimeRange(
+            datetime.datetime(2020, 1, 1, tzinfo=tz_london),
+            datetime.datetime(2021, 1, 1, tzinfo=tz_berlin),
+        )
+        with pytest.raises(ranges.InconsistentTzInfo):
+            ranges.get_tzinfo(r)
+
+
 def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[int]:
     """
     Convenience method to make test declarations clearer.

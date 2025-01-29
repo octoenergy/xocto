@@ -26,6 +26,9 @@ from xocto.types import generic
 from . import localtime
 
 
+class InconsistentTzInfo(Exception): ...
+
+
 class RangeBoundaries(enum.Enum):
     EXCLUSIVE_EXCLUSIVE = "()"
     EXCLUSIVE_INCLUSIVE = "(]"
@@ -1151,3 +1154,17 @@ def iterate_over_months(
 
         yield FiniteDatetimeRange(start_at, this_end)
         start_at = next_start
+
+
+def get_tzinfo(dt_range: DatetimeRange) -> Optional[datetime.tzinfo]:
+    if dt_range.start is None:
+        if dt_range.end is None:
+            return None
+        return dt_range.end.tzinfo
+
+    if dt_range.end is None:
+        return dt_range.start.tzinfo
+
+    if dt_range.start.tzinfo != dt_range.end.tzinfo:
+        raise InconsistentTzInfo("inconsistent tzinfo for datetime range boundaries")
+    return dt_range.start.tzinfo
