@@ -13,6 +13,10 @@ from hypothesis.strategies import composite, integers, none, one_of, sampled_fro
 from xocto import localtime, ranges
 
 
+TZ_UTC = zoneinfo.ZoneInfo("UTC")
+TZ_LONDON = zoneinfo.ZoneInfo("Europe/London")
+
+
 @composite
 def valid_integer_range(draw):
     boundaries = draw(sampled_from(ranges.RangeBoundaries))
@@ -1277,6 +1281,23 @@ class TestFiniteDatetimeRange:
                 dt_range.as_date_range()
 
             assert "End of range is not midnight-aligned" in str(exc_info.value)
+
+    class TestDays:
+        # This range crosses the DST boundary.
+        # At the start TZ_LONDON is equal to TZ_UTC.
+        # At the end TZ_LONDON is +1 to TZ_UTC.
+        RANGE = ranges.FiniteDatetimeRange(
+            # This is also 2024-03-01T00:00:00 in TZ_UTC
+            datetime.datetime(2024, 3, 1, tzinfo=TZ_LONDON),
+            # This is 2024-04-01T00:00:00 in TZ_LONDON
+            datetime.datetime(2024, 3, 31, hour=23, tzinfo=TZ_UTC),
+        )
+
+        def test_days_in_london(self):
+            assert self.RANGE.days(tz=TZ_LONDON) == 31
+
+        def test_days_in_utc(self):
+            assert self.RANGE.days(tz=TZ_UTC) == 30
 
 
 class TestAsFiniteDatetimePeriods:

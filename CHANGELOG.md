@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- [Breaking] Update `FiniteDatetimeRange.days` to require passing a timezone
+  [#195](https://github.com/octoenergy/xocto/pull/195).
+
 ## V7.1.1 - 2025-01-22
 
 - Improve the performance of `FiniteDatetimeRange.intersection`,

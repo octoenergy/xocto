@@ -901,12 +901,12 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
     ) -> Optional["FiniteDatetimeRange"]:
         return self.intersection(other)
 
-    @property
-    def days(self) -> int:
+    def days(self, tz: datetime.tzinfo) -> int:
         """
         Return the number of days between the start and end of the range.
         """
-        return (self.end - self.start).days
+        range_ = self.localize(tz)
+        return (range_.end - range_.start).days
 
     @property
     def seconds(self) -> int:
