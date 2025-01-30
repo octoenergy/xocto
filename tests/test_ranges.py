@@ -1084,6 +1084,7 @@ class TestFiniteDatetimeRange:
                 end=datetime.datetime(2000, 1, 3),
             )
 
+            assert isinstance(range | other, ranges.FiniteDatetimeRange)
             assert (
                 range | other
                 == other | range
@@ -1115,6 +1116,7 @@ class TestFiniteDatetimeRange:
                 end=datetime.datetime(2000, 1, 4),
             )
 
+            assert isinstance(range | other, ranges.FiniteDatetimeRange)
             assert (
                 range | other
                 == other | range
@@ -1123,6 +1125,54 @@ class TestFiniteDatetimeRange:
                     end=datetime.datetime(2000, 1, 4),
                 )
             )
+
+        @pytest.mark.parametrize(
+            "range_, other, expected_union",
+            [
+                [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2020, 1, 1),
+                        datetime.datetime(2023, 1, 1),
+                    ),
+                    ranges.HalfFiniteDatetimeRange(
+                        datetime.datetime(2021, 1, 1),
+                        None,
+                    ),
+                    ranges.HalfFiniteDatetimeRange(
+                        start=datetime.datetime(2020, 1, 1),
+                        end=None,
+                    ),
+                ],
+                [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2020, 1, 1),
+                        datetime.datetime(2023, 1, 1),
+                    ),
+                    ranges.HalfFiniteDatetimeRange(
+                        datetime.datetime(2021, 1, 1),
+                        datetime.datetime(2022, 1, 1),
+                    ),
+                    # The resulting range is finite, but it's still an instance of `HalfFiniteDatetimeRange`.
+                    ranges.HalfFiniteDatetimeRange(
+                        start=datetime.datetime(2020, 1, 1),
+                        end=datetime.datetime(2023, 1, 1),
+                    ),
+                ],
+            ],
+        )
+        def test_union_with_half_finite_range(self, range_, other, expected_union):
+            assert ranges._is_half_finite_datetime_range(range_ | other)
+            assert range_ | other == other | range_ == expected_union
+
+        def test_union_with_continuum(self):
+            range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1),
+                datetime.datetime(2022, 1, 1),
+            )
+            other = ranges.DatetimeRange.continuum()
+
+            assert ranges._is_datetime_range(range | other)
+            assert range | other == other | range == ranges.DatetimeRange.continuum()
 
     class TestIntersection:
         def test_intersection_of_touching_ranges(self):
@@ -1165,6 +1215,25 @@ class TestFiniteDatetimeRange:
                 == ranges.FiniteDatetimeRange(
                     start=datetime.datetime(2000, 1, 2),
                     end=datetime.datetime(2000, 1, 3),
+                )
+            )
+
+        def test_intersection_with_half_finite_range(self):
+            range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1),
+                datetime.datetime(2022, 1, 1),
+            )
+            other = ranges.HalfFiniteDatetimeRange(
+                datetime.datetime(2021, 1, 1),
+                None,
+            )
+
+            assert (
+                range & other
+                == other & range
+                == ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2021, 1, 1),
+                    end=datetime.datetime(2022, 1, 1),
                 )
             )
 
