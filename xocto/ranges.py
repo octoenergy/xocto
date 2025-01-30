@@ -860,7 +860,7 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
             if left.end <= right.start:
                 return None
             else:
-                return FiniteDatetimeRange(right.start, min(left.end, right.end))
+                return FiniteDatetimeRange(right.start, min(right.end, left.end))
 
         base_intersection = super().intersection(other)
         if base_intersection is None:
