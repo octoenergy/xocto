@@ -13,6 +13,10 @@ from hypothesis.strategies import composite, integers, none, one_of, sampled_fro
 from xocto import localtime, ranges
 
 
+TZ_LONDON = zoneinfo.ZoneInfo("Europe/London")
+TZ_BERLIN = zoneinfo.ZoneInfo("Europe/Berlin")
+
+
 @composite
 def valid_integer_range(draw):
     boundaries = draw(sampled_from(ranges.RangeBoundaries))
@@ -1174,6 +1178,20 @@ class TestFiniteDatetimeRange:
             assert ranges._is_datetime_range(range | other)
             assert range | other == other | range == ranges.DatetimeRange.continuum()
 
+        def test_preference_on_equal_end(self):
+            r1 = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1, tzinfo=TZ_LONDON),
+                datetime.datetime(2022, 1, 1, tzinfo=TZ_LONDON),
+            )
+            r2 = ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 1, 1, hour=1, tzinfo=TZ_BERLIN),
+                datetime.datetime(2022, 1, 1, hour=1, tzinfo=TZ_BERLIN),
+            )
+            assert r1.end == r2.end
+            union = r1 | r2
+            # r1.end was picked over r2.end.
+            assert union.start.tzinfo == union.end.tzinfo == TZ_LONDON
+
     class TestIntersection:
         def test_intersection_of_touching_ranges(self):
             range = ranges.FiniteDatetimeRange(
@@ -1236,6 +1254,20 @@ class TestFiniteDatetimeRange:
                     end=datetime.datetime(2022, 1, 1),
                 )
             )
+
+        def test_preference_on_equal_end(self):
+            r1 = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1, tzinfo=TZ_LONDON),
+                datetime.datetime(2022, 1, 1, tzinfo=TZ_LONDON),
+            )
+            r2 = ranges.FiniteDatetimeRange(
+                datetime.datetime(2021, 1, 1, hour=1, tzinfo=TZ_BERLIN),
+                datetime.datetime(2022, 1, 1, hour=1, tzinfo=TZ_BERLIN),
+            )
+            assert r1.end == r2.end
+            intersection = r1 & r2
+            # r2.end was picked over r1.end.
+            assert intersection.start.tzinfo == intersection.end.tzinfo == TZ_BERLIN
 
     class TestLocalize:
         def test_converts_timezone(self):
