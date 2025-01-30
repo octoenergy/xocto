@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add `localtime.get_local_tzinfo` [#195](https://github.com/octoenergy/xocto/pull/195).
 - [Breaking] Update `FiniteDatetimeRange.days` to require passing a timezone
   [#195](https://github.com/octoenergy/xocto/pull/195).
 

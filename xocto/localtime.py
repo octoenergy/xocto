@@ -28,6 +28,13 @@ ONE_HOUR = datetime_.timedelta(hours=1)
 MIDNIGHT_TIME = datetime_.time(0, 0)
 
 
+def get_local_tzinfo() -> datetime_.tzinfo:
+    """
+    Return the local tzinfo.
+    """
+    return timezone.get_current_timezone()
+
+
 def as_localtime(
     dt: datetime_.datetime, tz: datetime_.tzinfo | None = None
 ) -> datetime_.datetime:
@@ -383,8 +390,7 @@ def is_local_time(dt: datetime_.datetime) -> bool:
     """
     Test whether a given (timezone-aware) datetime is in local time or not.
     """
-    current_timezone = timezone.get_current_timezone()
-    return dt.tzinfo == current_timezone
+    return dt.tzinfo == get_local_tzinfo()
 
 
 def within_date_range(
