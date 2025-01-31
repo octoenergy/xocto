@@ -25,7 +25,7 @@ classifiers = [
 ]
 license = {text = "MIT"}
 dependencies = [
-  "ddtrace>=1.9.0",
+  "ddtrace>=1.9.0,<2.20.0",
   "duckdb>=0.9.0",
   "django>=4.0",
   "openpyxl>=3.1.0",
