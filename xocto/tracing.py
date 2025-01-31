@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import ddtrace
+import ddtrace.trace
 
 
-tracer = ddtrace.tracer
+tracer = ddtrace.trace.tracer
 wrap = tracer.wrap
 
 
