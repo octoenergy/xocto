@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V8.0.0 - 2025-02-05
+
+- Remove convenience code for ddtrace [#201](https://github.com/octoenergy/xocto/pull/201/).
+
 ## V7.2.0 - 2025-01-30
 
 - Allow the `union` operation between `FiniteDatetimeRange` and `HalfFiniteDatetimeRange` 
