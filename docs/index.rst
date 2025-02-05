@@ -23,7 +23,6 @@ PyPI detail page: https://pypi.python.org/pypi/xocto
    xocto/pact_testing
    xocto/settlement_periods
    xocto/storage
-   xocto/tracing
    xocto/types
    xocto/development
 
