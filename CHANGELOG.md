@@ -25,23 +25,23 @@
 ## V7.0.0 - 2024-12-19
 
 - Add `FiniteDatetimeRange.as_date_range` [#181](https://github.com/octoenergy/xocto/pull/181)
-- [Breaking] Remove `ranges.date_range_for_midnight_range` (replaced by FiniteDatetimeRange.as_date_range)[#181] (https://github.com/octoenergy/xocto/pull/181)
+- [Breaking] Remove `ranges.date_range_for_midnight_range` (replaced by FiniteDatetimeRange.as_date_range) [#181](https://github.com/octoenergy/xocto/pull/181)
 
 ## v6.2.0 - 2024-12-11
 
-- Add `ranges.date_range_for_midnight_range` [#178] (https://github.com/octoenergy/xocto/pull/178)
-- Add `FiniteDatetimeRange.localize` [#178] (https://github.com/octoenergy/xocto/pull/178)
+- Add `ranges.date_range_for_midnight_range` [#178](https://github.com/octoenergy/xocto/pull/178)
+- Add `FiniteDatetimeRange.localize` [#178](https://github.com/octoenergy/xocto/pull/178)
 
 ## v6.1.0 - 2024-08-30
 
-- Add optional `timezone` parameter to datetime-based range fields [#174] (https://github.com/octoenergy/xocto/pull/174)
+- Add optional `timezone` parameter to datetime-based range fields [#174](https://github.com/octoenergy/xocto/pull/174)
 
 ## v6.0.0 - 2024-08-30
 
 - [Breaking] Use parameter object for passing options to `pact_service`.
   Rename parameter `pact_version` to `consumer_version`.
   [#166](https://github.com/octoenergy/xocto/pull/166)
-- Fix bug with `list_files`  method in `S3SubdirectoryFileStore` [#171] (https://github.com/octoenergy/xocto/pull/171)
+- Fix bug with `list_files`  method in `S3SubdirectoryFileStore` [#171](https://github.com/octoenergy/xocto/pull/171)
 
 ## v5.1.0 - 2024-07-03
 
