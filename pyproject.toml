@@ -35,6 +35,7 @@ dependencies = [
   "python-magic>=0.4.27",
   "pytz",
   "structlog>=20.2.0",
+  "typing-extensions>=4.12.2",
   "xlrd>=2.0.1",
 ]
 
