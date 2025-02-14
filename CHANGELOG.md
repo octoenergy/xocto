@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- [Breaking] Remove `FiniteDatetimeRange.days` [#205](https://github.com/octoenergy/xocto/pull/205).
+  See [Issue #192](https://github.com/octoenergy/xocto/issues/192) for more context.
+
 ## V8.0.0 - 2025-02-05
 
 - Remove convenience code for ddtrace [#201](https://github.com/octoenergy/xocto/pull/201/).
