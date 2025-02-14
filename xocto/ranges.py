@@ -934,13 +934,6 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         return self.union(other)
 
     @property
-    def days(self) -> int:
-        """
-        Return the number of days between the start and end of the range.
-        """
-        return (self.end - self.start).days
-
-    @property
     def seconds(self) -> int:
         """
         Return the number of seconds between the start and end of the range.
