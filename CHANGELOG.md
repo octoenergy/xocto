@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `localtime.get_local_timezone()` [#206](https://github.com/octoenergy/xocto/pull/206/).
+
 ## V8.0.0 - 2025-02-05
 
 - Remove convenience code for ddtrace [#201](https://github.com/octoenergy/xocto/pull/201/).

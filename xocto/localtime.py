@@ -28,6 +28,10 @@ ONE_HOUR = datetime_.timedelta(hours=1)
 MIDNIGHT_TIME = datetime_.time(0, 0)
 
 
+def get_local_timezone() -> datetime_.tzinfo:
+    return timezone.get_current_timezone()
+
+
 def as_localtime(
     dt: datetime_.datetime, tz: datetime_.tzinfo | None = None
 ) -> datetime_.datetime:
