@@ -13,6 +13,10 @@ from tests import factories
 from xocto import localtime
 
 
+def test_get_local_timezone():
+    assert localtime.get_local_timezone() == timezone.get_current_timezone()
+
+
 class TestNow:
     def test_now_is_in_correct_timezone(self):
         now = localtime.now()
