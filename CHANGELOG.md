@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## V8.1.0 - 2025-02-18
+
 - Mark `FiniteDatetimeRange.days` as deprecated [#207](https://github.com/octoenergy/xocto/pull/207).
 - Add `localtime.get_local_timezone()` [#206](https://github.com/octoenergy/xocto/pull/206/).
 
