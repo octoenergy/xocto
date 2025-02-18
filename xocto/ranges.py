@@ -21,6 +21,7 @@ from typing import (
 )
 
 from dateutil import relativedelta
+from typing_extensions import deprecated
 
 from xocto.types import generic
 
@@ -934,6 +935,10 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         return self.union(other)
 
     @property
+    @deprecated(
+        "For midnight-aligned ranges get calendar days via `.as_date_range().days` instead. "
+        "Use `.localize()` first as appropriate."
+    )
     def days(self) -> int:
         """
         Return the number of days between the start and end of the range.
