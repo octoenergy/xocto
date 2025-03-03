@@ -1,0 +1,76 @@
+name: Run benchmarks main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run_benchmarks:
+    name: Run benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Run benchmarks
+        run: pytest --benchmark-only --benchmark-json benchmarks.json
+
+      - name: Upload artifact - benchmarks JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmarks_json
+          path: benchmarks.json
+          # Short retention. Only needed short term to share with the `extract_benchmarks` job.
+          retention-days: 1
+
+  extract_benchmarks:
+    name: Extract benchmarks
+    runs-on: ubuntu-latest
+    needs: [ run_benchmarks ]
+    steps:
+      - name: Checkout benchmarks-data branch
+        uses: actions/checkout@v4
+        with:
+          ref: benchmarks-data
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Download artifact - benchmarks JSON
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmarks_json
+
+      - name: Extract benchmarks
+        run: |
+          uv run scripts/extract_benchmarks.py \
+            -i benchmarks.json \
+            -o "uncollected/$(uuidgen).csv" \
+            -t ubuntu-latest
+
+      - name: Remove benchmarks JSON
+        run: rm benchmarks.json
+
+      - name: Add and commit benchmarks data
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          
+          git add --all
+          git commit -m "Add uncollected benchmarks"
+
+          # Retry below incase another workflow pushed to the benchmarks-data branch since we checked it out.
+          # Unlikely but technically possible...
+          # There won't be a merge conflict since we used a UUID as the file name.
+          scripts/push_with_retry.sh 5
