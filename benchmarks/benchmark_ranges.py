@@ -12,20 +12,20 @@ def _shuffled(ranges_, *, seed=42):
     return ranges_
 
 
-def test_any_overlapping(benchmark):
+def benchmark_any_overlapping(benchmark):
     ranges_ = _shuffled([ranges.Range(D(i), D(i + 1)) for i in range(1000)])
     any_overlapping = benchmark(ranges.any_overlapping, ranges_)
     assert any_overlapping is False
 
 
-def test_any_gaps(benchmark):
+def benchmark_any_gaps(benchmark):
     ranges_ = _shuffled([ranges.Range(D(i), D(i + 1)) for i in range(1000)])
-    any_overlapping = benchmark(ranges.any_gaps, ranges_)
-    assert any_overlapping is False
+    any_gaps = benchmark(ranges.any_gaps, ranges_)
+    assert any_gaps is False
 
 
-class TestFiniteDatetimeRange:
-    def test_intersection_is_none(self, benchmark):
+class BenchmarkFiniteDatetimeRange:
+    def benchmark_intersection_is_none(self, benchmark):
         r1 = ranges.FiniteDatetimeRange(
             datetime.datetime(2020, 1, 1),
             datetime.datetime(2020, 1, 2),
@@ -39,7 +39,7 @@ class TestFiniteDatetimeRange:
 
         assert result is None
 
-    def test_intersection_is_not_none(self, benchmark):
+    def benchmark_intersection_is_not_none(self, benchmark):
         r1 = ranges.FiniteDatetimeRange(
             datetime.datetime(2020, 1, 1),
             datetime.datetime(2020, 1, 3),
@@ -56,7 +56,7 @@ class TestFiniteDatetimeRange:
             datetime.datetime(2020, 1, 3),
         )
 
-    def test_union_is_none(self, benchmark):
+    def benchmark_union_is_none(self, benchmark):
         r1 = ranges.FiniteDatetimeRange(
             datetime.datetime(2020, 1, 1),
             datetime.datetime(2020, 1, 2),
@@ -70,7 +70,7 @@ class TestFiniteDatetimeRange:
 
         assert result is None
 
-    def test_union_is_not_none(self, benchmark):
+    def benchmark_union_is_not_none(self, benchmark):
         r1 = ranges.FiniteDatetimeRange(
             datetime.datetime(2020, 1, 1),
             datetime.datetime(2020, 1, 3),
@@ -87,7 +87,7 @@ class TestFiniteDatetimeRange:
             datetime.datetime(2020, 1, 4),
         )
 
-    def test_sorting(self, benchmark):
+    def benchmark_sorting(self, benchmark):
         sorted_ranges_ = []
         dt = datetime.datetime(2020, 1, 1)
         for _ in range(100_000):
