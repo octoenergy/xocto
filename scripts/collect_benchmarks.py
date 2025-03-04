@@ -1,8 +1,3 @@
-"""
-Collects benchmarks data from a set of input CSVs and appends the data
-to an output CSV.
-"""
-
 import argparse
 import glob
 import os
@@ -25,7 +20,7 @@ def main():
     else:
         os.makedirs(output_path.parent, exist_ok=True)
 
-    for uncollected_file in glob.glob(f"{args.input.rstrip('/')}/*"):
+    for uncollected_file in glob.glob(args.input):
         dfs.append(pl.read_csv(uncollected_file))
 
     df = pl.concat(dfs)
@@ -34,4 +29,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
