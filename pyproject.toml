@@ -217,7 +217,9 @@ filterwarnings = [
 DJANGO_SETTINGS_MODULE = "tests.settings"
 
 # Test modules must have be named this way.
-python_files = "test_*.py"
+python_files = ["test_*.py", "benchmark_*.py"]
+python_functions = ["test_*", "benchmark_*"]
+python_classes = ["Test*", "Benchmark*"]
 
 # Default options when pytest is run:
 #

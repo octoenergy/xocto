@@ -14,7 +14,7 @@ lint_check:
 	ruff check .
 
 test:
-	py.test  --benchmark-skip
+	py.test  --benchmark-disable
 
 benchmark:
 	py.test  --benchmark-only --benchmark-autosave --benchmark-compare --benchmark-group-by=func --benchmark-columns mean,rounds,iterations
