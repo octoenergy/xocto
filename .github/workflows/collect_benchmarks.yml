@@ -1,0 +1,45 @@
+name: Collect benchmarks
+
+on:
+  workflow_run:
+    workflows: [ "Run benchmarks main" ]
+    types:
+      - completed
+
+# `concurrency` used to ensure that only one instance of this workflow runs at one time.
+# This is important since concurrent workflows would operate on the same files.
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  collect_benchmarks:
+    name: Collect benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout benchmarks-data branch
+        uses: actions/checkout@v4
+        with:
+          ref: benchmarks-data
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Collect benchmarks
+        run: uv run scripts/collect_benchmarks.py -i 'uncollected/*.csv' -o benchmarks.csv
+
+      - name: Remove now collected benchmarks
+        run: rm uncollected/*.csv
+
+      - name: Add and commit
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          
+          git add --all
+          git commit -m "Collect benchmarks"
+          
+          # Retry below incase another workflow pushed to the benchmarks-data branch since we checked it out.
+          # Unlikely but technically possible...
+          # There won't be a merge conflict since this workflow is the only workflow touching benchmarks.csv
+          # and this workflow uses `concurrency`.
+          scripts/push_with_retry.sh 5
