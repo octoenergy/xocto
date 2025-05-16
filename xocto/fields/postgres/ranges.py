@@ -188,7 +188,7 @@ class HalfFiniteDateTimeRangeField(_LocaliserMixin, pg_fields.DateTimeRangeField
         if isinstance(value, datetime.datetime):
             return value
         raise TypeError(
-            "HalfFiniteDateTimeRangeField may only accept HalfFiniteDateTimeRangeField or datetime objects."
+            "HalfFiniteDateTimeRangeField may only accept HalfFiniteDateTimeRangeField, FiniteDateTimeRangeField, or datetime objects."
         )
 
     def from_db_value(
