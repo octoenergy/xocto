@@ -151,8 +151,8 @@ def date_of_day_before(
     That is, find the local date of the datetime passed in, subtract one day from it, and return it.
 
     This is frequently useful when we are converting from the upper bound of a datetime range,
-    which by convention we treat as exclusive, to the upper bound of a date range, which by
-    convention we consider *inclusive*.
+    which we tend to treat as exclusive, to the upper bound of a date range, which we tend to
+    consider *inclusive*.
 
     Note that `dt` must already be timezone-aware: it cannot be naive. It may be in UTC, for
     example, or already in current local time, in which case the effect will be the same as
