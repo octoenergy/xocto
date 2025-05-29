@@ -724,7 +724,7 @@ def translate_english_month_to_spanish(month: int) -> str:
         "September": "septiembre",
         "October": "octubre",
         "November": "noviembre",
-        "December": "deciembre",
+        "December": "diciembre",
     }
     return month_name_lookup[month_name]
 
