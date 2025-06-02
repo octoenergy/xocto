@@ -702,6 +702,22 @@ class TestS3FileStore:
             )
             assert len(file_contents) == 0
 
+    def test_non_closeable_buffered_reader_does_not_close_underlying_file(self):
+        # deliberately not using a context manager to
+        # open/read the file so we can correctly observe
+        # the closing behavior.
+        tmp = tempfile.TemporaryFile(mode="w+b")
+        tmp.write(b"data")
+        tmp.seek(0)
+        try:
+            wrapped = storage.NonCloseableBufferedReader(tmp)
+            wrapped.close()
+
+            # Should have flushed, but NOT closed
+            assert not tmp.closed
+        finally:
+            tmp.close()
+
 
 class TestMemoryFileStore:
     def setup_method(self):
