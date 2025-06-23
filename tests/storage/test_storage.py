@@ -823,6 +823,30 @@ class TestMemoryFileStore:
         finally:
             os.remove(file.name)
 
+    def test_copy_file(self):
+        # Store a file in a different source bucket
+        source_store = storage.MemoryFileStore("source-bucket")
+        contents = b"test_download_file"
+        source_bucket_name, source_key_path = source_store.store_file(
+            namespace="mem",
+            filename="test.pdf",
+            contents=contents,
+        )
+        s3_object = storage.S3Object(
+            bucket_name=source_bucket_name,
+            key=source_key_path,
+        )
+        destination = "a/b/c.pdf"
+
+        # Copy the file to a different bucket
+        new_s3_object = self.store.copy(s3_object=s3_object, destination=destination)
+
+        # Check the file is copied to the correct bucket and content is as expected
+        assert new_s3_object.bucket_name == self.store.bucket_name
+        assert new_s3_object.key == destination
+        copied_contents = self.store.fetch_file_contents(destination)
+        assert copied_contents == contents
+
 
 class TestLocalFileStore:
     @classmethod
