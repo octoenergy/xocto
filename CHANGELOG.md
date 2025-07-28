@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V8.1.1 - 2025-07-28
+
+- Fix spanish month translation typo [#217](https://github.com/octoenergy/xocto/pull/217).
+
 ## V8.1.0 - 2025-02-18
 
 - Mark `FiniteDatetimeRange.days` as deprecated [#207](https://github.com/octoenergy/xocto/pull/207).
