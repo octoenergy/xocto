@@ -42,3 +42,6 @@ venv/
 
 # Config file for direnv shell extension for per-directory environments
 .envrc
+
+# Ignore Claude-generated documentation
+docs_claude_generated/
