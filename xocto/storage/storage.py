@@ -32,6 +32,7 @@ import duckdb
 import magic
 import pandas as pd
 from botocore import exceptions as botocore_exceptions
+from botocore.config import Config
 from botocore.response import StreamingBody
 from django.conf import settings
 from django.urls import reverse
@@ -808,10 +809,19 @@ class S3FileStore(BaseS3FileStore):
         return None
 
     def _get_boto_client(self) -> S3Client:
+        client_kwargs = {}
+        if (
+            hasattr(settings, "AWS_S3_ENDPOINT_URL")
+            and settings.AWS_S3_SIGNATURE_VERSION is not None
+        ):
+            client_kwargs["config"] = Config(
+                signature_version=settings.AWS_S3_SIGNATURE_VERSION
+            )
         return boto3.client(
             "s3",
             region_name=settings.AWS_REGION,
             endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+            **client_kwargs,
         )
 
     def _get_boto_bucket(self) -> service_resource.Bucket:
