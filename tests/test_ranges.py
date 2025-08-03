@@ -1538,6 +1538,104 @@ class TestIterateOverMonths:
         assert result == row["expected"]
 
 
+class TestIterateOverDays:
+    @pytest.mark.parametrize(
+        "row",
+        [
+            {
+                "period": ranges.FiniteDatetimeRange(
+                    datetime.datetime(2023, 6, 12, 3, 45, tzinfo=localtime.UTC),
+                    datetime.datetime(2023, 6, 12, 16, 15, tzinfo=localtime.UTC),
+                ),
+                "expected": [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2023, 6, 12, 3, 45, tzinfo=localtime.UTC),
+                        datetime.datetime(2023, 6, 12, 16, 15, tzinfo=localtime.UTC),
+                    )
+                ],
+                "id": "within-one-day",
+            },
+            {
+                "period": ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 5, 12, 2, 30, tzinfo=localtime.UTC),
+                    datetime.datetime(2021, 5, 13, 18, 25, tzinfo=localtime.UTC),
+                ),
+                "expected": [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 5, 12, 2, 30, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 5, 13, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 5, 13, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 5, 13, 18, 25, tzinfo=localtime.UTC),
+                    ),
+                ],
+                "id": "spanning-two-days",
+            },
+            {
+                "period": ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 5, 12, 5, 10, tzinfo=localtime.UTC),
+                    datetime.datetime(2021, 5, 14, 17, 55, tzinfo=localtime.UTC),
+                ),
+                "expected": [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 5, 12, 5, 10, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 5, 13, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 5, 13, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 5, 14, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 5, 14, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 5, 14, 17, 55, tzinfo=localtime.UTC),
+                    ),
+                ],
+                "id": "spanning-three-days",
+            },
+            {
+                "period": ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 5, 31, 2, 30, tzinfo=localtime.UTC),
+                    datetime.datetime(2021, 6, 1, 18, 25, tzinfo=localtime.UTC),
+                ),
+                "expected": [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 5, 31, 2, 30, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 6, 1, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 6, 1, tzinfo=localtime.UTC),
+                        datetime.datetime(2021, 6, 1, 18, 25, tzinfo=localtime.UTC),
+                    ),
+                ],
+                "id": "spanning-two-days-over-month-boundary",
+            },
+            {
+                "period": ranges.FiniteDatetimeRange(
+                    datetime.datetime(2021, 12, 31, 2, 30, tzinfo=localtime.UTC),
+                    datetime.datetime(2022, 1, 1, 18, 25, tzinfo=localtime.UTC),
+                ),
+                "expected": [
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2021, 12, 31, 2, 30, tzinfo=localtime.UTC),
+                        datetime.datetime(2022, 1, 1, tzinfo=localtime.UTC),
+                    ),
+                    ranges.FiniteDatetimeRange(
+                        datetime.datetime(2022, 1, 1, tzinfo=localtime.UTC),
+                        datetime.datetime(2022, 1, 1, 18, 25, tzinfo=localtime.UTC),
+                    ),
+                ],
+                "id": "spanning-two-days-over-year-boundary",
+            },
+        ],
+        ids=lambda row: row["id"],
+    )
+    def test_yields_correct_ranges(self, row):
+        result = list(ranges.iterate_over_days(period=row["period"], tz=localtime.UTC))
+
+        assert result == row["expected"]
+
+
 def _rangeset_from_string(rangeset_str: str) -> ranges.RangeSet[int]:
     """
     Convenience method to make test declarations clearer.
