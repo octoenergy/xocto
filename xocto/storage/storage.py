@@ -28,6 +28,7 @@ from typing import (
 )
 
 import boto3
+import botocore.config
 import duckdb
 import magic
 import pandas as pd
@@ -808,10 +809,22 @@ class S3FileStore(BaseS3FileStore):
         return None
 
     def _get_boto_client(self) -> S3Client:
+        config = {}
+
+        if (connect_timeout := getattr(settings, "BOTO_S3_CONNECT_TIMEOUT")) is not None:
+            config["connect_timeout"] = connect_timeout
+        if (read_timeout := getattr(settings, "BOTO_S3_READ_TIMEOUT")) is not None:
+            config["read_timeout"] = read_timeout
+        if (total_max_attempts := getattr(settings, "BOTO_S3_TOTAL_MAX_ATTEMPTS")) is not None:
+            config["retries"] = {
+                "total_max_attempts": total_max_attempts,
+            }
+
         return boto3.client(
             "s3",
             region_name=settings.AWS_REGION,
             endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+            config=botocore.config.Config(**config),
         )
 
     def _get_boto_bucket(self) -> service_resource.Bucket:
