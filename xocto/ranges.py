@@ -1175,11 +1175,45 @@ def iterate_over_months(
         (01/03->15/03)
     ]
     """
+    return _iterate_over_periods(
+        period=period, tz=tz, delta=relativedelta.relativedelta(months=1, day=1)
+    )
+
+
+def iterate_over_days(
+    period: FiniteDatetimeRange, *, tz: datetime.tzinfo
+) -> Iterator[FiniteDatetimeRange]:
+    """
+    Generate a sequence of finite datetime ranges spanning days during the period.
+
+    Ranges span each whole day between the start and end times, inclusive.
+
+    ie: given a period of (2025-01-15 10:30, 2025-01-17 09:00) -> [
+        (2025-01-15 10:30->2025-01-16 00:00),
+        (2025-01-16 00:00->2025-01-17 00:00),
+        (2025-01-17 00:00->2025-01-17 09:00)
+    ]
+    """
+    return _iterate_over_periods(
+        period=period,
+        tz=tz,
+        delta=relativedelta.relativedelta(
+            days=1, hour=0, minute=0, second=0, microsecond=0
+        ),
+    )
+
+
+def _iterate_over_periods(
+    period: FiniteDatetimeRange,
+    *,
+    tz: datetime.tzinfo,
+    delta: relativedelta.relativedelta,
+) -> Iterator[FiniteDatetimeRange]:
     start_at = localtime.as_localtime(period.start, tz=tz)
     end_at = localtime.as_localtime(period.end, tz=tz)
 
     while True:
-        next_start = start_at + relativedelta.relativedelta(months=1, day=1)
+        next_start = start_at + delta
         this_end = next_start
 
         if end_at <= this_end:
