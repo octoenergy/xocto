@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V8.2.1 - 2025-08-05
+
+- Add timeout and retry options to S3 client [#223](https://github.com/octoenergy/xocto/pull/223).
+
 ## V8.1.1 - 2025-07-28
 
 - Fix spanish month translation typo [#217](https://github.com/octoenergy/xocto/pull/217).
