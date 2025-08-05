@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V8.3.0 - 2025-08-06
+
+- Add `iterate_over_days` function to `ranges` module [#222](https://github.com/octoenergy/xocto/pull/222)
+
 ## V8.2.1 - 2025-08-05
 
 - Add timeout and retry options to S3 client [#223](https://github.com/octoenergy/xocto/pull/223).
