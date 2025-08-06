@@ -12,6 +12,20 @@ __all__ = [
     "number_of_periods_in_timedelta",
 ]
 
+# UK energy market settlement period rules
+SETTLEMENT_PERIODS_PER_DAY = 48  # Normal 24-hour UK day: 48 half-hour periods
+SETTLEMENT_PERIOD_MINUTES = 30  # UK standard: 30-minute intervals
+WHOLESALE_MARKET_START_HOUR = 23  # Wholesale trading: previous day 23:00
+RETAIL_MARKET_START_HOUR = (
+    24  # Conceptual start of the delivery day (midnight), used only for offset calculation
+    # with WHOLESALE_MARKET_START_HOUR. Not a valid hour for datetime objects.
+)
+SETTLEMENT_PERIODS_DST_FALLBACK_EXTRA = (
+    2  # Extra hour creates 2 additional 30-minute periods
+)
+SETTLEMENT_PERIODS_PER_DAY_MAX = (
+    SETTLEMENT_PERIODS_PER_DAY + SETTLEMENT_PERIODS_DST_FALLBACK_EXTRA
+)  # 50 periods maximum (during DST fallback)
 
 # Time zones implemented
 UTC_TZ = "UTC"
@@ -36,7 +50,9 @@ def _get_first_delivery_time(
     Return an aware datetime for the start of the first settlement period on a given date.
     """
     midnight = datetime.datetime(date.year, date.month, date.day)
-    offset_midnight = midnight - datetime.timedelta(hours=1)
+    offset_midnight = midnight - datetime.timedelta(
+        hours=RETAIL_MARKET_START_HOUR - WHOLESALE_MARKET_START_HOUR
+    )
     # First settlement period
     cases = {
         # UTC: first delivery starts at 00:00:00 UTC on the day
@@ -60,7 +76,7 @@ def _get_delivery_date(
     """
     period_date = local_time.date()
     offset_period_date = period_date
-    if local_time.hour >= 23:
+    if local_time.hour >= WHOLESALE_MARKET_START_HOUR:
         offset_period_date += datetime.timedelta(days=1)
     # Date of the first settlement period
     cases = {
@@ -78,10 +94,12 @@ def _get_delivery_date(
 
 
 def _round_local_down_to_hh(local_time: datetime.datetime) -> datetime.datetime:
-    if local_time.minute < 30:
+    if local_time.minute < SETTLEMENT_PERIOD_MINUTES:
         return local_time - datetime.timedelta(minutes=local_time.minute)
     else:
-        return local_time - datetime.timedelta(minutes=local_time.minute - 30)
+        return local_time - datetime.timedelta(
+            minutes=local_time.minute - SETTLEMENT_PERIOD_MINUTES
+        )
 
 
 def convert_sp_and_date_to_local(
@@ -90,12 +108,14 @@ def convert_sp_and_date_to_local(
     """
     Return an aware datetime for the start of a given settlement period.
     """
-    if sp not in range(1, 51):
+    if sp not in range(1, SETTLEMENT_PERIODS_PER_DAY_MAX + 1):
         raise exceptions.SettlementPeriodError("Settlement period not valid")
     # First settlement period in the time zone
     first_period_start = _get_first_delivery_time(date, timezone_str, is_wholesale)
     # Start of the settlement period in local time
-    local_time = first_period_start + datetime.timedelta(minutes=30 * (sp - 1))
+    local_time = first_period_start + datetime.timedelta(
+        minutes=SETTLEMENT_PERIOD_MINUTES * (sp - 1)
+    )
     # Normalizing for daylight saving rules
     return pytz.timezone(timezone_str).normalize(local_time)
 
@@ -130,7 +150,9 @@ def convert_local_to_sp_and_date(
     )
     # Fetch settlement period
     delta = half_hourly_time - first_delivery_time
-    settlement_period = ((int(delta.total_seconds()) // 60) + 30) // 30
+    settlement_period = (
+        (int(delta.total_seconds()) // 60) + SETTLEMENT_PERIOD_MINUTES
+    ) // SETTLEMENT_PERIOD_MINUTES
     return settlement_period, delivery_date
 
 
@@ -148,4 +170,4 @@ def number_of_periods_in_timedelta(delta: datetime.timedelta) -> float:
     """
     Return the number of half-hourly settlement periods in the given timedelta
     """
-    return (delta.total_seconds() / 60) / 30
+    return (delta.total_seconds() / 60) / SETTLEMENT_PERIOD_MINUTES
