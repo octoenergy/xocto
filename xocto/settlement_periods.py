@@ -1,7 +1,7 @@
 import datetime
 import typing
 
-import pytz
+import pytz  # type: ignore[import-untyped]  # TODO: Remove when pytz dependency removed
 
 from . import exceptions
 
