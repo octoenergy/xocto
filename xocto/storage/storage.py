@@ -126,6 +126,15 @@ class ReadableBinaryFile(Protocol):
     def read(self, size: int = ...) -> bytes: ...
 
 
+class NonCloseableBufferedReader(io.BufferedReader):
+    def __init__(self, raw: ReadableBinaryFile, *args: Any, **kwargs: Any):
+        super().__init__(cast(io.RawIOBase, raw), *args, **kwargs)
+
+    def close(self) -> None:
+        # Don't close the underlying file object, just flush the buffer.
+        self.flush()
+
+
 class StreamingBodyIOAdapter(io.RawIOBase):
     """
     Wrapper to adapt a boto3 S3 object to a standard Python "file-like" object
@@ -466,7 +475,7 @@ class S3FileStore(BaseS3FileStore):
                 _log_existing_file_returned(key_path)
                 return self.bucket_name, existing_boto_object.key
 
-        readable = _to_stream(contents=contents)
+        readable = NonCloseableBufferedReader(_to_stream(contents=contents))
 
         # `boto_client.upload_fileobj` is type annotated with `Fileobj: BinaryIO`. However, in
         # practice the only file-like method it needs is `read(size=...)`. This cast allows us to
@@ -489,6 +498,11 @@ class S3FileStore(BaseS3FileStore):
             Key=key_path,
             ExtraArgs=extra_args,
         )
+
+        # we call readable.detach instead of file_obj.detach because mypy
+        # assumes file_obj is a BinaryIO and not a BufferedReader thus
+        # doesn't have a detach method.
+        readable.detach()
 
         return self.bucket_name, key_path
 
