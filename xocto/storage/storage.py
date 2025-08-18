@@ -809,20 +809,18 @@ class S3FileStore(BaseS3FileStore):
         return None
 
     def _get_boto_client(self) -> S3Client:
-        config = {}
+        config: dict[str, Any] = {}
 
         if (
             connect_timeout := getattr(settings, "BOTO_S3_CONNECT_TIMEOUT")
         ) is not None:
-            config["connect_timeout"] = connect_timeout
+            config["connect_timeout"] = float(connect_timeout)
         if (read_timeout := getattr(settings, "BOTO_S3_READ_TIMEOUT")) is not None:
-            config["read_timeout"] = read_timeout
+            config["read_timeout"] = float(read_timeout)
         if (
             total_max_attempts := getattr(settings, "BOTO_S3_TOTAL_MAX_ATTEMPTS")
         ) is not None:
-            config["retries"] = {
-                "total_max_attempts": total_max_attempts,
-            }
+            config["retries"] = {"total_max_attempts": int(total_max_attempts)}
 
         return boto3.client(
             "s3",
