@@ -51,7 +51,10 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
+    "sphinx.ext.intersphinx",
 ]
+
+intersphinx_mapping = {"python": ("https://botocore.readthedocs.io/en/latest/", None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

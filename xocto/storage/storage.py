@@ -19,6 +19,7 @@ from typing import (
     Any,
     AnyStr,
     BinaryIO,
+    Dict,
     Iterable,
     Iterator,
     Protocol,
@@ -40,6 +41,7 @@ from django.utils.module_loading import import_string
 from pyarrow import parquet
 
 from xocto import events, localtime
+from xocto.conf import settings as xocto_settings
 
 from . import files, s3_select
 
@@ -809,19 +811,15 @@ class S3FileStore(BaseS3FileStore):
         return None
 
     def _get_boto_client(self) -> S3Client:
-        config = {}
+        config: Dict[str, Any] = {}
 
-        if (
-            connect_timeout := getattr(settings, "BOTO_S3_CONNECT_TIMEOUT")
-        ) is not None:
-            config["connect_timeout"] = connect_timeout
-        if (read_timeout := getattr(settings, "BOTO_S3_READ_TIMEOUT")) is not None:
-            config["read_timeout"] = read_timeout
-        if (
-            total_max_attempts := getattr(settings, "BOTO_S3_TOTAL_MAX_ATTEMPTS")
-        ) is not None:
+        if xocto_settings.BOTO_S3_CONNECT_TIMEOUT is not None:
+            config["connect_timeout"] = xocto_settings.BOTO_S3_CONNECT_TIMEOUT
+        if xocto_settings.BOTO_S3_READ_TIMEOUT is not None:
+            config["read_timeout"] = xocto_settings.BOTO_S3_READ_TIMEOUT
+        if xocto_settings.BOTO_S3_TOTAL_MAX_ATTEMPTS is not None:
             config["retries"] = {
-                "total_max_attempts": total_max_attempts,
+                "total_max_attempts": xocto_settings.BOTO_S3_TOTAL_MAX_ATTEMPTS,
             }
 
         return boto3.client(

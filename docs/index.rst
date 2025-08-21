@@ -24,6 +24,7 @@ PyPI detail page: https://pypi.python.org/pypi/xocto
    xocto/settlement_periods
    xocto/storage
    xocto/types
+   xocto/settings
    xocto/development
 
 
