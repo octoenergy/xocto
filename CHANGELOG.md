@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Ensure that boto configuration from django settings are integers [#231](https://github.com/octoenergy/xocto/pull/231)
+
 ## V8.4.0 - 2025-09-02
 
 - Add `DjangoJSONValue` Django type [#232](https://github.com/octoenergy/xocto/pull/232)
