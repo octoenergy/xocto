@@ -29,7 +29,9 @@ jobs:
         run: make install
 
       - name: Run benchmarks
-        run: python -m pytest --benchmark-only --benchmark-json benchmarks.json
+        run: |
+          source venv/bin/activate
+          python -m pytest --benchmark-only --benchmark-json benchmarks.json
 
       - name: Upload artifact - benchmarks JSON
         uses: actions/upload-artifact@v4
