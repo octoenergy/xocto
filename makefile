@@ -1,6 +1,6 @@
 install:
-	pip install pip==23.3.1
-	pip install -e '.[dev,docs]'
+	pip install -U uv
+	uv pip install -e '.[dev,docs]'
 
 
 # CI step wrappers
