@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V8.3.1 - 2025-09-02
+
+- Inline import of `pandas` and `duckdb` [#237](https://github.com/octoenergy/xocto/pull/237)
+
 ## V8.3.0 - 2025-08-06
 
 - Add `iterate_over_days` function to `ranges` module [#222](https://github.com/octoenergy/xocto/pull/222)
