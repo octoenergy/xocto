@@ -1,9 +1,13 @@
+import datetime
+import decimal
+import uuid
 from typing import Generic, Tuple, TypeVar, Union
 
 from django.contrib.auth import models as auth_models
 from django.db import models
 from django.db.models.expressions import Combinable
 from django.http import HttpRequest
+from typing_extensions import TypeAlias
 
 
 # A type variable which can be used in generic types, and represents a Django model of some
@@ -38,3 +42,25 @@ class AuthenticatedRequest(HttpRequest, Generic[User]):
     """
 
     user: User
+
+
+# JSON serializable primitive types
+_JSONPrimitive: TypeAlias = Union[str, int, float, bool, None]
+
+# Django JSON serializable value types, as per DjangoJSONEncoder
+DjangoJSONValue: TypeAlias = Union[
+    _JSONPrimitive,
+    datetime.date,
+    datetime.datetime,
+    datetime.time,
+    datetime.timedelta,
+    decimal.Decimal,
+    uuid.UUID,
+]
+
+# Recursive type for Django JSON serializable values, for nested structures
+DjangoJSONSerializableValue: TypeAlias = Union[
+    DjangoJSONValue,
+    list["DjangoJSONSerializableValue"],
+    dict[str, "DjangoJSONSerializableValue"],
+]
