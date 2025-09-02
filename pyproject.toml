@@ -47,7 +47,7 @@ dev = [
   "moto[s3,sqs]==4.1",
   "mypy-boto3-s3==1.34.120",
   "mypy==1.10.0",
-  "numpy==1.22.2",
+  "numpy==2.0.0",
   "pre-commit>=3.7.1",
   "psycopg2>=2.8.4",
   "pyarrow-stubs==10.0.1.6",
