@@ -20,6 +20,11 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Set up virtual environment
+        run: |
+          python -m venv venv
+          echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/venv" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: make install
 
