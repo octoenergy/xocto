@@ -29,9 +29,7 @@ from typing import (
 
 import boto3
 import botocore.config
-import duckdb
 import magic
-import pandas as pd
 from botocore import exceptions as botocore_exceptions
 from botocore.response import StreamingBody
 from django.conf import settings
@@ -45,6 +43,9 @@ from . import files, s3_select
 
 
 if TYPE_CHECKING:
+    # Reduce some runtime startup costs by avoiding loading
+    # pandas unless we really need it.
+    import pandas as pd
     from _typeshed import WriteableBuffer
     from mypy_boto3_s3 import service_resource
     from mypy_boto3_s3.client import S3Client
@@ -1265,6 +1266,10 @@ class LocalFileStore(BaseS3FileStore):
         raw_sql: str,
         df: pd.DataFrame,
     ) -> pd.DataFrame:
+        # We inline the import of duckdb here for performance reasons.
+        # It's a fairly large dependency so we should only load it on demand.
+        import duckdb
+
         # s3 select requires the from clause to use the identifier "s3object"
         # it is case insensitive however so people's queries may use different cases
         S3_OBJECT_QUERY_IDENTIFIER = "s3object"
@@ -1286,6 +1291,10 @@ class LocalFileStore(BaseS3FileStore):
         csv_input_serializer: s3_select.CSVInputSerializer,
         compression_type: s3_select.CompressionType | None = None,
     ) -> pd.DataFrame:
+        # We inline the import of pandas here for performance reasons.
+        # It's a fairly large dependency so we should only load it on demand.
+        import pandas as pd
+
         input_serializer = csv_input_serializer.to_dict()
 
         field_delimiter = input_serializer.get("FieldDelimiter", ",")
