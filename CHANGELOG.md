@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## V8.4.0 - 2025-09-02
+
+- Add `DjangoJSONValue` Django type [#232](https://github.com/octoenergy/xocto/pull/232)
+- Add `DjangoJSONSerializableValue` Django type [#232](https://github.com/octoenergy/xocto/pull/232)
+
 ## V8.3.1 - 2025-09-02
 
 - Inline import of `pandas` and `duckdb` [#237](https://github.com/octoenergy/xocto/pull/237)
