@@ -880,7 +880,7 @@ class S3FileStore(BaseS3FileStore):
             "s3",
             region_name=settings.AWS_REGION,
             endpoint_url=settings.AWS_S3_ENDPOINT_URL,
-            config=self._get_boto_config,
+            config=self._get_boto_config(),
         )
 
     def _get_boto_bucket(self) -> service_resource.Bucket:
