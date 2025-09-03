@@ -1234,7 +1234,14 @@ def _is_datetime_range(value: Any) -> bool:
     )
 
 
+def _is_datetime_range_and_bounded(value: Any) -> bool:
+    return _is_datetime_range(value) and (
+        isinstance(value.start, datetime.datetime)
+        or isinstance(value.end, datetime.datetime)
+    )
+
+
 # Subscripted generics may not be used with isinstance directly.
 # TODO: A TypeGuard would be nicer, once we drop Python 3.9.
 def _is_half_finite_datetime_range(value: Any) -> bool:
-    return _is_datetime_range(value) and isinstance(value, HalfFiniteRange)
+    return _is_datetime_range_and_bounded(value) or isinstance(value, HalfFiniteRange)
