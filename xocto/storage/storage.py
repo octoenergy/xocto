@@ -127,6 +127,64 @@ class ReadableBinaryFile(Protocol):
     def read(self, size: int = ...) -> bytes: ...
 
 
+def make_boto_config(
+    *,
+    connect_timeout: int | None = None,
+    read_timeout: int | None = None,
+    total_max_attempts: int | None = None,
+) -> botocore.config.Config:
+    """
+    Used to make a botocore.config.Config for use with the S3FileStore class.
+
+    By default that class will use `make_boto_config_from_django_settings` which
+    will populate the inputs to this function using django settings
+    """
+    config: dict[str, object] = {}
+
+    if connect_timeout is not None:
+        config["connect_timeout"] = connect_timeout
+
+    if read_timeout is not None:
+        config["read_timeout"] = read_timeout
+
+    if total_max_attempts is not None:
+        config["retries"] = {"total_max_attempts": total_max_attempts}
+
+    return botocore.config.Config(**config)
+
+
+def make_boto_config_from_django_settings(
+    *,
+    connect_timeout_key: str = "BOTO_S3_CONNECT_TIMEOUT",
+    read_timeout_key: str = "BOTO_S3_READ_TIMEOUT",
+    total_max_attempts_key: str = "BOTO_S3_TOTAL_MAX_ATTEMPTS",
+) -> botocore.config.Config:
+    """
+    Used to make a botocore.config.Config for use with the S3FileStore class.
+
+    This will find django settings using the specified keys and ensure if those have values,
+    that those values are integers, before passing into `make_boto_config` to make a boto config
+    """
+
+    def _get_int(key: str) -> int | None:
+        val = getattr(settings, key, None)
+        if val is None or isinstance(val, int):
+            return val
+
+        if isinstance(val, str) and val.isdigit():
+            return int(val)
+
+        raise TypeError(
+            "Expect django setting to be an integer: {key}, got {type(val)}: '{val}'"
+        )
+
+    return make_boto_config(
+        connect_timeout=_get_int(connect_timeout_key),
+        read_timeout=_get_int(read_timeout_key),
+        total_max_attempts=_get_int(total_max_attempts_key),
+    )
+
+
 class StreamingBodyIOAdapter(io.RawIOBase):
     """
     Wrapper to adapt a boto3 S3 object to a standard Python "file-like" object
@@ -415,6 +473,11 @@ class BaseS3FileStore(abc.ABC):
 
 
 class S3FileStore(BaseS3FileStore):
+    """
+    To customise the boto config used and/or the django settings used to populate values in the config,
+    create a subclass that overrides `_get_boto_config`.
+    """
+
     ACL_BUCKET_OWNER_FULL_CONTROL = "bucket-owner-full-control"
 
     def __init__(
@@ -809,27 +872,15 @@ class S3FileStore(BaseS3FileStore):
             return self.ACL_BUCKET_OWNER_FULL_CONTROL
         return None
 
+    def _get_boto_config(self) -> botocore.config.Config:
+        return make_boto_config_from_django_settings()
+
     def _get_boto_client(self) -> S3Client:
-        config = {}
-
-        if (
-            connect_timeout := getattr(settings, "BOTO_S3_CONNECT_TIMEOUT")
-        ) is not None:
-            config["connect_timeout"] = connect_timeout
-        if (read_timeout := getattr(settings, "BOTO_S3_READ_TIMEOUT")) is not None:
-            config["read_timeout"] = read_timeout
-        if (
-            total_max_attempts := getattr(settings, "BOTO_S3_TOTAL_MAX_ATTEMPTS")
-        ) is not None:
-            config["retries"] = {
-                "total_max_attempts": total_max_attempts,
-            }
-
         return boto3.client(
             "s3",
             region_name=settings.AWS_REGION,
             endpoint_url=settings.AWS_S3_ENDPOINT_URL,
-            config=botocore.config.Config(**config),
+            config=self._get_boto_config,
         )
 
     def _get_boto_bucket(self) -> service_resource.Bucket:
