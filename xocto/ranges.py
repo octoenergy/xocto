@@ -25,8 +25,6 @@ from typing_extensions import deprecated
 
 from xocto.types import generic
 
-from . import localtime
-
 
 class RangeBoundaries(enum.Enum):
     EXCLUSIVE_EXCLUSIVE = "()"
@@ -1209,8 +1207,8 @@ def _iterate_over_periods(
     tz: datetime.tzinfo,
     delta: relativedelta.relativedelta,
 ) -> Iterator[FiniteDatetimeRange]:
-    start_at = localtime.as_localtime(period.start, tz=tz)
-    end_at = localtime.as_localtime(period.end, tz=tz)
+    start_at = period.start.astimezone(tz)
+    end_at = period.end.astimezone(tz)
 
     while True:
         next_start = start_at + delta
