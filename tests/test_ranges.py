@@ -1379,6 +1379,39 @@ class TestFiniteDatetimeRange:
 
             assert "End of range is not midnight-aligned" in str(exc_info.value)
 
+    class TestSeconds:
+        def test_seconds(self):
+            dt_range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1, 0, 0, 0),
+                datetime.datetime(2020, 1, 1, 1, 1, 40),
+            )
+            assert dt_range.seconds == 3700
+
+        def test_seconds_with_timezone(self):
+            tz = zoneinfo.ZoneInfo("Europe/London")
+            dt_range = ranges.FiniteDatetimeRange(
+                datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=tz),
+                datetime.datetime(2020, 1, 1, 1, 1, 40, tzinfo=tz),
+            )
+            assert dt_range.seconds == 3700
+
+        def test_seconds_across_dst(self):
+            tz = zoneinfo.ZoneInfo("Europe/London")
+
+            # The moment DST starts in London in 2020 is March 29th at 1AM. The clocks jump forward from 1AM to 2AM.
+            # Get a datetime one minute before this happens.
+            before_dst = datetime.datetime(2020, 3, 29, 0, 59, 0, tzinfo=tz)
+
+            # Get a datetime 60 seconds after the DST switch. We avoid using timedelta arithmetic here, as this does
+            #  "wall clock" arithmetic and would end up during the non-existent hour.
+            after_dst = datetime.datetime.fromtimestamp(
+                before_dst.timestamp() + 120, tz=tz
+            )
+
+            dt_range = ranges.FiniteDatetimeRange(before_dst, after_dst)
+
+            assert dt_range.seconds == 120
+
 
 class TestAsFiniteDatetimePeriods:
     def test_converts(self):
