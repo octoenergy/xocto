@@ -4,6 +4,28 @@ This page details how to develop `xocto`.
 
 ## Installation of development environment
 
+Some parts of the project uses the [python-magic package](https://pypi.org/project/python-magic/) which requires the libmagic C library as a system dependency. To install libmagic for:
+
+Debian/Ubuntu
+
+```sh
+sudo apt-get install libmagic1
+```
+
+Windows
+
+You'll need DLLs for libmagic. There's a Pypi package with the DLLs, you can fetch it with:
+
+```sh
+pip install python-magic-bin
+```
+
+OSX
+
+```sh
+brew install libmagic
+```
+
 Create and activate a Python 3.9 virtualenv then run:
 
 ```sh
