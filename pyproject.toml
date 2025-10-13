@@ -28,7 +28,7 @@ dependencies = [
   "duckdb>=0.9.0",
   "django>=4.0",
   "openpyxl>=3.1.0",
-  "pact-python>=1.6.0",
+  "pact-python>=1.6.0,<3.0.0",
   "pandas>=1.5.3",
   "pyarrow>=11.0.0",
   "python-dateutil>=2.8.2",
@@ -214,6 +214,7 @@ filterwarnings = [
     "ignore:Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3:DeprecationWarning:(graphene|singledispatch)",
     # https://github.com/ktosiek/pytest-freezegun/issues/35
     "ignore:distutils Version classes are deprecated:DeprecationWarning:pytest_freezegun",
+    "ignore:This class will be deprecated Pact Python v3:PendingDeprecationWarning",
 ]
 
 DJANGO_SETTINGS_MODULE = "tests.settings"
