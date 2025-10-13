@@ -1,7 +1,7 @@
 # xocto - utilities for Python services
 
 Proven utilities used on Python services at Kraken Technologies. This library
-works with Python 3.9 and above.
+works with Python 3.12 and above.
 
 CI status:
 

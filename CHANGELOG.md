@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Bump min supported Python version to 3.12 [#246](https://github.com/octoenergy/xocto/pull/246)
+
 ## V8.5.1 - 2025-09-03
 
 - Ensure we create the boto config when passing that into boto [#242](https://github.com/octoenergy/xocto/pull/242)

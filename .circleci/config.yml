@@ -3,8 +3,8 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/python:3.9
-      - image: cimg/postgres:13.3
+      - image: cimg/python:3.12
+      - image: cimg/postgres:15.14
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: xocto-dev
@@ -17,8 +17,8 @@ jobs:
             echo "source /home/circleci/venv/bin/activate" >> $BASH_ENV
       - restore_cache:
           keys:
-            - &cache-key python-3.9-packages-v1-{{ checksum "pyproject.toml" }}
-            - &cache-key-prefix python-3.9-packages-v1-
+            - &cache-key python-3.12-packages-v1-{{ checksum "pyproject.toml" }}
+            - &cache-key-prefix python-3.12-packages-v1-
       - run:
           name: Install dev dependencies
           command: make install
