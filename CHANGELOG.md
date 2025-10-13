@@ -42,7 +42,7 @@
 
 ## V7.2.0 - 2025-01-30
 
-- Allow the `union` operation between `FiniteDatetimeRange` and `HalfFiniteDatetimeRange` 
+- Allow the `union` operation between `FiniteDatetimeRange` and `HalfFiniteDatetimeRange`
   (and other `DatetimeRange`s) [#189](https://github.com/octoenergy/xocto/pull/189/).
 
 ## V7.1.1 - 2025-01-22
