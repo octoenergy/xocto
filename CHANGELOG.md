@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Bump min supported Python version to 3.12 [#246](https://github.com/octoenergy/xocto/pull/246)
+
 ## V8.5.1 - 2025-09-03
 
 - Ensure we create the boto config when passing that into boto [#242](https://github.com/octoenergy/xocto/pull/242)
@@ -42,7 +44,7 @@
 
 ## V7.2.0 - 2025-01-30
 
-- Allow the `union` operation between `FiniteDatetimeRange` and `HalfFiniteDatetimeRange` 
+- Allow the `union` operation between `FiniteDatetimeRange` and `HalfFiniteDatetimeRange`
   (and other `DatetimeRange`s) [#189](https://github.com/octoenergy/xocto/pull/189/).
 
 ## V7.1.1 - 2025-01-22

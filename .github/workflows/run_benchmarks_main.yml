@@ -18,7 +18,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.12'
 
       - name: Set up virtual environment
         run: |
@@ -73,7 +73,7 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          
+
           git add --all
           git commit -m "Add uncollected benchmarks"
 

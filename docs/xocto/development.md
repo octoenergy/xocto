@@ -4,7 +4,7 @@ This page details how to develop `xocto`.
 
 ## Installation of development environment
 
-Create and activate a Python 3.9 virtualenv then run:
+Create and activate a Python 3.12 virtualenv then run:
 
 ```sh
 make install
