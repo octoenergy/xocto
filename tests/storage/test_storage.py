@@ -823,6 +823,23 @@ class TestMemoryFileStore:
         finally:
             os.remove(file.name)
 
+    def test_copy_between_buckets(self):
+        source_store = storage.MemoryFileStore(
+            "source_bucket", use_date_in_key_path=False
+        )
+        source_store.clear()
+        source_store.store_file(
+            namespace="x", filename="test.pdf", contents=b"test_copy_contents"
+        )
+
+        self.store.copy(
+            s3_object=storage.S3Object(bucket_name="source_bucket", key="x/test.pdf"),
+            destination="y/test_copy.pdf",
+        )
+
+        contents = self.store.fetch_file_contents("y/test_copy.pdf")
+        assert contents == b"test_copy_contents"
+
 
 class TestLocalFileStore:
     @classmethod
