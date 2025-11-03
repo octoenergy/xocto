@@ -9,7 +9,8 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: xocto-dev
     steps:
-      - checkout
+      - checkout:
+          method: full
       - run:
           name: Create virtualenv
           command: |
