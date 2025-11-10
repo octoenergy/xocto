@@ -51,6 +51,22 @@ class RangeBoundaries(enum.Enum):
 T = TypeVar("T", bound=generic.Comparable)  # type: ignore[type-arg]
 
 
+def _normalise_datetimes[T](*args: T) -> T | tuple[T, T]:
+    """
+    Convert the start and end arguments to UTC datetimes only if they are datetime objects.
+    """
+    normalised_args = []
+    for arg in args:
+        if isinstance(arg, datetime.datetime):
+            normalised_args.append(arg.astimezone(datetime.UTC))
+        else:
+            normalised_args.append(arg)
+
+    if len(normalised_args) == 1:
+        return normalised_args[0]
+    else:
+        return tuple(normalised_args)
+
 @functools.total_ordering
 class Range(Generic[T]):
     """
@@ -207,7 +223,13 @@ class Range(Generic[T]):
                 RangeBoundaries.INCLUSIVE_INCLUSIVE: operator.le,
             }[range_boundaries]
             if not check_op(start, end):
-                raise ValueError("Invalid boundaries for range")
+                # This fails for datetime ranges crossing the hour-loss DST boundary
+                # where the end datetime has fold=1 and is less than the start datetime.
+                if isinstance(start, datetime.datetime) and isinstance(end, datetime.datetime):
+                    if not check_op(start.astimezone(datetime.UTC), end.astimezone(datetime.UTC)):
+                        raise ValueError("Invalid boundaries for range")
+                else:
+                    raise ValueError("Invalid boundaries for range")
 
         object.__setattr__(self, "start", start)
         object.__setattr__(self, "end", end)
@@ -250,37 +272,39 @@ class Range(Generic[T]):
         return hash((self.start, self.end, self.boundaries))
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, Range):
-            return False
+        _self_start, _self_end, _other_start, _other_end = _normalise_datetimes(self.start, self.end, other.start, other.end)
 
-        return (self.start, self.end, self.boundaries) == (
-            other.start,
-            other.end,
+        return (_self_start, _self_end, self.boundaries) == (
+            _other_start,
+            _other_end,
             other.boundaries,
         )
 
     def __lt__(self, other: "Range[T]") -> bool:
-        if self.start == other.start:
+        _self_start, _self_end = _normalise_datetimes(self.start, self.end)
+        _other_start, _other_end = _normalise_datetimes(other.start, other.end)
+
+        if _self_start == _other_start:
             if self._is_left_exclusive and not other._is_left_exclusive:
                 return False
 
             if (not self._is_left_exclusive) and other._is_left_exclusive:
                 return True
 
-            if self.end == other.end:
+            if _self_end == _other_end:
                 if self._is_right_exclusive and not other._is_right_exclusive:
                     return True
 
                 return False
             else:
                 # If one endpoint is None then that range is greater, otherwise compare them
-                return (other.end is None) or (
-                    self.end is not None and self.end < other.end
+                return (_other_end is None) or (
+                    _self_end is not None and _self_end < _other_end
                 )
         else:
             # If one endpoint is None then that range is lesser, otherwise compare them
-            return (self.start is None) or (
-                other.start is not None and self.start < other.start
+            return (_self_start is None) or (
+                _other_start is not None and _self_start < _other_start
             )
 
     def __contains__(self, item: T) -> bool:
@@ -309,39 +333,45 @@ class Range(Generic[T]):
         """
         Check if the provided item is inside our left bound.
         """
-        if self.start is None:
+        _self_start, _self_end, _item = _normalise_datetimes(self.start, self.end, item)
+
+        if _self_start is None:
             return True
         elif self._is_left_exclusive:
-            return item > self.start
+            return _item > _self_start
         else:
-            return item >= self.start
+            return _item >= _self_start
 
     def _is_inside_right_bound(self, item: T) -> bool:
         """
         Check if the provided item is inside our right bound.
         """
-        if self.end is None:
+        _self_start, _self_end, _item = _normalise_datetimes(self.start, self.end, item)
+
+        if _self_end is None:
             return True
         elif self._is_right_exclusive:
-            return item < self.end
+            return _item < _self_end
         else:
-            return item <= self.end
+            return _item <= _self_end
 
     def is_disjoint(self, other: "Range[T]") -> bool:
         """
         Test whether the two ranges are disjoint.
         """
-        if self.end is not None and other.start is not None:
+        _self_start, _self_end, _other_start, _other_end = _normalise_datetimes(self.start, self.end, other.start, other.end)
+
+        if _self_end is not None and _other_start is not None:
             if not (
-                self._is_inside_right_bound(other.start)
-                and other._is_inside_left_bound(self.end)
+                self._is_inside_right_bound(_other_start)
+                and other._is_inside_left_bound(_self_end)
             ):
                 return True
 
-        if self.start is not None and other.end is not None:
+        if _self_start is not None and _other_end is not None:
             if not (
-                self._is_inside_left_bound(other.end)
-                and other._is_inside_right_bound(self.start)
+                self._is_inside_left_bound(_other_end)
+                and other._is_inside_right_bound(_self_start)
             ):
                 return True
 
@@ -839,12 +869,13 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
 
     def __lt__(self, other: Range[datetime.datetime]) -> bool:
         # We're deliberately overriding the base class here for better performance.
-        if other.start is None:
+        _self_start, _other_start = _normalise_datetimes(self.start, other.start)
+        if _other_start is None:
             # We don't need to check anything more if the other range
             # is open-ended
             return False
         else:
-            return self.start < other.start
+            return _self_start < _other_start
 
     def intersection(
         self, other: Range[datetime.datetime]
@@ -852,12 +883,14 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         """
         Intersections with finite ranges will always be finite.
         """
+        _self_start, _self_end, _other_start, _other_end = _normalise_datetimes(self.start, self.end, other.start, other.end)
+
         if isinstance(other, FiniteDatetimeRange):
             # We're deliberately overriding the base class here for better performance.
             # We can simplify the implementation since we know we're dealing with finite
             # ranges with INCLUSIVE_EXCLUSIVE bounds.
-            left, right = (self, other) if self.start < other.start else (other, self)
-            if left.end <= right.start:
+            left, right = (self, other) if _self_start < _other_start else (other, self)
+            if _self_end <= _other_start:
                 return None
             else:
                 return FiniteDatetimeRange(right.start, min(right.end, left.end))
