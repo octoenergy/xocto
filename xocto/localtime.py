@@ -285,8 +285,7 @@ def datetime_from_epoch_timestamp(
     """
     Return a TZ-aware datetime for the passed epoch timestamp.
     """
-    naive_datetime_in_utc = datetime_.datetime.utcfromtimestamp(timestamp)
-    utc_dt = timezone.make_aware(naive_datetime_in_utc, timezone=UTC)
+    utc_dt = datetime_.datetime.fromtimestamp(timestamp, tz=UTC)
     return timezone.localtime(utc_dt, timezone=tz)
 
 

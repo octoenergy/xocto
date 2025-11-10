@@ -1072,6 +1072,17 @@ class TestFiniteDatetimeRange:
                 ),
                 False,
             ],
+            [
+                ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2025, 10, 26, 0, 45, 0, tzinfo=datetime.UTC),
+                    end=datetime.datetime(2025, 10, 27, 1, 0, 0,tzinfo=datetime.UTC),
+                ),
+                ranges.FiniteDatetimeRange(
+                    start=datetime.datetime(2025, 10, 27, tzinfo=datetime.UTC),
+                    end=datetime.datetime(2025, 10, 28, tzinfo=datetime.UTC),
+                ),
+                True,
+            ]
         ],
     )
     def test__lt__(self, r1, r2, expected):
@@ -1316,10 +1327,21 @@ class TestFiniteDatetimeRange:
                 datetime.datetime(2020, 10, 25, hour=1, tzinfo=utc_tz),
             )
 
-            # Converting to London timezone should error due to the period
-            # being empty: both times map to 1AM.
-            with pytest.raises(ValueError):
-                assert dt_range.localize(london_tz)
+            # Shouldn't error as the range is evaluated in UTC
+            assert dt_range.localize(london_tz)
+
+        def test_range_over_dst_loss_hour(self):
+            berlin_tz = zoneinfo.ZoneInfo("Europe/Berlin")
+
+            dt_range_1 = ranges.FiniteDatetimeRange(
+                datetime.datetime(2025, 10, 26, hour=2, minute=45, tzinfo=berlin_tz),
+                datetime.datetime(2025, 10, 26, hour=2, minute=0, fold=1, tzinfo=berlin_tz),
+            )
+            dt_range_2 = ranges.FiniteDatetimeRange(
+                datetime.datetime(2025, 10, 27, hour=2, minute=45, tzinfo=berlin_tz),
+                datetime.datetime(2025, 10, 27, hour=3, minute=0, tzinfo=berlin_tz),
+            )
+            assert dt_range_1 < dt_range_2
 
         def test_errors_if_naive(self):
             tz = zoneinfo.ZoneInfo("Europe/London")
