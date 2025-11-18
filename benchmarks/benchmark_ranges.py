@@ -89,7 +89,7 @@ class BenchmarkFiniteDatetimeRange:
 
     def benchmark_sorting(self, benchmark):
         sorted_ranges_ = []
-        dt = datetime.datetime(2020, 1, 1)
+        dt = datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc)
         for _ in range(100_000):
             sorted_ranges_.append(
                 ranges.FiniteDatetimeRange(dt, dt + datetime.timedelta(hours=1))
