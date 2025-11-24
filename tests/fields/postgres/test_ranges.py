@@ -296,10 +296,8 @@ class TestFiniteDateTimeRangeField:
         # No issue getting this object as the range is configurated as UTC
         utc_obj.refresh_from_db()
 
-        # Unable to get this object because the datetime (stored as UTC) is converted to a DST timezone
-        # and then both start and end == datetime.datetime(2021, 10, 31, 1,) raising a ValueError
-        with pytest.raises(ValueError):
-            local_obj.refresh_from_db()
+        # This should also work, as the range is evaluated in UTC
+        local_obj.refresh_from_db()
 
 
 class TestHalfFiniteDateTimeRangeField:
@@ -509,7 +507,5 @@ class TestHalfFiniteDateTimeRangeField:
         # No issue getting this object as the range is configurated as UTC
         utc_obj.refresh_from_db()
 
-        # Unable to get this object because the datetime (stored as UTC) is converted to a DST timezone
-        # and then both start and end == datetime.datetime(2021, 10, 31, 1,) raising a ValueError
-        with pytest.raises(ValueError):
-            local_obj.refresh_from_db()
+        # This should also work, as the range is evaluated in UTC
+        local_obj.refresh_from_db()

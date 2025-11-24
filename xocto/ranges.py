@@ -51,6 +51,26 @@ class RangeBoundaries(enum.Enum):
 T = TypeVar("T", bound=generic.Comparable)  # type: ignore[type-arg]
 
 
+def _normalise_datetimes(start: object, end: object) -> tuple[object, object]:
+    """
+    Convert the start and end arguments to UTC datetimes only if they are datetime objects.
+    """
+    if isinstance(start, datetime.datetime):
+        try:
+            start = start.astimezone(datetime.timezone.utc)
+        except (
+            ValueError,
+            OverflowError,
+        ):  # this can happen for nonsensical datetimes e.g. year 0 or year 9999
+            start = start.replace(tzinfo=datetime.timezone.utc)
+    if isinstance(end, datetime.datetime):
+        try:
+            end = end.astimezone(datetime.timezone.utc)
+        except (ValueError, OverflowError):
+            end = end.replace(tzinfo=datetime.timezone.utc)
+    return start, end
+
+
 @functools.total_ordering
 class Range(Generic[T]):
     """
@@ -149,8 +169,10 @@ class Range(Generic[T]):
     """
 
     __slots__ = (
-        "start",
-        "end",
+        "_start_original",
+        "_end_original",
+        "_start_normalised",
+        "_end_normalised",
         "boundaries",
         "_is_left_exclusive",
         "_is_left_inclusive",
@@ -158,8 +180,10 @@ class Range(Generic[T]):
         "_is_right_inclusive",
     )
 
-    start: Optional[T]
-    end: Optional[T]
+    _start_original: Optional[T]
+    _end_original: Optional[T]
+    _start_normalised: Optional[T]
+    _end_normalised: Optional[T]
     boundaries: RangeBoundaries
     _is_left_exclusive: bool
     _is_left_inclusive: bool
@@ -193,29 +217,53 @@ class Range(Generic[T]):
         _is_left_inclusive = not _is_left_exclusive
         _is_right_inclusive = not _is_right_exclusive
 
-        if start is None:
+        _start, _end = _normalise_datetimes(start, end)
+
+        if _start is None:
             if _is_left_inclusive:
                 raise ValueError("Range with unbounded start must be left-exclusive")
-        if end is None:
+        if _end is None:
             if _is_right_inclusive:
                 raise ValueError("Range with unbounded end must be right-exclusive")
-        elif start is not None:
+        elif _start is not None:
             check_op: Callable[[Any, Any], bool] = {
                 RangeBoundaries.EXCLUSIVE_EXCLUSIVE: operator.lt,
                 RangeBoundaries.EXCLUSIVE_INCLUSIVE: operator.lt,
                 RangeBoundaries.INCLUSIVE_EXCLUSIVE: operator.lt,
                 RangeBoundaries.INCLUSIVE_INCLUSIVE: operator.le,
             }[range_boundaries]
-            if not check_op(start, end):
+            if not check_op(_start, _end):
+                # This fails for datetime ranges crossing the hour-repeat DST boundary
+                # where the end datetime has fold=1 and is less than the start datetime.
                 raise ValueError("Invalid boundaries for range")
 
-        object.__setattr__(self, "start", start)
-        object.__setattr__(self, "end", end)
+        object.__setattr__(self, "_start_original", start)
+        object.__setattr__(self, "_end_original", end)
+        object.__setattr__(self, "_start_normalised", _start)
+        object.__setattr__(self, "_end_normalised", _end)
         object.__setattr__(self, "boundaries", range_boundaries)
         object.__setattr__(self, "_is_left_exclusive", _is_left_exclusive)
         object.__setattr__(self, "_is_left_inclusive", _is_left_inclusive)
         object.__setattr__(self, "_is_right_exclusive", _is_right_exclusive)
         object.__setattr__(self, "_is_right_inclusive", _is_right_inclusive)
+
+    @property
+    def start(self) -> Optional[T]:
+        return self._start_original
+
+    @start.setter
+    def start(self, value: Optional[T]) -> None:
+        self._start_original = value
+        self._start_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
+
+    @property
+    def end(self) -> Optional[T]:
+        return self._end_original
+
+    @end.setter
+    def end(self, value: Optional[T]) -> None:
+        self._end_original = value
+        self._end_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
 
     @classmethod
     def continuum(cls) -> Range[T]:
@@ -253,34 +301,36 @@ class Range(Generic[T]):
         if not isinstance(other, Range):
             return False
 
-        return (self.start, self.end, self.boundaries) == (
-            other.start,
-            other.end,
+        return (self._start_normalised, self._end_normalised, self.boundaries) == (
+            other._start_normalised,
+            other._end_normalised,
             other.boundaries,
         )
 
     def __lt__(self, other: "Range[T]") -> bool:
-        if self.start == other.start:
+        if self._start_normalised == other._start_normalised:
             if self._is_left_exclusive and not other._is_left_exclusive:
                 return False
 
             if (not self._is_left_exclusive) and other._is_left_exclusive:
                 return True
 
-            if self.end == other.end:
+            if self._end_normalised == other._end_normalised:
                 if self._is_right_exclusive and not other._is_right_exclusive:
                     return True
 
                 return False
             else:
                 # If one endpoint is None then that range is greater, otherwise compare them
-                return (other.end is None) or (
-                    self.end is not None and self.end < other.end
+                return (other._end_normalised is None) or (
+                    self._end_normalised is not None
+                    and self._end_normalised < other._end_normalised
                 )
         else:
             # If one endpoint is None then that range is lesser, otherwise compare them
-            return (self.start is None) or (
-                other.start is not None and self.start < other.start
+            return (self._start_normalised is None) or (
+                other._start_normalised is not None
+                and self._start_normalised < other._start_normalised
             )
 
     def __contains__(self, item: T) -> bool:
@@ -309,39 +359,42 @@ class Range(Generic[T]):
         """
         Check if the provided item is inside our left bound.
         """
-        if self.start is None:
+        _item_utc, _ = _normalise_datetimes(item, None)
+        if self._start_normalised is None:
             return True
         elif self._is_left_exclusive:
-            return item > self.start
+            return _item_utc > self._start_normalised
         else:
-            return item >= self.start
+            return _item_utc >= self._start_normalised
 
     def _is_inside_right_bound(self, item: T) -> bool:
         """
         Check if the provided item is inside our right bound.
         """
-        if self.end is None:
+        _item_utc, _ = _normalise_datetimes(item, None)
+
+        if self._end_normalised is None:
             return True
         elif self._is_right_exclusive:
-            return item < self.end
+            return _item_utc < self._end_normalised
         else:
-            return item <= self.end
+            return _item_utc <= self._end_normalised
 
     def is_disjoint(self, other: "Range[T]") -> bool:
         """
         Test whether the two ranges are disjoint.
         """
-        if self.end is not None and other.start is not None:
+        if self._end_normalised is not None and other._start_normalised is not None:
             if not (
-                self._is_inside_right_bound(other.start)
-                and other._is_inside_left_bound(self.end)
+                self._is_inside_right_bound(other._start_normalised)
+                and other._is_inside_left_bound(self._end_normalised)
             ):
                 return True
 
-        if self.start is not None and other.end is not None:
+        if self._start_normalised is not None and other._end_normalised is not None:
             if not (
-                self._is_inside_left_bound(other.end)
-                and other._is_inside_right_bound(self.start)
+                self._is_inside_left_bound(other._end_normalised)
+                and other._is_inside_right_bound(self._start_normalised)
             ):
                 return True
 
@@ -362,7 +415,9 @@ class Range(Generic[T]):
         # This has the effect of making the intersection prefer an inclusive right boundary to an
         # equivalent exclusive one (e.g. [0,2] is preferred over [0,3))
 
-        if range_l.end is not None and range_r._is_inside_right_bound(range_l.end):
+        if range_l._end_normalised is not None and range_r._is_inside_right_bound(
+            range_l._end_normalised
+        ):
             end: Optional[T] = range_l.end
             right_exclusive = range_l._is_right_exclusive
         else:
@@ -383,7 +438,7 @@ class Range(Generic[T]):
         range_l, range_r = (self, other) if self < other else (other, self)
 
         if range_l.is_disjoint(range_r) and not (
-            range_l.end == range_r.start
+            range_l._end_normalised == range_r._start_normalised
             and (range_l._is_right_inclusive or range_r._is_left_inclusive)
         ):
             return None
@@ -393,7 +448,9 @@ class Range(Generic[T]):
         #
         # This has the effect of making the resulting union prefer an exclusive right boundary to
         # the equivalent inclusive one (e.g. [0,3) is preferred over [0,2]).
-        if range_r.end is not None and range_l._is_inside_right_bound(range_r.end):
+        if range_r._end_normalised is not None and range_l._is_inside_right_bound(
+            range_r._end_normalised
+        ):
             end = range_l.end
             right_exclusive = range_l._is_right_exclusive
         else:
@@ -492,8 +549,28 @@ class FiniteRange(Range[T]):
     __slots__ = ()
 
     # Redefine types in base class
-    start: T
-    end: T
+    _start_original: T
+    _end_original: T
+    _start_normalised: T
+    _end_normalised: T
+
+    @property  # type: ignore[override]
+    def start(self) -> T:
+        return self._start_original
+
+    @start.setter
+    def start(self, value: T) -> None:
+        self._start_original = value
+        self._start_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
+
+    @property  # type: ignore[override]
+    def end(self) -> T:
+        return self._end_original
+
+    @end.setter
+    def end(self, value: T) -> None:
+        self._end_original = value
+        self._end_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
 
     def intersection(self, other: Range[T]) -> Optional["FiniteRange[T]"]:
         """
@@ -520,7 +597,17 @@ class HalfFiniteRange(Range[T]):
     __slots__ = ()
 
     # Redefine types in base class
-    start: T
+    _start_original: T
+    _start_normalised: T
+
+    @property  # type: ignore[override]
+    def start(self) -> T:
+        return self._start_original
+
+    @start.setter
+    def start(self, value: T) -> None:
+        self._start_original = value
+        self._start_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
 
     def __init__(self, start: T, end: Optional[T] = None):
         super().__init__(start, end, boundaries=RangeBoundaries.INCLUSIVE_EXCLUSIVE)
@@ -839,12 +926,12 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
 
     def __lt__(self, other: Range[datetime.datetime]) -> bool:
         # We're deliberately overriding the base class here for better performance.
-        if other.start is None:
+        if other._start_normalised is None:
             # We don't need to check anything more if the other range
             # is open-ended
             return False
         else:
-            return self.start < other.start
+            return self._start_normalised < other._start_normalised
 
     def intersection(
         self, other: Range[datetime.datetime]
@@ -856,11 +943,21 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
             # We're deliberately overriding the base class here for better performance.
             # We can simplify the implementation since we know we're dealing with finite
             # ranges with INCLUSIVE_EXCLUSIVE bounds.
-            left, right = (self, other) if self.start < other.start else (other, self)
-            if left.end <= right.start:
+            left, right = (
+                (self, other)
+                if self._start_normalised < other._start_normalised
+                else (other, self)
+            )
+            if left._end_normalised <= right._start_normalised:
                 return None
             else:
-                return FiniteDatetimeRange(right.start, min(right.end, left.end))
+                start = right.start
+                end = (
+                    right.end
+                    if right._end_normalised <= left._end_normalised
+                    else left.end
+                )
+                return FiniteDatetimeRange(start, end)
 
         base_intersection = super().intersection(other)
         if base_intersection is None:
@@ -888,11 +985,21 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
             # We're deliberately overriding the base class here for better performance.
             # We can simplify the implementation since we know we're dealing with finite
             # ranges with INCLUSIVE_EXCLUSIVE bounds.
-            left, right = (self, other) if self.start < other.start else (other, self)
+            left, right = (
+                (self, other)
+                if self._start_normalised < other._start_normalised
+                else (other, self)
+            )
             if left.end < right.start:
                 return None
             else:
-                return FiniteDatetimeRange(left.start, max(left.end, right.end))
+                start = left.start
+                end = (
+                    left.end
+                    if left._end_normalised >= right._end_normalised
+                    else right.end
+                )
+                return FiniteDatetimeRange(start, end)
         elif _is_half_finite_datetime_range(other):
             base_union = super().union(other)
             if base_union is None:
@@ -1048,14 +1155,14 @@ class FiniteDateRange(FiniteRange[datetime.date]):
     def is_disjoint(self, other: Range[datetime.date]) -> bool:
         # Adjacent dates should not be considered disjoint, we extend the other
         # range to allow them to be considered adjacent.
-        other_start = other.start
+        other_start = other._start_normalised
         if other._is_left_inclusive:
             assert other_start is not None
             try:
                 other_start -= datetime.timedelta(days=1)
             except OverflowError:
                 pass
-        other_end = other.end
+        other_end = other._end_normalised
         if other._is_right_inclusive:
             assert other_end is not None
             try:
@@ -1074,7 +1181,7 @@ class FiniteDateRange(FiniteRange[datetime.date]):
         """
         Return the number of days between the start and end of the range.
         """
-        return (self.end - self.start).days + 1
+        return (self._end_normalised - self._start_normalised).days + 1
 
 
 def get_finite_datetime_ranges_from_timestamps(
