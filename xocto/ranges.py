@@ -49,25 +49,27 @@ class RangeBoundaries(enum.Enum):
 
 
 T = TypeVar("T", bound=generic.Comparable)  # type: ignore[type-arg]
+_T_Start = TypeVar("_T_Start")
+_T_End = TypeVar("_T_End")
 
 
-def _normalise_datetimes(start: object, end: object) -> tuple[object, object]:
+def _normalise_datetimes(start: _T_Start, end: _T_End) -> tuple[_T_Start, _T_End]:
     """
     Convert the start and end arguments to UTC datetimes only if they are datetime objects.
     """
     if isinstance(start, datetime.datetime):
         try:
-            start = start.astimezone(datetime.timezone.utc)
+            start = start.astimezone(datetime.timezone.utc)  # type: ignore[assignment]
         except (
             ValueError,
             OverflowError,
         ):  # this can happen for nonsensical datetimes e.g. year 0 or year 9999
-            start = start.replace(tzinfo=datetime.timezone.utc)
+            start = start.replace(tzinfo=datetime.timezone.utc)  # type: ignore[assignment]
     if isinstance(end, datetime.datetime):
         try:
-            end = end.astimezone(datetime.timezone.utc)
+            end = end.astimezone(datetime.timezone.utc)  # type: ignore[assignment]
         except (ValueError, OverflowError):
-            end = end.replace(tzinfo=datetime.timezone.utc)
+            end = end.replace(tzinfo=datetime.timezone.utc)  # type: ignore[assignment]
     return start, end
 
 
@@ -254,7 +256,7 @@ class Range(Generic[T]):
     @start.setter
     def start(self, value: Optional[T]) -> None:
         self._start_original = value
-        self._start_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
+        self._start_normalised, _ = _normalise_datetimes(value, None)
 
     @property
     def end(self) -> Optional[T]:
@@ -263,7 +265,7 @@ class Range(Generic[T]):
     @end.setter
     def end(self, value: Optional[T]) -> None:
         self._end_original = value
-        self._end_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
+        self._end_normalised, _ = _normalise_datetimes(value, None)
 
     @classmethod
     def continuum(cls) -> Range[T]:
@@ -561,7 +563,7 @@ class FiniteRange(Range[T]):
     @start.setter
     def start(self, value: T) -> None:
         self._start_original = value
-        self._start_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
+        self._start_normalised, _ = _normalise_datetimes(value, None)
 
     @property  # type: ignore[override]
     def end(self) -> T:
@@ -570,7 +572,7 @@ class FiniteRange(Range[T]):
     @end.setter
     def end(self, value: T) -> None:
         self._end_original = value
-        self._end_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
+        self._end_normalised, _ = _normalise_datetimes(value, None)
 
     def intersection(self, other: Range[T]) -> Optional["FiniteRange[T]"]:
         """
@@ -607,7 +609,7 @@ class HalfFiniteRange(Range[T]):
     @start.setter
     def start(self, value: T) -> None:
         self._start_original = value
-        self._start_normalised, _ = _normalise_datetimes(value, None)  # type: ignore[assignment]
+        self._start_normalised, _ = _normalise_datetimes(value, None)
 
     def __init__(self, start: T, end: Optional[T] = None):
         super().__init__(start, end, boundaries=RangeBoundaries.INCLUSIVE_EXCLUSIVE)
