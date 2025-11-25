@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V9.0.0 - 2025-11-25
+
+- Ranges now use UTC time behind the scene to evaluate datetimes! [#251](https://github.com/octoenergy/xocto/pull/251)
+
 ## V8.5.2 - 2025-10-28
 
 - Fix `MemoryFileStore` copy between buckets  [#248](https://github.com/octoenergy/xocto/pull/248)
