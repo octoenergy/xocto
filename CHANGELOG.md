@@ -2,9 +2,13 @@
 
 ## Unreleased
 
+## V9.0.0 - 2025-11-25
+
+- Ranges now use UTC time behind the scene to evaluate datetimes! [#251](https://github.com/octoenergy/xocto/pull/251)
+
 ## V8.5.2 - 2025-10-28
 
-- Fix `MemoryFileStore` copy between buckets  [#248](https://github.com/octoenergy/xocto/pull/248)
+- Fix `MemoryFileStore` copy between buckets [#248](https://github.com/octoenergy/xocto/pull/248)
 
 ## V8.5.1 - 2025-09-03
 
@@ -46,7 +50,7 @@
 
 ## V7.2.0 - 2025-01-30
 
-- Allow the `union` operation between `FiniteDatetimeRange` and `HalfFiniteDatetimeRange` 
+- Allow the `union` operation between `FiniteDatetimeRange` and `HalfFiniteDatetimeRange`
   (and other `DatetimeRange`s) [#189](https://github.com/octoenergy/xocto/pull/189/).
 
 ## V7.1.1 - 2025-01-22
@@ -79,7 +83,7 @@
 - [Breaking] Use parameter object for passing options to `pact_service`.
   Rename parameter `pact_version` to `consumer_version`.
   [#166](https://github.com/octoenergy/xocto/pull/166)
-- Fix bug with `list_files`  method in `S3SubdirectoryFileStore` [#171](https://github.com/octoenergy/xocto/pull/171)
+- Fix bug with `list_files` method in `S3SubdirectoryFileStore` [#171](https://github.com/octoenergy/xocto/pull/171)
 
 ## v5.1.0 - 2024-07-03
 
@@ -92,9 +96,9 @@
 ## v5.0.0 - 2024-06-18
 
 - [Breaking] Range types are now (mostly) immutable [#142](https://github.com/octoenergy/xocto/pull/142)
-    - start, end, and bounds can no longer be modified after creation
+  - start, end, and bounds can no longer be modified after creation
 - [Breaking] The `types` module is now split into a package containing `types.generic` and `types.django` [#144](https://github.com/octoenergy/xocto/pull/144)
-    - `xocto.numbers` and `xocto.ranges` can now be imported without configuring Django
+  - `xocto.numbers` and `xocto.ranges` can now be imported without configuring Django
 - Postgres range database fields now allow querying by a single value [#150](https://github.com/octoenergy/xocto/pull/150)
 - `Storage.fetch_file` now supports fetching a range [#154](https://github.com/octoenergy/xocto/pull/154/)
 - Enables `FiniteDatetimeRange` to be unioned with more than two ranges [#155](https://github.com/octoenergy/xocto/pull/155)
@@ -103,18 +107,17 @@
 
 - Yanked v4.10.1 due to unintentional inclusion of breaking changes. This release is identical to v4.10.1, but with the breaking changes from [#142](https://github.com/octoenergy/xocto/pull/142) removed.
 
-
 ## v4.10.1 - 2024-03-12
 
 - Updated build config to automatically include sub-packages [#143](https://github.com/octoenergy/xocto/pull/143)
-    - Makes available the new `xocto.fields` package in the distribution introduced in 4.10.0
+  - Makes available the new `xocto.fields` package in the distribution introduced in 4.10.0
 
 ## v4.10.0 - 2024-03-05
 
 - Updated dev dependencies like ruff, pytest, and mypy [#138](https://github.com/octoenergy/xocto/pull/138)
 - Updated doc dependencies to fix the build [#139](https://github.com/octoenergy/xocto/pull/139)
 - Added a new module `xocto.fields.postgres.ranges` to provide range fields that work with the `Range` classes from `xocto.ranges` [#136](https://github.com/octoenergy/xocto/pull/136)
-    - Tests now depend on postgres and psycopg2
+  - Tests now depend on postgres and psycopg2
 - Doc site should now build again correctly
 
 ## v4.9.3 - 2024-01-16
