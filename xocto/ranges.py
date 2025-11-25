@@ -48,7 +48,6 @@ class RangeBoundaries(enum.Enum):
         }[(left_exclusive, right_exclusive)]
 
 
-T = TypeVar("T", bound=generic.Comparable)  # type: ignore[type-arg]
 _T_Start = TypeVar("_T_Start")
 _T_End = TypeVar("_T_End")
 
@@ -71,6 +70,9 @@ def _normalise_datetimes(start: _T_Start, end: _T_End) -> tuple[_T_Start, _T_End
         except (ValueError, OverflowError):
             end = end.replace(tzinfo=datetime.timezone.utc)  # type: ignore[assignment]
     return start, end
+
+
+T = TypeVar("T", bound=generic.Comparable)  # type: ignore[type-arg]
 
 
 @functools.total_ordering
