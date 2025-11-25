@@ -42,4 +42,4 @@ VERSION=v$(shell python -c "import importlib.metadata; print(importlib.metadata.
 tag:
 	@echo Tagging as $(VERSION)
 	git tag -a $(VERSION) -m "Creating version $(VERSION)"
-	git push origin $(VERSION)
+	git push origin tag $(VERSION)
