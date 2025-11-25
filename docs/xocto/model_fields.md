@@ -2,7 +2,6 @@
 
 Custom [Django model fields](https://docs.djangoproject.com/en/dev/ref/models/fields/).
 
-
 ## Postgres specific fields
 
 Fields that can only be used with a Postgres database, enhancing the functionality
@@ -26,6 +25,11 @@ be a no-op.
 
 The standard Django query operators are almost the same as for the built-in types.
 They accept `xocto.ranges` as arguments, but don't support passing in a tuple of values:
+
+> **_NOTE:_** As of 9.0.0, if the `start` and `end` attributes of a range are
+> datetimes, they are evaluated in UTC to provide accurate comparison.
+> Note that this means providing a 1hr naive datetime range on the March DST
+> boundary will cause the ranges to have a period of 0hrs.
 
 ```python
 
@@ -82,7 +86,6 @@ assert sales_period.period == ranges.FiniteDateRange(
 assert sales_period.period.start == datetime.date(2020, 1, 1)
 ```
 
-
 #### FiniteDateTimeRangeField
 
 Module: `xocto.fields.postgres.ranges.FiniteDateTimeRangeField`\
@@ -120,7 +123,6 @@ assert calendar_entry.event_time == ranges.FiniteDatetimeRange(
 )
 assert calendar_entry.event_time.start == localtime.datetime(2020, 1, 1, 14, 30)
 ```
-
 
 #### HalfFiniteDateTimeRangeField
 
