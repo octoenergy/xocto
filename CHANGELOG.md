@@ -2,9 +2,14 @@
 
 ## Unreleased
 
-## V9.0.0 - 2025-11-25
+## V9.0.1 - 2025-11-26
 
 - Ranges now use UTC time behind the scene to evaluate datetimes! [#251](https://github.com/octoenergy/xocto/pull/251)
+- Added note to docs to highlight `Range` UTC changes, narrow typing of Range class internal function so outputs retain type of arguments [#251](https://github.com/octoenergy/xocto/pull/251)
+
+## V9.0.0 - 2025-11-25
+
+- Misconfigured, intended to fix [#251](https://github.com/octoenergy/xocto/pull/251), no functional changes
 
 ## V8.5.2 - 2025-10-28
 
