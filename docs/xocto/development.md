@@ -82,6 +82,8 @@ make
 make tag
 ```
 
+> **_NOTE:_** Ensure tags are created on `main` and include all intended changes
+
 This will trigger a Github action to publish the package to PyPI.
 
 ### Backporting a fix
