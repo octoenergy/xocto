@@ -40,6 +40,11 @@ format:
 VERSION=v$(shell python -c "import importlib.metadata; print(importlib.metadata.version('xocto'))")
 
 tag:
+	@BRANCH=$$(git rev-parse --abbrev-ref HEAD); \
+	if [ "$$BRANCH" != "main" ]; then \
+		echo "Error: You must be on the 'main' branch to tag. Current branch: $$BRANCH"; \
+		exit 1; \
+	fi
 	@echo Tagging as $(VERSION)
 	git tag -a $(VERSION) -m "Creating version $(VERSION)"
 	git push origin tag $(VERSION)
