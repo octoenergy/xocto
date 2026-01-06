@@ -884,7 +884,11 @@ class S3FileStore(BaseS3FileStore):
         )
 
     def _get_boto_bucket(self) -> service_resource.Bucket:
-        boto_resource = boto3.resource("s3", region_name=settings.AWS_REGION)
+        boto_resource = boto3.resource(
+            "s3",
+            region_name=settings.AWS_REGION,
+            endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+        )
         return boto_resource.Bucket(self.bucket_name)
 
     def _bucket_is_versioned(self) -> bool:
