@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Pin max version of `pact-python` to <3.0.0 [#261](https://github.com/octoenergy/xocto/pull/261)
+
 ## V9.0.2 - 2026-01-13
 
 - Update `Comparable` protocol parameters as positional-only [#259](https://github.com/octoenergy/xocto/pull/259)
