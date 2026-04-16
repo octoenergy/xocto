@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V9.0.3 - 2026-04-17
+
+- Add `ensure_midnight_aligned` function to `localtime` module [#265](https://github.com/octoenergy/xocto/pull/265)
+
 ## V9.0.2 - 2026-01-13
 
 - Update `Comparable` protocol parameters as positional-only [#259](https://github.com/octoenergy/xocto/pull/259)
