@@ -1210,6 +1210,74 @@ class TestParseDatetime:
         assert "Invalid isoformat string" in str(exc_info.value)
 
 
+class TestEnsureMidnightAligned:
+    def test_returns_none_for_none(self):
+        assert localtime.ensure_midnight_aligned(None) is None
+
+    def test_returns_midnight_for_date(self):
+        date = datetime.date(2026, 4, 16)
+        assert localtime.ensure_midnight_aligned(date) == localtime.midnight(date)
+
+    @pytest.mark.parametrize(
+        "source_datetime, expected_midnight",
+        [
+            (
+                # Naive datetime
+                datetime.datetime(2026, 4, 16, 14, 30),
+                localtime.midnight(datetime.datetime(2026, 4, 16)),
+            ),
+            (
+                # Local TZ-aware datetime
+                factories.local.dt("2026-04-16 14:30"),
+                localtime.midnight(datetime.date(2026, 4, 16)),
+            ),
+            (
+                # UTC datetime
+                factories.utc.dt("2026-04-16 14:30"),
+                localtime.midnight(datetime.date(2026, 4, 16)),
+            ),
+        ],
+    )
+    def test_returns_midnight_for_datetime(self, source_datetime, expected_midnight):
+        assert localtime.ensure_midnight_aligned(source_datetime) == expected_midnight
+
+    @pytest.mark.parametrize(
+        "source_datetime, expected_midnight",
+        [
+            (
+                # UTC 22:30 during BST (London is UTC+1): local time is 23:30 on Jun 1, no date rollover
+                factories.utc.dt("2026-06-01 22:30"),
+                localtime.midnight(datetime.date(2026, 6, 1)),
+            ),
+            (
+                # UTC 23:30 during BST (London is UTC+1): local time is 00:30 on Jun 2, date rolls over
+                factories.utc.dt("2026-06-01 23:30"),
+                localtime.midnight(datetime.date(2026, 6, 2)),
+            ),
+            (
+                # UTC 23:30 outside BST (London = UTC, no offset): local date stays Dec 1
+                factories.utc.dt("2026-12-01 23:30"),
+                localtime.midnight(datetime.date(2026, 12, 1)),
+            ),
+            (
+                # Fall back (Oct 25, 2026): UTC 23:30 on Oct 24 = BST 00:30 on Oct 25, date rolls over
+                factories.utc.dt("2026-10-24 23:30"),
+                localtime.midnight(datetime.date(2026, 10, 25)),
+            ),
+            (
+                # Fall back (Oct 25, 2026): UTC 23:30 on Oct 25 = GMT 23:30 (clocks have gone back), no rollover
+                factories.utc.dt("2026-10-25 23:30"),
+                localtime.midnight(datetime.date(2026, 10, 25)),
+            ),
+        ],
+    )
+    @override_settings(TIME_ZONE="Europe/London")
+    def test_returns_midnight_for_utc_datetime(
+        self, source_datetime, expected_midnight
+    ):
+        assert localtime.ensure_midnight_aligned(source_datetime) == expected_midnight
+
+
 class TestStrftime:
     @override_settings(TIME_ZONE="Europe/Berlin")
     def test_formats_datetime_in_local_timezone(self):
