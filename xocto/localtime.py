@@ -657,6 +657,18 @@ def is_aligned_to_midnight(
     )
 
 
+def ensure_midnight_aligned(
+    value: datetime_.date | datetime_.datetime | None,
+) -> datetime_.datetime | None:
+    """
+    Return a localtime midnight-aligned, timezone-aware datetime for the
+    given value, or None if value is None.
+    """
+    if value is None:
+        return None
+    return midnight(value)
+
+
 def consolidate_into_intervals(
     dates: Sequence[datetime_.date],
 ) -> Sequence[Tuple[datetime_.date, datetime_.date]]:
