@@ -1000,7 +1000,7 @@ class TestFiniteDateRange:
 
         def test_doesnt_extend_union(self):
             """
-            A union of ranges should be longer than the sum of it's parts.
+            A union of ranges should not be longer than the sum of it's parts.
             """
             # This is a weird test to include, it is added because this feels like an
             # obvious risk with the implementation I have used.
@@ -1020,6 +1020,118 @@ class TestFiniteDateRange:
             subject = ranges.FiniteRange(1, 4)
 
             assert 3 in subject
+
+    class TestDifference:
+        def test_paco(self):
+            r1 = ranges.FiniteDateRange(
+                start=datetime.date(2024, 10, 1),
+                end=datetime.date(2024, 10, 30),
+            )
+            r2 = ranges.FiniteDateRange(
+                start=datetime.date(2024, 10, 5),
+                end=datetime.date(2024, 10, 15),
+            )
+            r3 = ranges.FiniteDateRange(
+                start=datetime.date(2024, 12, 1),
+                end=datetime.date(2024, 12, 30),
+            )
+            f1 = ranges.FiniteRangeSet([r1])
+            f2 = ranges.FiniteRangeSet([r2])
+            f3 = ranges.FiniteRangeSet([r3])
+            r1.difference(r2)
+            r1.difference(r3)
+
+            f1-f2
+
+
+
+        def test_range_sets_overlap(self):
+            range_set = ranges.FiniteRangeSet(
+                [
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 10, 1),
+                        end=datetime.date(2024, 10, 31),
+                    )
+                ]
+            )
+            other = ranges.FiniteRangeSet(
+                [
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 10, 1),
+                        end=datetime.date(2024, 10, 15),
+                    )
+                ]
+            )
+            difference = range_set.difference(other)
+
+            assert difference == ranges.FiniteRangeSet(
+                [
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 10, 15),
+                        end=datetime.date(2024, 10, 31),
+                    )
+                ]
+            )
+
+        def test_range_sets_overlap_multiple_ranges(self):
+            range_set = ranges.FiniteRangeSet(
+                [
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 1, 1),
+                        end=datetime.date(2024, 2, 28),
+                    ),
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 5, 1),
+                        end=datetime.date(2024, 6, 30),
+                    ),
+                ]
+            )
+            other = ranges.FiniteRangeSet(
+                [
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 1, 1),
+                        end=datetime.date(2024, 2, 15),
+                    ),
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 5, 15),
+                        end=datetime.date(2024, 6, 30),
+                    )
+                ]
+            )
+            difference = range_set.difference(other)
+
+            assert difference == ranges.FiniteRangeSet(
+                [
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 2, 15),
+                        end=datetime.date(2024, 2, 28),
+                    ),
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 5,1),
+                        end=datetime.date(2024, 5, 15),
+                    ),
+                ]
+            )
+
+        def test_difference_does_not_overlap(self):
+            range_set = ranges.FiniteRangeSet(
+                [
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 1, 1),
+                        end=datetime.date(2024, 1, 31),
+                    )
+                ]
+            )
+            other = ranges.FiniteRangeSet(
+                [
+                    ranges.FiniteDateRange(
+                        start=datetime.date(2024, 3, 1),
+                        end=datetime.date(2024, 3, 31),
+                    )
+                ]
+            )
+            difference = range_set.difference(other)
+            assert difference == range_set
 
 
 class TestFiniteDatetimeRange:
