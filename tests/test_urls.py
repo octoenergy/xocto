@@ -161,3 +161,36 @@ class TestParseFileDestinationFromURL:
             "MAM/TO_OE",
             "MAM/TO_OE/pending",
         )
+
+class TestSanitizeURL:
+    def test_removes_query_params(self):
+        """
+        Removes query params from the URL.
+        """
+        url = "https://example.com/path?query=param"
+        sanitized_url = urls.sanitize_url(url)
+        assert sanitized_url == "https://example.com/"
+    
+    def test_removes_fragment(self):
+        """
+        Removes fragment from the URL.
+        """
+        url = "https://example.com/path#fragment"
+        sanitized_url = urls.sanitize_url(url)
+        assert sanitized_url == "https://example.com/"
+        
+    def test_removes_auth(self):
+        """
+        Removes auth from the URL.
+        """
+        url = "https://user:test@localhost:8080/path"
+        sanitized_url = urls.sanitize_url(url)
+        assert sanitized_url == "https://localhost:8080/"
+        
+    def test_removes_path(self):
+        """
+        Removes path from the URL.
+        """
+        url = "https://example.com/path/"
+        sanitized_url = urls.sanitize_url(url)
+        assert sanitized_url == "https://example.com/"
