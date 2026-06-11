@@ -208,6 +208,7 @@ section-order = [
 #   Hence the rules ignoring deprecation warnings must by below the rule that converts
 #   DeprecationWarnings into errors.
 filterwarnings = [
+    "error::ResourceWarning",
     "error::RuntimeWarning",
     "error::DeprecationWarning",
     "ignore:defusedxml.lxml:DeprecationWarning:zeep",
