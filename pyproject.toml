@@ -211,6 +211,7 @@ filterwarnings = [
     "error::ResourceWarning",
     "error::RuntimeWarning",
     "error::DeprecationWarning",
+    "error::pytest.PytestCollectionWarning",
     "ignore:defusedxml.lxml:DeprecationWarning:zeep",
     "ignore:distutils Version classes are deprecated:DeprecationWarning:pytest_freezegun",  # https://github.com/ktosiek/pytest-freezegun/issues/35
     "ignore:Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3:DeprecationWarning:(graphene|singledispatch)",
