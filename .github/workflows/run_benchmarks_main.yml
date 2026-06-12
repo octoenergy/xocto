@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: main
 
@@ -47,7 +47,7 @@ jobs:
     needs: [ run_benchmarks ]
     steps:
       - name: Checkout benchmarks-data branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: benchmarks-data
 
