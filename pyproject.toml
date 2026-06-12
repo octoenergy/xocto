@@ -25,7 +25,11 @@ classifiers = [
 license = {text = "MIT"}
 dependencies = [
   "django>=4.0",
+  "duckdb>=0.9.0",
+  # `fastapi` is required for `compat-v2` of `pact-python`.
+  "fastapi>=0.136.0",
   "openpyxl>=3.1.0",
+  "pact-python[compat-v2]>=3.0.0",
   "pandas>=1.5.3",
   "pyarrow>=11.0.0",
   "python-dateutil>=2.8.2",
@@ -33,13 +37,13 @@ dependencies = [
   "pytz",
   "structlog>=20.2.0",
   "typing-extensions>=4.12.2",
+  # `uvicorn` is required for `compat-v2` of `pact-python`.
+  "uvicorn>=0.38.0",
   "xlrd>=2.0.1",
 ]
 
 [project.optional-dependencies]
 dev = [
-  "duckdb>=0.9.0",
-  "pact-python>=1.6.0,<3.0.0",
   "boto3==1.26.53",
   "botocore==1.29.53",
   "hypothesis==6.62.1",
@@ -64,10 +68,10 @@ dev = [
   "wheel==0.38.4",
 ]
 docs = [
-  "Sphinx==7.2.6",
   "myst-parser==2.0.0",
-  "sphinxcontrib-serializinghtml==1.1.10",
   "sphinx-rtd-theme==2.0.0",
+  "sphinx==7.2.6",
+  "sphinxcontrib-serializinghtml==1.1.10",
 ]
 
 [project.urls]
@@ -207,12 +211,15 @@ section-order = [
 #   Hence the rules ignoring deprecation warnings must by below the rule that converts
 #   DeprecationWarnings into errors.
 filterwarnings = [
+    "error::ResourceWarning",
     "error::RuntimeWarning",
     "error::DeprecationWarning",
+    "error::pytest.PytestCollectionWarning",
+    "ignore:Bundled (pact-plugin-cli|pact-stub-server|pact_mock_server_cli|pact_verifier_cli) binary not found; using system installation instead:RuntimeWarning:pact_cli",
     "ignore:defusedxml.lxml:DeprecationWarning:zeep",
+    "ignore:distutils Version classes are deprecated:DeprecationWarning:pytest_freezegun",  # https://github.com/ktosiek/pytest-freezegun/issues/35
+    "ignore:The `pact.v2` module is deprecated:DeprecationWarning",
     "ignore:Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3:DeprecationWarning:(graphene|singledispatch)",
-    # https://github.com/ktosiek/pytest-freezegun/issues/35
-    "ignore:distutils Version classes are deprecated:DeprecationWarning:pytest_freezegun",
 ]
 
 DJANGO_SETTINGS_MODULE = "tests.settings"

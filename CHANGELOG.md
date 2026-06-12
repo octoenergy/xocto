@@ -2,9 +2,9 @@
 
 ## Unreleased
 
+- Pin min version of `pact-python` to >=3.0.0 [#269](https://github.com/octoenergy/xocto/pull/269)
 - Drop Python 3.9 support [#263](https://github.com/octoenergy/xocto/pull/263)
 - Drop Postgres 13 support [#262](https://github.com/octoenergy/xocto/pull/262)
-- Pin max version of `pact-python` to <3.0.0 [#261](https://github.com/octoenergy/xocto/pull/261)
 
 ## V9.0.3 - 2026-04-17
 
