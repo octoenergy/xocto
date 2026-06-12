@@ -6,7 +6,7 @@ import os
 import subprocess
 from typing import Any
 
-import pact
+import pact.v2 as pact_v2
 import requests
 
 
@@ -41,13 +41,13 @@ class PactConsumerClient:
         return response.json()
 
 
-def pact_service(*, options: PactOptions, publish_to_broker: bool) -> pact.Pact:
-    service = pact.Consumer(
+def pact_service(*, options: PactOptions, publish_to_broker: bool) -> pact_v2.Pact:
+    service = pact_v2.Consumer(  # type: ignore[no-untyped-call]
         name=options.consumer_name,
         tag_with_git_branch=True,
         version=options.consumer_version,
     ).has_pact_with(
-        pact.Provider(options.provider_name),
+        pact_v2.Provider(options.provider_name),  # type: ignore[no-untyped-call]
         publish_to_broker=publish_to_broker,
         broker_base_url=options.broker_url,
         broker_username=options.broker_username,
