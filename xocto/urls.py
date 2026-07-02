@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import os
 from urllib import parse
-
+from urllib3 import exceptions as urllib3_exceptions
+from urllib3 import util as urllib3_util
 
 def pop_url_query_param(url: str, key: str) -> tuple[str, str | None]:
     """
@@ -144,3 +145,29 @@ def _fix_url_scheme(*, old_url: str, new_url: str) -> str:
         segments = new_url.split(":", maxsplit=1)
         new_url = segments[0] + "://" + segments[1]
     return new_url
+
+def sanitize_url(url: str) -> str | None:
+    """
+    Sanitizes the URL by removing the auth, path, query and fragment parts of the URL. `None` is
+    returned if the URL is invalid.
+    
+    E.g.
+    >>> sanitize_url('https://user:pass@localhost:8080/path?query#fragment')
+    'https://localhost:8080/'
+    >>> sanitize_url('ftp://example.com:21')
+    'ftp://example.com:21/'
+    >>> sanitize_url('invalid-url')
+    None
+    """
+    try:
+        scheme, _auth, host, port, _path, _query, _fragment = urllib3_util.parse_url(url)
+
+        if host is None:
+            return None
+
+        scheme = f"{scheme}://" if scheme is not None else ""
+        port = f":{port}" if port is not None else ""
+
+        return f"{scheme}{host}{port}/"
+    except urllib3_exceptions.LocationParseError:
+        return None
