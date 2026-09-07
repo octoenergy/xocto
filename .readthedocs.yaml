@@ -12,7 +12,7 @@ build:
   apt_packages:
     - libmagic1
   tools:
-    python: "3.10"
+    python: "3.13"
   jobs:
     pre_build:
       - "pip install '.[docs]'"
