@@ -20,7 +20,10 @@ repos:
     rev: 'v1.10.0'
     hooks:
       - id: mypy
+        files: ^xocto/.*\.py$
         additional_dependencies:
+          - pact-python[compat-v2]>=3.0.0
+          - types-pytz
           - types-requests
           - types-python-dateutil
           - mypy-boto3-s3
