@@ -293,7 +293,7 @@ class Range(Generic[T]):
         return f"<Range: {str(self)}>"
 
     def __setattr__(self, name: str, value: Any) -> None:
-        if name in type(self).__slots__:
+        if any(name in getattr(cls, "__slots__", ()) for cls in type(self).__mro__):
             raise AttributeError("Can't set attributes")
         else:
             super().__setattr__(name, value)
