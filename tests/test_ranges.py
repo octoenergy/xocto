@@ -519,9 +519,40 @@ class TestHalfFiniteRange:
         assert 1 == r.start
         assert 2 == r.end
 
+    def test_rejects_missing_start(self):
+        with pytest.raises(ValueError, match="HalfFiniteRange start cannot be None"):
+            ranges.HalfFiniteRange(None)
+
+    def test_endpoints_are_immutable(self):
+        r = ranges.HalfFiniteRange(0, 1)
+
+        with pytest.raises(AttributeError, match="Can't set attributes"):
+            r.start = None
+        with pytest.raises(AttributeError, match="Can't set attributes"):
+            r.end = r.start
+
+        assert r == ranges.HalfFiniteRange(0, 1)
+
     def test_does_not_have_instance_dictionary(self):
         r = ranges.HalfFiniteRange(0, 2)
         assert not hasattr(r, "__dict__")
+
+
+class TestFiniteRange:
+    @pytest.mark.parametrize("start,end", [(None, 1), (1, None), (None, None)])
+    def test_rejects_missing_endpoints(self, start, end):
+        with pytest.raises(ValueError, match="FiniteRange endpoints cannot be None"):
+            ranges.FiniteRange(start, end)
+
+    def test_endpoints_are_immutable(self):
+        r = ranges.FiniteRange(0, 1)
+
+        with pytest.raises(AttributeError, match="Can't set attributes"):
+            r.start = None
+        with pytest.raises(AttributeError, match="Can't set attributes"):
+            r.end = None
+
+        assert r == ranges.FiniteRange(0, 1)
 
 
 ONE_DAY = datetime.timedelta(days=1)

@@ -469,11 +469,11 @@ class TestHalfFiniteDateTimeRangeField:
             half_finite_datetime_range=half_finite_datetime_range_melb,
             half_finite_datetime_range_utc=half_finite_datetime_range_melb,
         )
-        half_finite_datetime_range_london = ranges.FiniteDatetimeRange(
+        half_finite_datetime_range_london = ranges.HalfFiniteDatetimeRange(
             start=localtime.as_localtime(half_finite_datetime_range_melb.start),
             end=None,
         )
-        half_finite_datetime_range_utc = ranges.FiniteDatetimeRange(
+        half_finite_datetime_range_utc = ranges.HalfFiniteDatetimeRange(
             start=localtime.as_utc(half_finite_datetime_range_melb.start),
             end=None,
         )
