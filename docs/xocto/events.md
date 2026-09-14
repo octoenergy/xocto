@@ -50,7 +50,7 @@ events.publish(
 ## API Reference
 
 ```{eval-rst}
-.. module:: xocto.types
+.. module:: xocto.events
 
 .. autofunction:: xocto.events.publish
 
