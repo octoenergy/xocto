@@ -102,7 +102,7 @@ datetime(2020, 3, 29, tzinfo=london_tz) + timedelta(hours=1)
 
 ```{eval-rst}
 
-.. module:: xocto.types
+.. module:: xocto.localtime
 
 .. automodule:: xocto.localtime
    :members:
