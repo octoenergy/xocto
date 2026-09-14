@@ -91,10 +91,12 @@ namespaces = false
 "xocto" = ["py.typed"]
 
 [tool.mypy]
-files = [
-  "xocto",
-  "tests",
-  "*.py",
+files = ["."]
+exclude = [
+  '^benchmarks/',
+  '^build/',
+  '^dist/',
+  '^docs/',
 ]
 show_error_codes = true
 strict = true
