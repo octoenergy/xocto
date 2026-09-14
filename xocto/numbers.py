@@ -12,12 +12,12 @@ def quantise(
 ) -> int:
     """
     Round a number to an arbitrary integer base. For example:
-    >>> quantise(256, 5)
+    >>> quantise(decimal.Decimal("256"), 5)
     255
 
     Note that numbers equal to half of the rounding amount will always
     round down. So:
-    >>> quantise(15, 30)
+    >>> quantise(decimal.Decimal("15"), 30)
     0
     """
     assert base > 0
@@ -33,14 +33,14 @@ def truncate_decimal_places(value: decimal.Decimal, places: int = 1) -> float:
 
     NB: Takes a decimal but returns a float!
 
-    >>> truncate_decimal_places(12.364, 1)
+    >>> truncate_decimal_places(decimal.Decimal("12.364"), 1)
     12.3
 
-    >>> round_decimal_places(-12.364, 1)
-    -12.3 # -12.3 is bigger than -12.4
+    >>> truncate_decimal_places(decimal.Decimal("-12.364"), 1)
+    -12.3
 
-    >>> round_decimal_places(12.364, 0)
-    12.0 # rounding to 0 returns float with no decmial part
+    >>> truncate_decimal_places(decimal.Decimal("12.364"), 0)
+    12.0
     """
 
     if places == 0:
@@ -66,11 +66,11 @@ def round_decimal_places(
     (which use "banker's"/half-even rounding, which is considered by IEEE 754 to be the recommended
     default for decimal).
 
-    >>> round_decimal_places(12.35, 1)
-    12.4
+    >>> round_decimal_places(decimal.Decimal("12.35"), 1)
+    Decimal('12.4')
 
-    >>> round_decimal_places(-12.35, 1)
-    -12.3 #-12.3 is bigger than -12.4
+    >>> round_decimal_places(decimal.Decimal("-12.35"), 1)
+    Decimal('-12.4')
     """
 
     if places == 0:
@@ -113,8 +113,13 @@ def clip_to_range(
     Example usage:
         >>> clip_to_range(10, minval=20, maxval=25)
         20
-        >>> clip_to_range(date(2020, 1, 4), minval=date(2020, 1, 1), maxval=date(2020, 1, 3))
-        date(2020, 1, 3)
+        >>> import datetime
+        >>> clip_to_range(
+        ...     datetime.date(2020, 1, 4),
+        ...     minval=datetime.date(2020, 1, 1),
+        ...     maxval=datetime.date(2020, 1, 3),
+        ... )
+        datetime.date(2020, 1, 3)
         >>> clip_to_range(1.5, minval=1.0, maxval=2.0)
         1.5
     """
@@ -140,8 +145,9 @@ def random_int(length: int) -> int:
     """
     Return a pseudo-random integer based on the provided `length`.
 
+        >>> random.seed(0)
         >>> random_int(3)
-        114
+        964
     """
     if length < 2:
         raise ValueError("length must be greater than or equal to 2")
