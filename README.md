@@ -11,5 +11,5 @@ Docs status:
 
 [![Documentation Status](https://readthedocs.org/projects/xocto/badge/?version=latest)](https://xocto.readthedocs.io/en/latest/?badge=latest)
 
-- PyPI detail page: <https://pypi.python.org/pypi/xocto>
+- PyPI detail page: <https://pypi.org/project/xocto/>
 - Documentation: <https://xocto.readthedocs.io/>

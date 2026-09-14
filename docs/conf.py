@@ -17,9 +17,12 @@ from datetime import datetime
 
 import django
 
-# Use pip-vendored tomli so we can read pyproject.toml
-# When we upgrade Python to 3.11 we can use tomllib directly
-from pip._vendor import tomli
+
+# tomllib is available from Python 3.11; retain the Python 3.10 fallback.
+try:
+    import tomllib
+except ModuleNotFoundError:
+    from pip._vendor import tomli as tomllib
 
 
 sys.path.insert(0, os.path.abspath(".."))  # for discovery of project modules
@@ -37,7 +40,7 @@ author = "Kraken Tech"
 
 # Fetch the version from pyproject.toml
 path = pathlib.Path(__file__).parent / ".." / "pyproject.toml"
-pyproject = tomli.loads(path.read_text())
+pyproject = tomllib.loads(path.read_text())
 release = pyproject["project"]["version"]
 
 # -- General configuration ---------------------------------------------------
