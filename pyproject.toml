@@ -95,11 +95,12 @@ namespaces = false
 # ----
 
 [tool.mypy]
-# Specify which files to check.
-files = [
-  "xocto",
-  "tests",
-  "*.py",
+files = ["."]
+exclude = [
+  '^benchmarks/',
+  '^build/',
+  '^dist/',
+  '^docs/',
 ]
 
 # Output.
