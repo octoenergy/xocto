@@ -2671,7 +2671,7 @@ dependencies = [
     { name = "xlrd" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "boto3" },
     { name = "botocore" },
@@ -2705,48 +2705,53 @@ docs = [
 
 [package.metadata]
 requires-dist = [
-    { name = "boto3", marker = "extra == 'dev'", specifier = "==1.26.53" },
-    { name = "botocore", marker = "extra == 'dev'", specifier = "==1.29.53" },
     { name = "django", specifier = ">=4.0" },
     { name = "duckdb", specifier = ">=0.9.0" },
     { name = "fastapi", specifier = ">=0.136.0" },
-    { name = "hypothesis", marker = "extra == 'dev'", specifier = "==6.62.1" },
-    { name = "moto", extras = ["s3", "sqs"], marker = "extra == 'dev'", specifier = "==4.1" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = "==1.10.0" },
-    { name = "mypy-boto3-s3", marker = "extra == 'dev'", specifier = "==1.34.120" },
-    { name = "myst-parser", marker = "extra == 'docs'", specifier = "==2.0.0" },
-    { name = "numpy", marker = "extra == 'dev'", specifier = "==2.0.0" },
     { name = "openpyxl", specifier = ">=3.1.0" },
     { name = "pact-python", extras = ["compat-v2"], specifier = ">=3.0.0" },
     { name = "pandas", specifier = ">=1.5.3" },
-    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.7.1" },
-    { name = "psycopg2", marker = "extra == 'dev'", specifier = ">=2.8.4" },
     { name = "pyarrow", specifier = ">=11.0.0" },
-    { name = "pyarrow-stubs", marker = "extra == 'dev'", specifier = "==10.0.1.6" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = "==9.0.3" },
-    { name = "pytest-benchmark", marker = "extra == 'dev'", specifier = "==5.0.1" },
-    { name = "pytest-django", marker = "extra == 'dev'", specifier = "==4.8.0" },
-    { name = "pytest-mock", marker = "extra == 'dev'", specifier = "==3.12.0" },
     { name = "python-dateutil", specifier = ">=2.8.2" },
     { name = "python-magic", specifier = ">=0.4.27" },
     { name = "pytz" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = "==0.4.9" },
-    { name = "sphinx", marker = "extra == 'docs'", specifier = "==7.2.6" },
-    { name = "sphinx-rtd-theme", marker = "extra == 'docs'", specifier = "==2.0.0" },
-    { name = "sphinxcontrib-serializinghtml", marker = "extra == 'docs'", specifier = "==1.1.10" },
     { name = "structlog", specifier = ">=20.2.0" },
-    { name = "time-machine", marker = "extra == 'dev'", specifier = "==2.14.1" },
-    { name = "twine", marker = "extra == 'dev'", specifier = "==4.0.2" },
-    { name = "types-openpyxl", marker = "extra == 'dev'", specifier = "==3.0.4.5" },
-    { name = "types-python-dateutil", marker = "extra == 'dev'", specifier = "==2.8.19.20240106" },
-    { name = "types-pytz", marker = "extra == 'dev'", specifier = "==2024.1.0.20240203" },
-    { name = "types-requests", marker = "extra == 'dev'", specifier = "==2.28.11.8" },
     { name = "typing-extensions", specifier = ">=4.12.2" },
     { name = "uvicorn", specifier = ">=0.38.0" },
-    { name = "wheel", marker = "extra == 'dev'", specifier = "==0.38.4" },
     { name = "xlrd", specifier = ">=2.0.1" },
 ]
-provides-extras = ["dev", "docs"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "boto3", specifier = "==1.26.53" },
+    { name = "botocore", specifier = "==1.29.53" },
+    { name = "hypothesis", specifier = "==6.62.1" },
+    { name = "moto", extras = ["s3", "sqs"], specifier = "==4.1" },
+    { name = "mypy", specifier = "==1.10.0" },
+    { name = "mypy-boto3-s3", specifier = "==1.34.120" },
+    { name = "numpy", specifier = "==2.0.0" },
+    { name = "pre-commit", specifier = ">=3.7.1" },
+    { name = "psycopg2", specifier = ">=2.8.4" },
+    { name = "pyarrow-stubs", specifier = "==10.0.1.6" },
+    { name = "pytest", specifier = "==9.0.3" },
+    { name = "pytest-benchmark", specifier = "==5.0.1" },
+    { name = "pytest-django", specifier = "==4.8.0" },
+    { name = "pytest-mock", specifier = "==3.12.0" },
+    { name = "ruff", specifier = "==0.4.9" },
+    { name = "time-machine", specifier = "==2.14.1" },
+    { name = "twine", specifier = "==4.0.2" },
+    { name = "types-openpyxl", specifier = "==3.0.4.5" },
+    { name = "types-python-dateutil", specifier = "==2.8.19.20240106" },
+    { name = "types-pytz", specifier = "==2024.1.0.20240203" },
+    { name = "types-requests", specifier = "==2.28.11.8" },
+    { name = "wheel", specifier = "==0.38.4" },
+]
+docs = [
+    { name = "myst-parser", specifier = "==2.0.0" },
+    { name = "sphinx", specifier = "==7.2.6" },
+    { name = "sphinx-rtd-theme", specifier = "==2.0.0" },
+    { name = "sphinxcontrib-serializinghtml", specifier = "==1.1.10" },
+]
 
 [[package]]
 name = "yarl"

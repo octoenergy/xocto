@@ -42,7 +42,7 @@ dependencies = [
   "xlrd>=2.0.1",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
   "boto3==1.26.53",
   "botocore==1.29.53",
@@ -73,6 +73,10 @@ docs = [
   "sphinx==7.2.6",
   "sphinxcontrib-serializinghtml==1.1.10",
 ]
+
+[tool.uv]
+# Keep dependency-group support consistent across local and CI environments.
+required-version = ">=0.10.0"
 
 [project.urls]
 changelog = "https://github.com/octoenergy/xocto/blob/main/CHANGELOG.md"
