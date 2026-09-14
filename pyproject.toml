@@ -49,7 +49,7 @@ dev = [
   "boto3-stubs[boto3,s3]==1.43.93",
   "botocore==1.43.93",
   "hypothesis==6.168.0",
-  "moto[s3,sqs]==4.2.14",
+  "moto[s3,sqs]==5.2.3",
   "mypy==1.10.0",
   "numpy==2.1.0",
   "pre-commit~=4.6",

@@ -19,7 +19,7 @@ from xocto.storage import s3_select, storage
 
 @pytest.fixture
 def mock_s3_bucket(mocker):
-    with moto.mock_s3():
+    with moto.mock_aws():
         bucket = boto3.resource("s3", region_name="us-east-1").create_bucket(
             Bucket="some-bucket"
         )
