@@ -16,7 +16,7 @@ events.publish(
         'quote_id': 'xyz123',
     },
     meta={
-        'account_id': 'A-12312345'
+        'account_id': 'A-12312345',
     },
     account=account,  # optional
     request=request,  # optional
@@ -40,19 +40,19 @@ events.publish(
         'quote_id': 'xyz123',
     },
     meta={
-        'account_id': account.account_id
-        "duration_in_ms": t.duration_in_ms
+        'account_id': account.number,
+        "duration_in_ms": t.duration_in_ms,
     },
-    account=account
+    account=account,
 )
 ```
 
 ## API Reference
 
 ```{eval-rst}
-.. module:: xocto.types
+.. module:: xocto.events
 
 .. autofunction:: xocto.events.publish
 
-.. autofunction:: xocto.events.Timer
+.. autoclass:: xocto.events.Timer
 ```

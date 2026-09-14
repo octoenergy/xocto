@@ -128,9 +128,7 @@ assert calendar_entry.event_time.start == localtime.datetime(2020, 1, 1, 14, 30)
 
 Module: `xocto.fields.postgres.ranges.HalfFiniteDateTimeRangeField`\
 Bounds: `[)`\
-Type: [xocto.ranges.HalfFiniteDatetimeRange](xocto.ranges.HalfFiniteRange)
-
-> **_NOTE:_** docs can not link directly to `HalfFiniteDatetimeRange` at this stage as it's a type alias
+Type: [xocto.ranges.HalfFiniteDatetimeRange](xocto.ranges.HalfFiniteDatetimeRange)
 
 A field that represents an inclusive-exclusive `[)` ranges of timezone-aware
 datetimes. The end of the range may be open-ended, represented by `None`.
