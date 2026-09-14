@@ -96,6 +96,9 @@ namespaces = false
 # ----
 
 [tool.mypy]
+# Avoid recursively checking generated build artifacts when invoked as `mypy .`.
+exclude = ["^build/"]
+
 # Specify which files to check.
 files = [
   "xocto",
