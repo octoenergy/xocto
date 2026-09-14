@@ -29,6 +29,9 @@ jobs:
             - "/home/circleci/venv/"
             - "/home/circleci/.cache/pip"
       - run:
+          name: Check uv lock file
+          command: uv lock --check
+      - run:
           name: Check formatting
           command: make format_check
           when: always
