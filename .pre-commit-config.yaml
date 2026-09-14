@@ -13,14 +13,17 @@ repos:
       - id: debug-statements      # Check for debugger imports and py37+ breakpoint() calls in python source
       - id: end-of-file-fixer      # Makes sure files end in a newline and only a newline.
       - id: no-commit-to-branch      # Protect specific branches from direct checkins (`master` by default)
-        stages: [commit]
+        stages: [pre-commit]
       - id: trailing-whitespace      # Trims trailing whitespace.
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: 'v1.10.0'
     hooks:
       - id: mypy
+        files: ^xocto/.*\.py$
         additional_dependencies:
+          - pact-python[compat-v2]>=3.0.0
+          - types-pytz
           - types-requests
           - types-python-dateutil
           - mypy-boto3-s3

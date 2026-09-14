@@ -34,10 +34,10 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          
+
           git add --all
           git commit -m "Collect benchmarks"
-          
+
           # Retry below incase another workflow pushed to the benchmarks-data branch since we checked it out.
           # Unlikely but technically possible...
           # There won't be a merge conflict since this workflow is the only workflow touching benchmarks.csv
