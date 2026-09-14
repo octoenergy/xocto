@@ -989,26 +989,25 @@ wheels = [
 
 [[package]]
 name = "moto"
-version = "4.1.0"
+version = "5.2.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "boto3" },
     { name = "botocore" },
     { name = "cryptography" },
-    { name = "jinja2" },
-    { name = "python-dateutil" },
     { name = "requests" },
     { name = "responses" },
     { name = "werkzeug" },
     { name = "xmltodict" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5d/3a/5adcdb131ba68c9e36123a2888b665fdad33352d153180486a702fd66be1/moto-4.1.0.tar.gz", hash = "sha256:e65a692df57abb631b06c8f3f7827c9deceae3416887527e266c775ad722a2fa", size = 2561695, upload-time = "2023-01-09T21:53:22.587Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/0f/1682c01ca0608c25526afb150246a3c9c1f609caccbd39758de4850e31bc/moto-5.2.3.tar.gz", hash = "sha256:a9e95c3218b6eda18e74571f1ced11cb1bc3151467d562c1da6037b9d19832cb", size = 8785514, upload-time = "2026-08-22T18:46:00.199Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/87/7e/8701dc98dedba64b4435bbf70e2bde1bcec9964a8c9979815413e0b75a3a/moto-4.1.0-py2.py3-none-any.whl", hash = "sha256:12f231196ebf22d19774f2a75738fdedae10a8c82abb8fa0877e1819aa799f4f", size = 1982185, upload-time = "2023-01-09T21:53:19.742Z" },
+    { url = "https://files.pythonhosted.org/packages/58/80/ee7ace7a49bd525455497fa2ff198111877d6f93b908b657adeb2cf057a4/moto-5.2.3-py3-none-any.whl", hash = "sha256:5ec31b3cdbb383a19d46030157bd82aaaa7a9cc5f564200f995663d347bd4728", size = 6780972, upload-time = "2026-08-22T18:45:55.719Z" },
 ]
 
 [package.optional-dependencies]
 s3 = [
+    { name = "py-partiql-parser" },
     { name = "pyyaml" },
 ]
 
@@ -1790,6 +1789,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/37/a8/d832f7293ebb21690860d2e01d8115e5ff6f2ae8bbdc953f0eb0fa4bd2c7/py-cpuinfo-9.0.0.tar.gz", hash = "sha256:3cdbbf3fac90dc6f118bfd64384f309edeadd902d7c8fb17f02ffa1fc3f49690", size = 104716, upload-time = "2022-10-25T20:38:06.303Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e0/a9/023730ba63db1e494a271cb018dcd361bd2c917ba7004c3e49d5daf795a2/py_cpuinfo-9.0.0-py3-none-any.whl", hash = "sha256:859625bc251f64e21f077d099d4162689c762b5d6a4c3c97553d56241c9674d5", size = 22335, upload-time = "2022-10-25T20:38:27.636Z" },
+]
+
+[[package]]
+name = "py-partiql-parser"
+version = "0.6.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/56/7a/a0f6bda783eb4df8e3dfd55973a1ac6d368a89178c300e1b5b91cd181e5e/py_partiql_parser-0.6.3.tar.gz", hash = "sha256:09cecf916ce6e3da2c050f0cb6106166de42c33d34a078ec2eb19377ea70389a", size = 17456, upload-time = "2025-10-18T13:56:13.441Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c9/33/a7cbfccc39056a5cf8126b7aab4c8bafbedd4f0ca68ae40ecb627a2d2cd3/py_partiql_parser-0.6.3-py2.py3-none-any.whl", hash = "sha256:deb0769c3346179d2f590dcbde556f708cdb929059fb654bad75f4cf6e07f582", size = 23752, upload-time = "2025-10-18T13:56:12.256Z" },
 ]
 
 [[package]]
@@ -2816,7 +2824,7 @@ dev = [
     { name = "boto3", specifier = "==1.43.95" },
     { name = "botocore", specifier = "==1.43.95" },
     { name = "hypothesis", specifier = "==6.168.0" },
-    { name = "moto", extras = ["s3", "sqs"], specifier = "==4.1" },
+    { name = "moto", extras = ["s3", "sqs"], specifier = "==5.2.3" },
     { name = "mypy", specifier = "==1.10.0" },
     { name = "mypy-boto3-s3", specifier = "==1.43.93" },
     { name = "numpy", specifier = "==2.1.0" },
