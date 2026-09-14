@@ -1,31 +1,37 @@
 import datetime
 import random
 from decimal import Decimal as D
+from typing import TypeVar
+
+from pytest_benchmark.fixture import BenchmarkFixture as PytestBenchmarkFixture
 
 from xocto import ranges
 
 
-def _shuffled(ranges_, *, seed=42):
-    ranges_ = ranges_.copy()
+T = TypeVar("T")
+
+
+def _shuffled(items: list[T], *, seed: int = 42) -> list[T]:
+    items = items.copy()
     random.seed(seed)
-    random.shuffle(ranges_)
-    return ranges_
+    random.shuffle(items)
+    return items
 
 
-def benchmark_any_overlapping(benchmark):
+def benchmark_any_overlapping(benchmark: PytestBenchmarkFixture) -> None:
     ranges_ = _shuffled([ranges.Range(D(i), D(i + 1)) for i in range(1000)])
     any_overlapping = benchmark(ranges.any_overlapping, ranges_)
     assert any_overlapping is False
 
 
-def benchmark_any_gaps(benchmark):
+def benchmark_any_gaps(benchmark: PytestBenchmarkFixture) -> None:
     ranges_ = _shuffled([ranges.Range(D(i), D(i + 1)) for i in range(1000)])
     any_gaps = benchmark(ranges.any_gaps, ranges_)
     assert any_gaps is False
 
 
 class BenchmarkFiniteDatetimeRange:
-    def benchmark_intersection_is_none(self, benchmark):
+    def benchmark_intersection_is_none(self, benchmark: PytestBenchmarkFixture) -> None:
         r1 = ranges.FiniteDatetimeRange(
             datetime.datetime(2020, 1, 1),
             datetime.datetime(2020, 1, 2),
@@ -39,7 +45,9 @@ class BenchmarkFiniteDatetimeRange:
 
         assert result is None
 
-    def benchmark_intersection_is_not_none(self, benchmark):
+    def benchmark_intersection_is_not_none(
+        self, benchmark: PytestBenchmarkFixture
+    ) -> None:
         r1 = ranges.FiniteDatetimeRange(
             datetime.datetime(2020, 1, 1),
             datetime.datetime(2020, 1, 3),
@@ -56,7 +64,7 @@ class BenchmarkFiniteDatetimeRange:
             datetime.datetime(2020, 1, 3),
         )
 
-    def benchmark_union_is_none(self, benchmark):
+    def benchmark_union_is_none(self, benchmark: PytestBenchmarkFixture) -> None:
         r1 = ranges.FiniteDatetimeRange(
             datetime.datetime(2020, 1, 1),
             datetime.datetime(2020, 1, 2),
@@ -70,7 +78,7 @@ class BenchmarkFiniteDatetimeRange:
 
         assert result is None
 
-    def benchmark_union_is_not_none(self, benchmark):
+    def benchmark_union_is_not_none(self, benchmark: PytestBenchmarkFixture) -> None:
         r1 = ranges.FiniteDatetimeRange(
             datetime.datetime(2020, 1, 1),
             datetime.datetime(2020, 1, 3),
@@ -87,7 +95,7 @@ class BenchmarkFiniteDatetimeRange:
             datetime.datetime(2020, 1, 4),
         )
 
-    def benchmark_sorting(self, benchmark):
+    def benchmark_sorting(self, benchmark: PytestBenchmarkFixture) -> None:
         sorted_ranges_ = []
         dt = datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc)
         for _ in range(100_000):

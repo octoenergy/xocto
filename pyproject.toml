@@ -156,6 +156,7 @@ module = [
   "moto.*",
   "pact.*",
   "pandas.*",
+  "pytest_benchmark.fixture",
   "setuptools.*",
   "xlrd.*",
   "zoneinfo.*",

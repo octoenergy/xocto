@@ -19,9 +19,9 @@ import django
 
 
 # tomllib is available from Python 3.11; retain the Python 3.10 fallback.
-try:
+if sys.version_info >= (3, 11):
     import tomllib
-except ModuleNotFoundError:
+else:
     from pip._vendor import tomli as tomllib
 
 
