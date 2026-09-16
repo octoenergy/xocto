@@ -36,6 +36,11 @@ jobs:
           git config user.email github-actions@github.com
 
           git add --all
+          if git diff --cached --quiet; then
+            echo "No benchmarks to collect"
+            exit 0
+          fi
+
           git commit -m "Collect benchmarks"
 
           # Retry below incase another workflow pushed to the benchmarks-data branch since we checked it out.
