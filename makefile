@@ -1,6 +1,5 @@
 install:
-	pip install -U uv
-	uv pip install -e '.[dev,docs]'
+	uv sync --all-groups
 
 
 # CI step wrappers
