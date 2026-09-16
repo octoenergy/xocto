@@ -2,7 +2,7 @@ name: Collect benchmarks
 
 on:
   workflow_run:
-    workflows: [ "Run benchmarks main" ]
+    workflows: [ "Run benchmarks" ]
     types:
       - completed
 

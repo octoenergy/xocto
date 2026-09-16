@@ -1,4 +1,4 @@
-name: Run benchmarks main
+name: Run benchmarks
 
 on:
   push:
@@ -10,10 +10,8 @@ jobs:
     name: Run benchmarks
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main branch
+      - name: Checkout triggering revision
         uses: actions/checkout@v7
-        with:
-          ref: main
 
       - name: Setup python
         uses: actions/setup-python@v7
