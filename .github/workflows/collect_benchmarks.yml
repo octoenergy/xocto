@@ -28,7 +28,7 @@ jobs:
         run: uv run scripts/collect_benchmarks.py -i 'uncollected/*.csv' -o benchmarks.csv
 
       - name: Remove now collected benchmarks
-        run: rm uncollected/*.csv
+        run: find uncollected -type f -name '*.csv' -exec rm {} +
 
       - name: Add and commit
         run: |
