@@ -23,22 +23,22 @@ classifiers = [
 ]
 license = "MIT"
 dependencies = [
-  "django>=4.0",
-  "duckdb>=0.9.0",
+  "django>=5.2,<7",
+  "duckdb==1.*",
   # `fastapi` is required for `compat-v2` of `pact-python`.
-  "fastapi>=0.136.0",
-  "openpyxl>=3.1.0",
-  "pact-python[compat-v2]>=3.0.0",
-  "pandas>=1.5.3",
-  "pyarrow>=11.0.0",
-  "python-dateutil>=2.8.2",
-  "python-magic>=0.4.27",
+  "fastapi~=0.136",
+  "openpyxl~=3.1",
+  "pact-python[compat-v2]~=3.0",
+  "pandas>=1.5.3,<3",
+  "pyarrow>=11.0.0,<26",
+  "python-dateutil~=2.8",
+  "python-magic~=0.4",
   "pytz",
-  "structlog>=20.2.0",
-  "typing-extensions>=4.12.2",
+  "structlog>=20.2.0,<27",
+  "typing-extensions~=4.12",
   # `uvicorn` is required for `compat-v2` of `pact-python`.
-  "uvicorn>=0.38.0",
-  "xlrd>=2.0.1",
+  "uvicorn~=0.38",
+  "xlrd~=2.0",
 ]
 
 [dependency-groups]
