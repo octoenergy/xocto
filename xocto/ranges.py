@@ -52,23 +52,24 @@ _T_Start = TypeVar("_T_Start")
 _T_End = TypeVar("_T_End")
 
 
+def _normalise_datetime(value: datetime.datetime) -> datetime.datetime:
+    try:
+        return value.astimezone(datetime.timezone.utc)
+    except (
+        ValueError,
+        OverflowError,
+    ):  # this can happen for nonsensical datetimes e.g. year 0 or year 9999
+        return value.replace(tzinfo=datetime.timezone.utc)
+
+
 def _normalise_datetimes(start: _T_Start, end: _T_End) -> tuple[_T_Start, _T_End]:
     """
     Convert the start and end arguments to UTC datetimes only if they are datetime objects.
     """
     if isinstance(start, datetime.datetime):
-        try:
-            start = start.astimezone(datetime.timezone.utc)  # type: ignore[assignment]
-        except (
-            ValueError,
-            OverflowError,
-        ):  # this can happen for nonsensical datetimes e.g. year 0 or year 9999
-            start = start.replace(tzinfo=datetime.timezone.utc)  # type: ignore[assignment]
+        start = cast(_T_Start, _normalise_datetime(start))
     if isinstance(end, datetime.datetime):
-        try:
-            end = end.astimezone(datetime.timezone.utc)  # type: ignore[assignment]
-        except (ValueError, OverflowError):
-            end = end.replace(tzinfo=datetime.timezone.utc)  # type: ignore[assignment]
+        end = cast(_T_End, _normalise_datetime(end))
     return start, end
 
 
@@ -571,7 +572,7 @@ class FiniteRange(Range[T]):
 
         super().__init__(start, end, boundaries=boundaries)
 
-    @property  # type: ignore[override]
+    @property  # type: ignore[override, unused-ignore]
     def start(self) -> T:
         return self._start_original
 
@@ -580,7 +581,7 @@ class FiniteRange(Range[T]):
         self._start_original = value
         self._start_normalised, _ = _normalise_datetimes(value, None)
 
-    @property  # type: ignore[override]
+    @property  # type: ignore[override, unused-ignore]
     def end(self) -> T:
         return self._end_original
 
@@ -617,7 +618,7 @@ class HalfFiniteRange(Range[T]):
     _start_original: T
     _start_normalised: T
 
-    @property  # type: ignore[override]
+    @property  # type: ignore[override, unused-ignore]
     def start(self) -> T:
         return self._start_original
 
