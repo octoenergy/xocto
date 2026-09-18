@@ -2726,7 +2726,7 @@ dev = [
     { name = "boto3", specifier = "==1.43.95" },
     { name = "botocore", specifier = "==1.43.95" },
     { name = "hypothesis", specifier = "==6.62.1" },
-    { name = "moto", extras = ["s3", "sqs"], specifier = "==4.1" },
+    { name = "moto", extras = ["s3"], specifier = "==4.1" },
     { name = "mypy", specifier = "==1.10.0" },
     { name = "mypy-boto3-s3", specifier = "==1.43.93" },
     { name = "numpy", specifier = "==2.0.0" },
