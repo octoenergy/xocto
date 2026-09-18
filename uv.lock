@@ -1754,10 +1754,14 @@ wheels = [
 
 [[package]]
 name = "pyarrow-stubs"
-version = "10.0.1.6"
+version = "20.0.0.20260819"
 source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyarrow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/12/a7/8a2ca91ffe4c6576207f932de655d7d8a36485c520dccce70ce7d492b256/pyarrow_stubs-20.0.0.20260819.tar.gz", hash = "sha256:150710a72248bc834bf048d3092713f070904a4af76d40289c43afb3ee189823", size = 238222, upload-time = "2026-08-19T05:52:53.618Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2b/8a/8f4ac71cd71f0690b6a186993463452db30fe325fd1d20eaded6159737dd/pyarrow_stubs-10.0.1.6-py3-none-any.whl", hash = "sha256:b519f2600dfdf1451086fd026ffb628a096a24b3f3dc7224c1322d23e81e6cd5", size = 54552, upload-time = "2023-01-03T09:55:57.497Z" },
+    { url = "https://files.pythonhosted.org/packages/65/6c/eea1d03e475217aea95b1d52aee09c97575d05bbc592c39c085b71dab89f/pyarrow_stubs-20.0.0.20260819-py3-none-any.whl", hash = "sha256:297e60b6e5314739c082b4757d090d8be6047465510eb0684ca954ef7ea58be3", size = 235949, upload-time = "2026-08-19T05:52:54.711Z" },
 ]
 
 [[package]]
@@ -2494,50 +2498,41 @@ wheels = [
 
 [[package]]
 name = "types-openpyxl"
-version = "3.0.4.5"
+version = "3.1.5.20260827"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ab/a6/1008a2fbf00a794c32c2e8b31650d6d561f3260a9ad303fffc72c29aa1f7/types-openpyxl-3.0.4.5.tar.gz", hash = "sha256:af09775cd139b7097e27b83566f471fea271ce9a0f45930b266147de5c47a386", size = 52035, upload-time = "2023-01-18T15:17:47.643Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8e/6b/ce650ce7754a2bce3ca1dfbce7f7441df092e2dc6047d00e04f840c2b56e/types_openpyxl-3.1.5.20260827.tar.gz", hash = "sha256:be8b605fb99cfd7d5f5576d4a508e8ec44be2dd15b85157c559080de6384be34", size = 101985, upload-time = "2026-08-27T12:06:18.927Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/43/ef/5d80d15f30677eff0d5e40df3c33295e1b41887ab13855b62b645fb75bc7/types_openpyxl-3.0.4.5-py3-none-any.whl", hash = "sha256:0a7872680dd1ad157717b42c472731127733f9e9963e5a6a9d601a01980e3d0d", size = 102296, upload-time = "2023-01-18T15:17:45.848Z" },
+    { url = "https://files.pythonhosted.org/packages/12/23/9708c0895d237205ab2b31c06f97d72294f69789ff9923ff7f4aa2126d6b/types_openpyxl-3.1.5.20260827-py3-none-any.whl", hash = "sha256:94e176d871d12e3cbc34f8fb03dc14db2a4245a6690791daf16fc7b08fd67869", size = 165885, upload-time = "2026-08-27T12:06:17.88Z" },
 ]
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.8.19.20240106"
+version = "2.9.0.20260807"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9b/47/2a9e51ae8cf48cea0089ff6d9d13fff60701f8c9bf72adaee0c4e5dc88f9/types-python-dateutil-2.8.19.20240106.tar.gz", hash = "sha256:1f8db221c3b98e6ca02ea83a58371b22c374f42ae5bbdf186db9c9a76581459f", size = 8960, upload-time = "2024-01-06T02:22:04.713Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c8/4e/b3fa538f9cb38dfece0d6ccf6d3d0d925bdedb144fb9c8129dfc007cd003/types_python_dateutil-2.9.0.20260807.tar.gz", hash = "sha256:e0b8a90d464c8684c66b7b8e4556d9074afdddcc56ca45323f0987134f9e7034", size = 17618, upload-time = "2026-08-07T04:17:13.491Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/28/50/8ed67814241e2684369f4b8b881c7d31a0816e76c8690ea8518017a35b7e/types_python_dateutil-2.8.19.20240106-py3-none-any.whl", hash = "sha256:efbbdc54590d0f16152fa103c9879c7d4a00e82078f6e2cf01769042165acaa2", size = 9673, upload-time = "2024-01-06T02:22:03.336Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/5e/3715867caea2f4cea56ccb04c851cde23ed063449c3b004c7a047f20dd48/types_python_dateutil-2.9.0.20260807-py3-none-any.whl", hash = "sha256:54aa3707350ed7a9cc0776fd2f6739679d6967d11b40150985e81edcb86df4db", size = 18486, upload-time = "2026-08-07T04:17:12.504Z" },
 ]
 
 [[package]]
 name = "types-pytz"
-version = "2024.1.0.20240203"
+version = "2026.3.1.20260727"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d1/80/0a2ef56b9977898789b7a0ab8d8ec32e19159e8c5d5aef203fccf4bbc4ed/types-pytz-2024.1.0.20240203.tar.gz", hash = "sha256:c93751ee20dfc6e054a0148f8f5227b9a00b79c90a4d3c9f464711a73179c89e", size = 5205, upload-time = "2024-02-03T02:10:34.913Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b1/cf/eae96172a036b942e0ad0ec49512108b4ef4b97cd6c2aed5677540a597e7/types_pytz-2026.3.1.20260727.tar.gz", hash = "sha256:4364075b6867dd15b210bb8c1d29727d609917129b45600defe1d4b3eda5ecb9", size = 10914, upload-time = "2026-07-27T05:36:32.389Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fc/6c/42a83a27bef09295b8d26866d690fd50d53b7fa27a961779daf0bb8f3b0c/types_pytz-2024.1.0.20240203-py3-none-any.whl", hash = "sha256:9679eef0365db3af91ef7722c199dbb75ee5c1b67e3c4dd7bfbeb1b8a71c21a3", size = 5072, upload-time = "2024-02-03T02:10:33.33Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/24/a654176875944981c75516857cd8750600eeb9ff7fc07a2b82573619a57c/types_pytz-2026.3.1.20260727-py3-none-any.whl", hash = "sha256:42ac44e83645bfceb46597342c8fb8ec028a1407e2feae9c5c539986eab6b57a", size = 10132, upload-time = "2026-07-27T05:36:31.52Z" },
 ]
 
 [[package]]
 name = "types-requests"
-version = "2.28.11.8"
+version = "2.33.0.20260906"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "types-urllib3" },
+    { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e0/7d/09d353a2743d72fd287eee657144a9ac80b84e0f99c0dca2b6fc2c454e89/types-requests-2.28.11.8.tar.gz", hash = "sha256:e67424525f84adfbeab7268a159d3c633862dafae15c5b19547ce1b55954f0a3", size = 14383, upload-time = "2023-01-18T09:18:50.204Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c0/18/4c2c0290953f8b3b9612adfcb07b57f144ade3ad32a76764fca42b77c5f3/types_requests-2.33.0.20260906.tar.gz", hash = "sha256:76ab8a0fb736744a0c3deee7aa57b2927e301f078d9e61f5391b3e92002416b9", size = 25263, upload-time = "2026-09-06T06:35:47.707Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1a/63/e20d61190eaa29a7d62170c74400bb0a4208e6ce2c98c3820bb316880a89/types_requests-2.28.11.8-py3-none-any.whl", hash = "sha256:61960554baca0008ae7e2db2bd3b322ca9a144d3e80ce270f5fb640817e40994", size = 14302, upload-time = "2023-01-18T09:18:48.627Z" },
-]
-
-[[package]]
-name = "types-urllib3"
-version = "1.26.25.14"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/73/de/b9d7a68ad39092368fb21dd6194b362b98a1daeea5dcfef5e1adb5031c7e/types-urllib3-1.26.25.14.tar.gz", hash = "sha256:229b7f577c951b8c1b92c1bc2b2fdb0b49847bd2af6d1cc2a2e3dd340f3bda8f", size = 11239, upload-time = "2023-07-20T15:19:31.307Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/7b/3fc711b2efea5e85a7a0bbfe269ea944aa767bbba5ec52f9ee45d362ccf3/types_urllib3-1.26.25.14-py3-none-any.whl", hash = "sha256:9683bbb7fb72e32bfe9d2be6e04875fbe1b3eeec3cbb4ea231435aa7fd6b4f0e", size = 15377, upload-time = "2023-07-20T15:19:30.379Z" },
+    { url = "https://files.pythonhosted.org/packages/60/4c/51ec821d22a45b4162fa3f3e9e94ea4c0f8c49e82363b10955baa5438391/types_requests-2.33.0.20260906-py3-none-any.whl", hash = "sha256:9f53622652bd921ead7a54d665be1b8d518165c8b51cc9d68d944cd6b6bfa8fb", size = 21461, upload-time = "2026-09-06T06:35:45.856Z" },
 ]
 
 [[package]]
@@ -2732,7 +2727,7 @@ dev = [
     { name = "numpy", specifier = "==2.0.0" },
     { name = "pre-commit", specifier = ">=3.7.1" },
     { name = "psycopg2", specifier = ">=2.8.4" },
-    { name = "pyarrow-stubs", specifier = "==10.0.1.6" },
+    { name = "pyarrow-stubs", specifier = "==20.0.0.20260819" },
     { name = "pytest", specifier = "==9.0.3" },
     { name = "pytest-benchmark", specifier = "==5.0.1" },
     { name = "pytest-django", specifier = "==4.8.0" },
@@ -2740,10 +2735,10 @@ dev = [
     { name = "ruff", specifier = "==0.4.9" },
     { name = "time-machine", specifier = "==2.14.1" },
     { name = "twine", specifier = "==4.0.2" },
-    { name = "types-openpyxl", specifier = "==3.0.4.5" },
-    { name = "types-python-dateutil", specifier = "==2.8.19.20240106" },
-    { name = "types-pytz", specifier = "==2024.1.0.20240203" },
-    { name = "types-requests", specifier = "==2.28.11.8" },
+    { name = "types-openpyxl", specifier = "==3.1.5.20260827" },
+    { name = "types-python-dateutil", specifier = "==2.9.0.20260807" },
+    { name = "types-pytz", specifier = "==2026.3.1.20260727" },
+    { name = "types-requests", specifier = "==2.33.0.20260906" },
     { name = "wheel", specifier = "==0.38.4" },
 ]
 docs = [
