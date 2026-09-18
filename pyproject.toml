@@ -90,10 +90,6 @@ namespaces = false
 [tool.setuptools.package-data]
 "xocto" = ["py.typed"]
 
-
-# Mypy
-# ----
-
 [tool.mypy]
 # Specify which files to check.
 files = [
@@ -157,10 +153,6 @@ module = [
 ]
 ignore_missing_imports = true
 
-
-# Ruff
-# ----
-
 [tool.ruff.lint]
 select = [
     "E",  # pycodestyle
@@ -191,10 +183,6 @@ section-order = [
     "xocto",
     "tests",
 ]
-
-
-# Pytest
-# ------
 
 [tool.pytest]
 # Convert some warning types into errors but ignore some others that we
