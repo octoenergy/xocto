@@ -19,8 +19,8 @@ benchmark:
 	pytest  --benchmark-only --benchmark-autosave --benchmark-compare --benchmark-group-by=func --benchmark-columns mean,rounds,iterations
 
 mypy:
-	mypy --version
-	mypy
+	uv run mypy --version
+	uv run mypy
 
 # Local helpers
 
