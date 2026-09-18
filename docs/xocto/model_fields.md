@@ -32,7 +32,6 @@ They accept `xocto.ranges` as arguments, but don't support passing in a tuple of
 > boundary will cause the ranges to have a period of 0hrs.
 
 ```python
-
 assert SalesPeriod.objects.filter(
     period__contains=ranges.FiniteDateRange(
         start=datetime.date(2020, 1, 10),
@@ -48,8 +47,9 @@ assert SalesPeriod.objects.filter(
 ).exists()
 
 # ERROR! This will raise a TypeError
-SalesPeriod.objects.filter(period__overlaps=(datetime.date(2020, 1, 10), datetime.date(2020, 1, 20)))
-
+SalesPeriod.objects.filter(
+    period__overlaps=(datetime.date(2020, 1, 10), datetime.date(2020, 1, 20))
+)
 ```
 
 #### FiniteDateRangeField
