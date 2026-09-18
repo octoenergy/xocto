@@ -24,7 +24,7 @@ repos:
         entry: uv run mypy
         language: system
         types: [python]
-        files: ^pyproject\.toml$
+        files: ^(pyproject\.toml|uv\.lock)$
         require_serial: true
         pass_filenames: false
 
