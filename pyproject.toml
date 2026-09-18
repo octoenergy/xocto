@@ -100,7 +100,6 @@ exclude = [
   '^dist/',
   '^docs/',
 ]
-show_error_codes = true
 strict = true
 disallow_subclassing_any = false
 warn_return_any = false
