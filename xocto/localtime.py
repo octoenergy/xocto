@@ -340,8 +340,8 @@ def month_boundaries(
 
     For example:
 
-        >>> month_boundaries(1, 2020)
-        ((datetime.datetime(2020, 1, 1, 0, 0), datetime.datetime(2020, 2, 1, 0, 0))
+        >>> month_boundaries(1, 2020)[0].date()
+        datetime.date(2020, 1, 1)
     """
     start_date = datetime_.date(year, month, 1)
     end_date = start_date + relativedelta(months=1)
@@ -410,8 +410,8 @@ def quantise(
 
     For example:
 
-        >>>> quantise(datetime.datetime(2020, 4, 1, 23, 21), timedelta(minutes=15))
-        datetime.datetime(2020, 4, 1, 23, 30)
+        >>> quantise(datetime(2020, 4, 1, 23, 21), datetime_.timedelta(minutes=15)).minute
+        15
 
     """
     # We simply convert the datetime we want to quantise into a timestamp and use

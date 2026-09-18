@@ -39,7 +39,7 @@ def download_file(
 ## API Reference
 
 ```{eval-rst}
-.. module:: xocto.types
+.. module:: xocto.storage.storage
 
 .. automodule:: xocto.storage.storage
    :members:
