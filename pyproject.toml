@@ -60,12 +60,12 @@ dev = [
   "pytest-mock==3.15.1",
   "ruff==0.4.9",
   "time-machine==3.5.1",
-  "twine==4.0.2",
+  "twine==7.0.0",
   "types-openpyxl==3.1.5.20260827",
   "types-python-dateutil==2.9.0.20260807",
   "types-pytz==2026.3.1.20260727",
   "types-requests==2.33.0.20260906",
-  "wheel==0.38.4",
+  "wheel==0.48.0",
 ]
 docs = [
   "myst-parser==2.0.0",
