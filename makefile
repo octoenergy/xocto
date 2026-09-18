@@ -13,10 +13,10 @@ lint_check:
 	ruff check .
 
 test:
-	py.test  --benchmark-disable
+	pytest  --benchmark-disable
 
 benchmark:
-	py.test  --benchmark-only --benchmark-autosave --benchmark-compare --benchmark-group-by=func --benchmark-columns mean,rounds,iterations
+	pytest  --benchmark-only --benchmark-autosave --benchmark-compare --benchmark-group-by=func --benchmark-columns mean,rounds,iterations
 
 mypy:
 	mypy --version
