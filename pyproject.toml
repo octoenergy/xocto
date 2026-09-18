@@ -201,7 +201,7 @@ section-order = [
 # Pytest
 # ------
 
-[tool.pytest.ini_options]
+[tool.pytest]
 # Convert some warning types into errors but ignore some others that we
 # can't/won't fix right now.
 #
@@ -233,17 +233,21 @@ python_files = ["test_*.py", "benchmark_*.py"]
 python_functions = ["test_*", "benchmark_*"]
 python_classes = ["Test*", "Benchmark*"]
 
-# Default options when pytest is run:
-#
-#   --verbose      -> Show names of tests being run.
-#   --tb=short     -> Use short tracebacks.
-#                     https://docs.pytest.org/en/stable/usage.html#modifying-python-traceback-printing
-#   --nomigrations -> Disable Django's migrations and create the database by inspecting models instead.
-#                     https://pytest-django.readthedocs.io/en/latest/database.html#nomigrations-disable-django-migrations
-#   --reuse-db     -> Don't remove test database after each test run so it can be re-used next time.
-#                     https://pytest-django.readthedocs.io/en/latest/database.html#reuse-db-reuse-the-testing-database-between-test-runs
-#   --color=auto   -> Detect whether to print colored output.
-#   --capture=fd   -> Capture all output written to the STDOUT and STDERR file descriptors.
-#                     https://docs.pytest.org/en/stable/capture.html
-#
-addopts = "--tb=short --verbose --nomigrations --reuse-db --color=auto --capture=fd"
+addopts = [
+    # Use short tracebacks.
+    # https://docs.pytest.org/en/stable/usage.html#modifying-python-traceback-printing
+    "--tb=short",
+    # Show names of tests being run.
+    "--verbose",
+    # Disable Django's migrations and create the database by inspecting models instead.
+    # https://pytest-django.readthedocs.io/en/latest/database.html#nomigrations-disable-django-migrations
+    "--nomigrations",
+    # Don't remove test database after each test run so it can be re-used next time.
+    # https://pytest-django.readthedocs.io/en/latest/database.html#reuse-db-reuse-the-testing-database-between-test-runs
+    "--reuse-db",
+    # Detect whether to print colored output.
+    "--color=auto",
+    # Capture all output written to the STDOUT and STDERR file descriptors.
+    # https://docs.pytest.org/en/stable/capture.html
+    "--capture=fd",
+]
