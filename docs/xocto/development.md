@@ -4,30 +4,30 @@ This page details how to develop `xocto`.
 
 ## Installation of development environment
 
-Create and activate a Python 3.10 virtualenv then run:
+Install [uv](https://docs.astral.sh/uv/), then run:
 
 ```sh
-make install
+uv sync --all-groups --python 3.10
 ```
 
-to install the package including development and testing dependencies.
+This installs the package including development and testing dependencies into
+uv's managed virtual environment.
 
 ## Running tests
 
 Run the test suite with:
 
 ```sh
-make test
+uv run pytest --benchmark-disable
 ```
 
 ## Running static analysis
 
-Use these make commands:
+Pre-commit runs static checks automatically when committing. To run all checks
+manually, use:
 
 ```sh
-make format_check  # Check formatting
-make lint_check    # Check linting
-make mypy          # Check Python type annotations
+uv run pre-commit run --all-files
 ```
 
 ## Coding conventions
@@ -78,8 +78,9 @@ Commit these changes in a single commit with subject matching
 After merging the pull request, push an annotated tag to Github with:
 
 ```sh
-make
-make tag
+version="v$(uv run python -c 'import importlib.metadata; print(importlib.metadata.version("xocto"))')"
+git tag -a "$version" -m "Creating version $version"
+git push origin "$version"
 ```
 
 > **_NOTE:_** Ensure tags are created on `main` and include all intended changes
