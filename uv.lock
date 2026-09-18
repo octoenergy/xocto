@@ -3195,7 +3195,7 @@ dependencies = [
     { name = "python-magic" },
     { name = "pytz" },
     { name = "structlog" },
-    { name = "typing-extensions" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
     { name = "uvicorn" },
     { name = "xlrd" },
 ]
@@ -3245,7 +3245,7 @@ requires-dist = [
     { name = "python-magic", specifier = "~=0.4" },
     { name = "pytz" },
     { name = "structlog", specifier = ">=20.2.0,<27" },
-    { name = "typing-extensions", specifier = "~=4.12" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13'", specifier = "~=4.12" },
     { name = "uvicorn", specifier = "~=0.38" },
     { name = "xlrd", specifier = "~=2.0" },
 ]

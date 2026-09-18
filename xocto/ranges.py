@@ -5,6 +5,7 @@ import enum
 import functools
 import itertools
 import operator
+import sys
 from typing import (
     Any,
     Callable,
@@ -21,9 +22,14 @@ from typing import (
 )
 
 from dateutil import relativedelta
-from typing_extensions import deprecated
 
 from xocto.types import generic
+
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 
 
 class RangeBoundaries(enum.Enum):
