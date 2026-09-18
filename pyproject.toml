@@ -38,7 +38,7 @@ dependencies = [
   "python-magic~=0.4",
   "pytz",
   "structlog>=20.2.0,<27",
-  "typing-extensions~=4.12",
+  "typing-extensions~=4.12; python_version < '3.13'",
   # `uvicorn` is required for `compat-v2` of `pact-python`.
   "uvicorn~=0.38",
   "xlrd~=2.0",
