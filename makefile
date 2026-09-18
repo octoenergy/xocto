@@ -7,13 +7,13 @@ install:
 ci: format_check lint_check test mypy
 
 format_check:
-	ruff format --check .
+	uv run ruff format --check .
 
 lint_check:
-	ruff check .
+	uv run ruff check .
 
 test:
-	pytest  --benchmark-disable
+	uv run pytest --benchmark-disable
 
 benchmark:
 	pytest  --benchmark-only --benchmark-autosave --benchmark-compare --benchmark-group-by=func --benchmark-columns mean,rounds,iterations
