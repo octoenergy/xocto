@@ -102,9 +102,6 @@ exclude = [
   '^docs/',
 ]
 
-# Output.
-show_error_codes = true
-
 # Strict mode; enables the following flags:
 #   --check-untyped-defs
 #   --disallow-any-generics,
