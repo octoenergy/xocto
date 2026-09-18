@@ -2,7 +2,9 @@ name: Collect benchmarks
 
 on:
   workflow_run:
-    workflows: [ "Run benchmarks main" ]
+    workflows: [ "Run benchmarks" ]
+    branches:
+      - main
     types:
       - completed
 
@@ -14,6 +16,10 @@ concurrency:
 jobs:
   collect_benchmarks:
     name: Collect benchmarks
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout benchmarks-data branch
@@ -36,6 +42,11 @@ jobs:
           git config user.email github-actions@github.com
 
           git add --all
+          if git diff --cached --quiet; then
+            echo "No benchmarks to collect"
+            exit 0
+          fi
+
           git commit -m "Collect benchmarks"
 
           # Retry below incase another workflow pushed to the benchmarks-data branch since we checked it out.
