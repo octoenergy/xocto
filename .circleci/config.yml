@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  python: circleci/python@4.0.0
+
 jobs:
   build:
     docker:
@@ -11,23 +14,9 @@ jobs:
     steps:
       - checkout:
           method: full
-      - run:
-          name: Create virtualenv
-          command: |
-            python -m venv /home/circleci/venv/
-            echo "source /home/circleci/venv/bin/activate" >> $BASH_ENV
-      - restore_cache:
-          keys:
-            - &cache-key python-3.10-packages-v1-{{ checksum "pyproject.toml" }}
-            - &cache-key-prefix python-3.10-packages-v1-
-      - run:
-          name: Install dev dependencies
-          command: make install
-      - save_cache:
-          key: *cache-key
-          paths:
-            - "/home/circleci/venv/"
-            - "/home/circleci/.cache/pip"
+      - python/install-packages:
+          pkg-manager: uv
+          args: --all-groups
       - run:
           name: Check uv lock file
           command: uv lock --check
