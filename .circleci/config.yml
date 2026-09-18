@@ -4,9 +4,12 @@ orbs:
   python: circleci/python@4.0.0
 
 jobs:
-  build:
+  test:
+    parameters:
+      python_version:
+        type: string
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:<< parameters.python_version >>
       - image: cimg/postgres:15.19
         environment:
           POSTGRES_USER: postgres
@@ -17,17 +20,6 @@ jobs:
       - python/install-packages:
           pkg-manager: uv
           args: --all-groups
-      - run:
-          name: Check uv lock file
-          command: uv lock --check
-      - run:
-          name: Check formatting
-          command: uv run ruff format --check .
-          when: always
-      - run:
-          name: Check linting
-          command: uv run ruff check .
-          when: always
       - run:
           name: install dockerize
           command: |
@@ -49,3 +41,33 @@ jobs:
             uv run mypy --version
             uv run mypy
           when: always
+
+  lint:
+    docker:
+      - image: cimg/python:3.14
+    steps:
+      - checkout:
+          method: full
+      - python/install-packages:
+          pkg-manager: uv
+          args: --all-groups
+      - run:
+          name: Check uv lock file
+          command: uv lock --check
+      - run:
+          name: Check formatting
+          command: uv run ruff format --check
+          when: always
+      - run:
+          name: Check linting
+          command: uv run ruff check
+          when: always
+
+workflows:
+  test:
+    jobs:
+      - lint
+      - test:
+          matrix:
+            parameters:
+              python_version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
