@@ -152,15 +152,10 @@ module = [
   "boto3.*",
   "botocore.*",
   "django.*",
-  # TODO: Remove after https://github.com/duckdb/duckdb-python/issues/57 is resolved
-  "duckdb.*",
   "moto.*",
-  "pact.*",
   "pandas.*",
   "pytest_benchmark.fixture",
-  "setuptools.*",
   "xlrd.*",
-  "zoneinfo.*",
 ]
 ignore_missing_imports = true
 
