@@ -33,7 +33,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
-        run: make install
+        run: uv sync --all-groups
 
       - name: Run benchmarks
         run: uv run python -m pytest --benchmark-only --benchmark-json benchmarks.json

@@ -22,11 +22,11 @@ jobs:
           command: uv lock --check
       - run:
           name: Check formatting
-          command: make format_check
+          command: uv run ruff format --check .
           when: always
       - run:
           name: Check linting
-          command: make lint_check
+          command: uv run ruff check .
           when: always
       - run:
           name: install dockerize
@@ -41,9 +41,11 @@ jobs:
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           name: Run tests
-          command: make test
+          command: uv run pytest --benchmark-disable
           when: always
       - run:
           name: Check Python type annotations
-          command: make mypy
+          command: |
+            uv run mypy --version
+            uv run mypy
           when: always
