@@ -24,8 +24,8 @@ repos:
         entry: uv run mypy
         language: system
         types: [python]
-        files: ^xocto/.*\.py$
         require_serial: true
+        pass_filenames: false
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
