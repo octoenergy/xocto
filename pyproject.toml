@@ -26,6 +26,8 @@ classifiers = [
 ]
 license = "MIT"
 dependencies = [
+  "boto3==1.*",
+  "botocore==1.*",
   "django>=5.2,<7",
   "duckdb==1.*",
   # `fastapi` is required for `compat-v2` of `pact-python`.
@@ -46,9 +48,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "boto3==1.43.95",
   "boto3-stubs[boto3,s3]==1.43.95",
-  "botocore==1.43.95",
   "hypothesis==6.168.0",
   "moto[s3]==5.2.3",
   "mypy==2.3.1",

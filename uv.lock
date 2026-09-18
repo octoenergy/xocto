@@ -3002,6 +3002,8 @@ name = "xocto"
 version = "10.0.0"
 source = { editable = "." }
 dependencies = [
+    { name = "boto3" },
+    { name = "botocore" },
     { name = "django", version = "5.2.17", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "duckdb" },
@@ -3021,9 +3023,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "boto3" },
     { name = "boto3-stubs", extra = ["boto3", "s3"] },
-    { name = "botocore" },
     { name = "hypothesis" },
     { name = "moto", extra = ["s3"] },
     { name = "mypy" },
@@ -3052,6 +3052,8 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "boto3", specifier = "==1.*" },
+    { name = "botocore", specifier = "==1.*" },
     { name = "django", specifier = ">=5.2,<7" },
     { name = "duckdb", specifier = "==1.*" },
     { name = "fastapi", specifier = "~=0.136" },
@@ -3070,9 +3072,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "boto3", specifier = "==1.43.95" },
     { name = "boto3-stubs", extras = ["boto3", "s3"], specifier = "==1.43.95" },
-    { name = "botocore", specifier = "==1.43.95" },
     { name = "hypothesis", specifier = "==6.168.0" },
     { name = "moto", extras = ["s3"], specifier = "==5.2.3" },
     { name = "mypy", specifier = "==2.3.1" },
