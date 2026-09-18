@@ -15,9 +15,9 @@ import urllib.parse
 import uuid
 from collections import defaultdict
 from typing import (
+    IO,
     TYPE_CHECKING,
     Any,
-    AnyStr,
     BinaryIO,
     Iterable,
     Iterator,
@@ -30,6 +30,8 @@ from typing import (
 import boto3
 import botocore.config
 import magic
+import mypy_boto3_s3.literals as s3_literals
+import mypy_boto3_s3.type_defs as s3_types
 from botocore import exceptions as botocore_exceptions
 from botocore.response import StreamingBody
 from django.conf import settings
@@ -139,18 +141,16 @@ def make_boto_config(
     By default that class will use `make_boto_config_from_django_settings` which
     will populate the inputs to this function using django settings
     """
-    config: dict[str, object] = {}
-
-    if connect_timeout is not None:
-        config["connect_timeout"] = connect_timeout
-
-    if read_timeout is not None:
-        config["read_timeout"] = read_timeout
-
-    if total_max_attempts is not None:
-        config["retries"] = {"total_max_attempts": total_max_attempts}
-
-    return botocore.config.Config(**config)
+    retries = (
+        {"total_max_attempts": total_max_attempts}
+        if total_max_attempts is not None
+        else None
+    )
+    return botocore.config.Config(
+        connect_timeout=connect_timeout,
+        read_timeout=read_timeout,
+        retries=cast(Any, retries),
+    )
 
 
 def make_boto_config_from_django_settings(
@@ -249,7 +249,7 @@ class BaseS3FileStore(abc.ABC):
         self,
         namespace: str,
         filename: str,
-        contents: AnyStr | ReadableBinaryFile,
+        contents: s3_types.BlobTypeDef,
         content_type: str = "",
         overwrite: bool = False,
         metadata: dict[str, str] | None = None,
@@ -257,13 +257,12 @@ class BaseS3FileStore(abc.ABC):
         """
         Store a file in S3 given its filename and contents. Contents should be UTF-8 encoded.
         """
-        raise NotImplementedError()
 
     @abc.abstractmethod
     def store_versioned_file(
         self,
         key_path: str,
-        contents: AnyStr | io.BytesIO,
+        contents: s3_types.BlobTypeDef,
         content_type: str = "",
     ) -> tuple[str, str, str]:
         """
@@ -274,7 +273,6 @@ class BaseS3FileStore(abc.ABC):
 
         :raises BucketNotVersioned: if the bucket does not have versioning enabled.
         """
-        raise NotImplementedError()
 
     @abc.abstractmethod
     def store_filepath(
@@ -283,8 +281,7 @@ class BaseS3FileStore(abc.ABC):
         filepath: str,
         overwrite: bool = False,
         dest_filepath: str = "",
-    ) -> tuple[str, str]:
-        raise NotImplementedError()
+    ) -> tuple[str, str]: ...
 
     def make_key_path(self, *, namespace: str = "", filepath: str) -> str:
         """
@@ -478,7 +475,9 @@ class S3FileStore(BaseS3FileStore):
     create a subclass that overrides `_get_boto_config`.
     """
 
-    ACL_BUCKET_OWNER_FULL_CONTROL = "bucket-owner-full-control"
+    ACL_BUCKET_OWNER_FULL_CONTROL: s3_literals.ObjectCannedACLType = (
+        "bucket-owner-full-control"
+    )
 
     def __init__(
         self,
@@ -503,7 +502,7 @@ class S3FileStore(BaseS3FileStore):
         self,
         namespace: str,
         filename: str,
-        contents: AnyStr | ReadableBinaryFile,
+        contents: s3_types.BlobTypeDef,
         content_type: str = "",
         overwrite: bool = False,
         metadata: dict[str, str] | None = None,
@@ -559,27 +558,26 @@ class S3FileStore(BaseS3FileStore):
     def store_versioned_file(
         self,
         key_path: str,
-        contents: AnyStr | io.BytesIO,
+        contents: s3_types.BlobTypeDef,
         content_type: str = "",
     ) -> tuple[str, str, str]:
         if not self._bucket_is_versioned():
             raise BucketNotVersioned()
 
-        file_obj = _to_stream(contents=contents)
+        file_obj: s3_types.BlobTypeDef = _to_stream(contents=contents)
 
-        extra_args: dict[str, str] = {}
+        put_object_args: s3_types.PutObjectRequestTypeDef = {
+            "Bucket": self.bucket_name,
+            "Key": key_path,
+            "Body": file_obj,
+        }
         if content_type:
-            extra_args["ContentType"] = content_type
+            put_object_args["ContentType"] = content_type
         if policy := self._get_policy():
-            extra_args["ACL"] = policy
+            put_object_args["ACL"] = policy
 
         boto_client = self._get_boto_client()
-        boto_response = boto_client.put_object(
-            Body=file_obj,
-            Bucket=self.bucket_name,
-            Key=key_path,
-            **extra_args,  # type: ignore[arg-type]
-        )
+        boto_response = boto_client.put_object(**put_object_args)
         version_id = boto_response["VersionId"]
 
         return self.bucket_name, key_path, version_id
@@ -690,14 +688,20 @@ class S3FileStore(BaseS3FileStore):
                 "input_serializer must be either CSVInputSerializer or ParquetInputSerializer"
             )
 
-        select_object_content_parameters = dict(
-            Bucket=self.bucket_name,
-            Key=key_path,
-            ExpressionType="SQL",
-            Expression=raw_sql,
-            InputSerialization=serialization["input_serialization"],
-            OutputSerialization=serialization["output_serialization"],
-        )
+        select_object_content_parameters: s3_types.SelectObjectContentRequestTypeDef = {
+            "Bucket": self.bucket_name,
+            "Key": key_path,
+            "ExpressionType": "SQL",
+            "Expression": raw_sql,
+            "InputSerialization": cast(
+                s3_types.InputSerializationTypeDef,
+                serialization["input_serialization"],
+            ),
+            "OutputSerialization": cast(
+                s3_types.OutputSerializationTypeDef,
+                serialization["output_serialization"],
+            ),
+        }
 
         if scan_range:
             yield from self._select_object_content_using_scan_range(
@@ -863,7 +867,7 @@ class S3FileStore(BaseS3FileStore):
 
     # Private
 
-    def _get_policy(self) -> str | None:
+    def _get_policy(self) -> s3_literals.ObjectCannedACLType | None:
         if self.set_acl_bucket_owner:
             # If the storage class is configured to, we will set the ACL of keys that we
             # set content on to have the policy "bucket-owner-full-control".
@@ -933,7 +937,7 @@ class S3FileStore(BaseS3FileStore):
         self,
         *,
         boto_client: S3Client,
-        select_object_content_parameters: dict[str, Any],
+        select_object_content_parameters: s3_types.SelectObjectContentRequestTypeDef,
     ) -> Iterator[str]:
         # Error codes reference: https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#SelectObjectContentErrorCodeList
         invalid_response_statuses = [400, 401, 403, 500]
@@ -963,7 +967,7 @@ class S3FileStore(BaseS3FileStore):
         self,
         *,
         boto_client: S3Client,
-        select_object_content_parameters: dict[str, Any],
+        select_object_content_parameters: s3_types.SelectObjectContentRequestTypeDef,
         key_path: str,
         scan_range: s3_select.ScanRange,
         chunk_size: int | None = None,
@@ -982,14 +986,14 @@ class S3FileStore(BaseS3FileStore):
             end_range = scan_range.End if scan_range.End else min(chunk_size, file_size)
 
             while start_range < file_size:
+                scan_range_params: s3_types.ScanRangeTypeDef = {
+                    "Start": start_range,
+                    "End": end_range,
+                }
+                select_object_content_parameters["ScanRange"] = scan_range_params
                 yield from self._select_object_content(
                     boto_client=boto_client,
-                    select_object_content_parameters=dict(
-                        **select_object_content_parameters,
-                        ScanRange=dataclasses.asdict(
-                            s3_select.ScanRange(Start=start_range, End=end_range)
-                        ),
-                    ),
+                    select_object_content_parameters=select_object_content_parameters,
                 )
                 start_range = end_range
                 end_range = end_range + min(chunk_size, file_size - end_range)
@@ -1005,9 +1009,7 @@ class S3FileStore(BaseS3FileStore):
                 boto_client=boto_client,
                 select_object_content_parameters=dict(
                     **select_object_content_parameters,
-                    ScanRange=dataclasses.asdict(
-                        s3_select.ScanRange(Start=start_range, End=end_range)
-                    ),
+                    ScanRange={"Start": start_range, "End": end_range},
                 ),
             )
 
@@ -1155,7 +1157,7 @@ class LocalFileStore(BaseS3FileStore):
         self,
         namespace: str,
         filename: str,
-        contents: AnyStr | ReadableBinaryFile,
+        contents: s3_types.BlobTypeDef,
         content_type: str = "",
         overwrite: bool = False,
         metadata: dict[str, str] | None = None,
@@ -1175,7 +1177,7 @@ class LocalFileStore(BaseS3FileStore):
     def store_versioned_file(
         self,
         key_path: str,
-        contents: AnyStr | io.BytesIO,
+        contents: s3_types.BlobTypeDef,
         content_type: str = "",
     ) -> tuple[str, str, str]:
         version = str(uuid.uuid4())
@@ -1646,7 +1648,7 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
         self,
         namespace: str,
         filename: str,
-        contents: AnyStr | ReadableBinaryFile,
+        contents: s3_types.BlobTypeDef,
         content_type: str = "",
         overwrite: bool = False,
         metadata: dict[str, str] | None = None,
@@ -1659,7 +1661,7 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
     def store_versioned_file(
         self,
         key_path: str,
-        contents: AnyStr | io.BytesIO,
+        contents: s3_types.BlobTypeDef,
         content_type: str = "",
     ) -> tuple[str, str, str]:
         version = str(uuid.uuid4())
@@ -1928,23 +1930,24 @@ def _create_parent_directories(filepath: str) -> None:
     os.makedirs(os.path.dirname(filepath), mode=0o755, exist_ok=True)
 
 
-def _to_stream(*, contents: AnyStr | ReadableBinaryFile) -> ReadableBinaryFile:
+def _to_stream(*, contents: s3_types.BlobTypeDef) -> IO[Any] | StreamingBody:
     """
     Return the given object expressed as an IO stream object.
     """
     if isinstance(contents, str):
         return io.BytesIO(contents.encode())
-    elif isinstance(contents, bytes):
+    if isinstance(contents, bytes):
         return io.BytesIO(contents)
     return contents
 
 
-def _to_bytes(*, contents: AnyStr | ReadableBinaryFile) -> bytes:
+def _to_bytes(*, contents: s3_types.BlobTypeDef) -> bytes:
     """
     Return the given object expressed as a bytes object.
     """
     if isinstance(contents, str):
         return contents.encode()
-    elif isinstance(contents, bytes):
+    if isinstance(contents, bytes):
         return contents
-    return contents.read()
+    data = contents.read()
+    return data if isinstance(data, bytes) else data.encode()

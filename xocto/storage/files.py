@@ -10,10 +10,11 @@ import hashlib
 import io
 import os
 import tempfile
-from typing import IO, Any, AnyStr, Callable
+from typing import IO, Any, AnyStr, Callable, Literal
 
 
 XLRD_FLOAT_TYPE = 2
+CsvQuoting = Literal[0, 1, 2, 3]
 
 
 def size(file: IO[AnyStr]) -> int:
@@ -50,7 +51,7 @@ def convert_xlsx_to_csv(
     csv_filepath: str | None = None,
     encoding: str | None = None,
     errors: str | None = None,
-    quoting: int | None = csv.QUOTE_ALL,
+    quoting: CsvQuoting | None = csv.QUOTE_ALL,
     delimiter: str | None = ",",
 ) -> IO[str]:
     """
@@ -71,6 +72,7 @@ def convert_xlsx_to_csv(
 
     workbook = openpyxl.load_workbook(xlsx_filepath, data_only=True, read_only=True)
     sheet = workbook.active
+    assert sheet is not None
 
     csv_file, wr = _get_csv_file_and_writer(
         csv_filepath, encoding, errors, quoting, delimiter
@@ -89,7 +91,7 @@ def convert_xls_to_csv(
     csv_filepath: str | None = None,
     encoding: str | None = None,
     errors: str | None = None,
-    quoting: int | None = csv.QUOTE_ALL,
+    quoting: CsvQuoting | None = csv.QUOTE_ALL,
     delimiter: str | None = ",",
 ) -> IO[str]:
     """
@@ -134,7 +136,7 @@ def _get_csv_file_and_writer(
     csv_filepath: str | None,
     encoding: str | None,
     errors: str | None,
-    quoting: int | None = csv.QUOTE_ALL,
+    quoting: CsvQuoting | None = csv.QUOTE_ALL,
     delimiter: str | None = ",",
 ) -> tuple[IO[str], Any]:
     if quoting is None:
