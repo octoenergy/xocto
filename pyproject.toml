@@ -44,8 +44,8 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "boto3==1.43.95",
-  "botocore==1.43.95",
+  "boto3==1.43.97",
+  "botocore==1.43.97",
   "hypothesis==6.168.0",
   "moto[s3,sqs]==5.2.3",
   "mypy-boto3-s3==1.43.93",
