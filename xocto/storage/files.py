@@ -71,6 +71,7 @@ def convert_xlsx_to_csv(
 
     workbook = openpyxl.load_workbook(xlsx_filepath, data_only=True, read_only=True)
     sheet = workbook.active
+    assert sheet is not None
 
     csv_file, wr = _get_csv_file_and_writer(
         csv_filepath, encoding, errors, quoting, delimiter

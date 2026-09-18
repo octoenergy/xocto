@@ -53,7 +53,7 @@ dev = [
   "numpy==2.2.6",
   "pre-commit~=4.6",
   "psycopg2~=2.9",
-  "pyarrow-stubs==10.0.1.6",
+  "pyarrow-stubs==20.0.0.20260819",
   "pytest==9.1.1",
   "pytest-benchmark==5.3.0",
   "pytest-django==4.8.0",
@@ -61,10 +61,10 @@ dev = [
   "ruff==0.4.9",
   "time-machine==2.14.1",
   "twine==4.0.2",
-  "types-openpyxl==3.0.4.5",
-  "types-python-dateutil==2.8.19.20240106",
-  "types-pytz==2024.1.0.20240203",
-  "types-requests==2.28.11.8",
+  "types-openpyxl==3.1.5.20260827",
+  "types-python-dateutil==2.9.0.20260807",
+  "types-pytz==2026.3.1.20260727",
+  "types-requests==2.33.0.20260906",
   "wheel==0.38.4",
 ]
 docs = [
@@ -148,6 +148,7 @@ check_untyped_defs = false
 # Ignore errors from packages that don't have type annotations.
 [[tool.mypy.overrides]]
 module = [
+  "attr",
   "boto3.*",
   "botocore.*",
   "django.*",
