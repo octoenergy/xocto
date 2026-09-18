@@ -18,7 +18,7 @@ repos:
       - id: trailing-whitespace      # Trims trailing whitespace.
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v1.10.0'
+    rev: 'v2.3.1'
     hooks:
       - id: mypy
         files: ^xocto/.*\.py$
