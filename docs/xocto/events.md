@@ -12,11 +12,11 @@ from xocto import events
 events.publish(
     event="ACCOUNT.CREATED",
     params={
-        'name': 'Barry Chuckle',
-        'quote_id': 'xyz123',
+        "name": "Barry Chuckle",
+        "quote_id": "xyz123",
     },
     meta={
-        'account_id': 'A-12312345',
+        "account_id": "A-12312345",
     },
     account=account,  # optional
     request=request,  # optional
@@ -36,11 +36,11 @@ with events.Timer() as t:
 events.publish(
     event="ACCOUNT.CREATED",
     params={
-        'name': 'Barry Chuckle',
-        'quote_id': 'xyz123',
+        "name": "Barry Chuckle",
+        "quote_id": "xyz123",
     },
     meta={
-        'account_id': account.number,
+        "account_id": account.number,
         "duration_in_ms": t.duration_in_ms,
     },
     account=account,

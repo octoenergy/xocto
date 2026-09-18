@@ -552,7 +552,7 @@ class TestS3FileStore:
         last_modified = store.get_last_modified("a/b/c.pdf")
         assert get_boto_object_for_key.called
         assert last_modified == k.last_modified
-        assert type(last_modified) == datetime.datetime
+        assert type(last_modified) is datetime.datetime
 
     def test_fetch_file_contents_using_s3_select_and_expect_output_in_json_format(self):
         store = storage.S3FileStore("some-bucket")
@@ -914,7 +914,7 @@ class TestLocalFileStore:
 
             last_modified = store.get_last_modified(path)
             assert last_modified is not None
-            assert type(last_modified) == datetime.datetime
+            assert type(last_modified) is datetime.datetime
 
     @mock.patch.object(shutil, "copyfile")
     @mock.patch.object(os.path, "exists", return_value=False)
