@@ -229,19 +229,19 @@ python_classes = ["Test*", "Benchmark*"]
 
 addopts = [
     # Use short tracebacks.
-    # https://docs.pytest.org/en/stable/usage.html#modifying-python-traceback-printing
+    # https://docs.pytest.org/en/9.0.x/how-to/output.html#modifying-python-traceback-printing
     "--tb=short",
     # Show names of tests being run.
     "--verbose",
     # Disable Django's migrations and create the database by inspecting models instead.
-    # https://pytest-django.readthedocs.io/en/latest/database.html#nomigrations-disable-django-migrations
+    # https://github.com/pytest-dev/pytest-django/blob/v4.8.0/docs/database.rst#L129
     "--nomigrations",
     # Don't remove test database after each test run so it can be re-used next time.
-    # https://pytest-django.readthedocs.io/en/latest/database.html#reuse-db-reuse-the-testing-database-between-test-runs
+    # https://github.com/pytest-dev/pytest-django/blob/v4.8.0/docs/database.rst#L90
     "--reuse-db",
     # Detect whether to print colored output.
     "--color=auto",
     # Capture all output written to the STDOUT and STDERR file descriptors.
-    # https://docs.pytest.org/en/stable/capture.html
+    # https://docs.pytest.org/en/9.0.x/how-to/capture-stdout-stderr.html#default-stdout-stderr-stdin-capturing-behaviour
     "--capture=fd",
 ]
