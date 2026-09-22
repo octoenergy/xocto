@@ -1075,7 +1075,7 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
         """
         Return the number of seconds between the start and end of the range.
         """
-        return int((self.end - self.start).total_seconds())
+        return int(self.end.timestamp() - self.start.timestamp())
 
     def localize(self, tz: datetime.tzinfo) -> FiniteDatetimeRange:
         """
