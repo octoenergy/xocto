@@ -7,20 +7,20 @@ install:
 ci: format_check lint_check test mypy
 
 format_check:
-	ruff format --check .
+	uv run ruff format --check .
 
 lint_check:
-	ruff check .
+	uv run ruff check .
 
 test:
-	py.test  --benchmark-disable
+	uv run py.test  --benchmark-disable
 
 benchmark:
-	py.test  --benchmark-only --benchmark-autosave --benchmark-compare --benchmark-group-by=func --benchmark-columns mean,rounds,iterations
+	uv run py.test  --benchmark-only --benchmark-autosave --benchmark-compare --benchmark-group-by=func --benchmark-columns mean,rounds,iterations
 
 mypy:
-	mypy --version
-	mypy
+	uv run mypy --version
+	uv run mypy
 
 # Local helpers
 
@@ -30,8 +30,8 @@ clean:
 	-find . -type d -name __pycache__ -delete
 
 format:
-	ruff check --fix .
-	ruff format .
+	uv run ruff check --fix .
+	uv run ruff format .
 
 # Releases
 
