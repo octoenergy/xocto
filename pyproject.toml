@@ -21,6 +21,9 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 license = {text = "MIT"}
 dependencies = [
@@ -90,10 +93,6 @@ namespaces = false
 [tool.setuptools.package-data]
 "xocto" = ["py.typed"]
 
-
-# Mypy
-# ----
-
 [tool.mypy]
 files = ["."]
 exclude = [
@@ -102,52 +101,28 @@ exclude = [
   '^dist/',
   '^docs/',
 ]
-
-# Output.
 show_error_codes = true
-
-# Strict mode; enables the following flags:
-#   --check-untyped-defs
-#   --disallow-any-generics,
-#   --disallow-incomplete-defs
-#   --disallow-subclassing-any
-#   --disallow-untyped-calls
-#   --disallow-untyped-decorators,
-#   --disallow-untyped-defs,
-#   --no-implicit-reexport
-#   --strict-concatenate
-#   --strict-equality
-#   --warn-redundant-casts
-#   --warn-return-any
-#   --warn-unused-configs
-#   --warn-unused-ignores
 strict = true
-
-# These flags enabled by `strict` are ones we're overriding.
 disallow_subclassing_any = false
 warn_return_any = false
-
-# Enable the following optional checks.
 enable_error_code = [
   "ignore-without-code",
   "redundant-expr",
   "truthy-bool",
   "unused-awaitable",
 ]
-
-# Warnings.
 warn_unreachable = true
 
-# Don't force test functions to include types.
 [[tool.mypy.overrides]]
+# Don't force test functions to include types.
 module = [
   "tests.*",
 ]
 disallow_untyped_defs = false
 check_untyped_defs = false
 
-# Ignore errors from packages that don't have type annotations.
 [[tool.mypy.overrides]]
+# Ignore errors from packages that don't have type annotations.
 module = [
   "django.*",
   "moto.*",
@@ -155,10 +130,6 @@ module = [
   "xlrd.*",
 ]
 ignore_missing_imports = true
-
-
-# Ruff
-# ----
 
 [tool.ruff.lint]
 select = [
@@ -191,11 +162,7 @@ section-order = [
     "tests",
 ]
 
-
-# Pytest
-# ------
-
-[tool.pytest.ini_options]
+[tool.pytest]
 # Convert some warning types into errors but ignore some others that we
 # can't/won't fix right now.
 #
@@ -209,15 +176,9 @@ section-order = [
 #   Hence the rules ignoring deprecation warnings must by below the rule that converts
 #   DeprecationWarnings into errors.
 filterwarnings = [
-    "error::ResourceWarning",
-    "error::RuntimeWarning",
-    "error::DeprecationWarning",
-    "error::pytest.PytestCollectionWarning",
+    "error",
     "ignore:Bundled (pact-plugin-cli|pact-stub-server|pact_mock_server_cli|pact_verifier_cli) binary not found; using system installation instead:RuntimeWarning:pact_cli",
-    "ignore:defusedxml.lxml:DeprecationWarning:zeep",
-    "ignore:distutils Version classes are deprecated:DeprecationWarning:pytest_freezegun",  # https://github.com/ktosiek/pytest-freezegun/issues/35
     "ignore:The `pact.v2` module is deprecated:DeprecationWarning",
-    "ignore:Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3:DeprecationWarning:(graphene|singledispatch)",
 ]
 
 DJANGO_SETTINGS_MODULE = "tests.settings"
@@ -227,17 +188,21 @@ python_files = ["test_*.py", "benchmark_*.py"]
 python_functions = ["test_*", "benchmark_*"]
 python_classes = ["Test*", "Benchmark*"]
 
-# Default options when pytest is run:
-#
-#   --verbose      -> Show names of tests being run.
-#   --tb=short     -> Use short tracebacks.
-#                     https://docs.pytest.org/en/stable/usage.html#modifying-python-traceback-printing
-#   --nomigrations -> Disable Django's migrations and create the database by inspecting models instead.
-#                     https://pytest-django.readthedocs.io/en/latest/database.html#nomigrations-disable-django-migrations
-#   --reuse-db     -> Don't remove test database after each test run so it can be re-used next time.
-#                     https://pytest-django.readthedocs.io/en/latest/database.html#reuse-db-reuse-the-testing-database-between-test-runs
-#   --color=auto   -> Detect whether to print colored output.
-#   --capture=fd   -> Capture all output written to the STDOUT and STDERR file descriptors.
-#                     https://docs.pytest.org/en/stable/capture.html
-#
-addopts = "--tb=short --verbose --nomigrations --reuse-db --color=auto --capture=fd"
+addopts = [
+    # Use short tracebacks.
+    # https://docs.pytest.org/en/9.0.x/how-to/output.html#modifying-python-traceback-printing
+    "--tb=short",
+    # Show names of tests being run.
+    "--verbose",
+    # Disable Django's migrations and create the database by inspecting models instead.
+    # https://github.com/pytest-dev/pytest-django/blob/v4.8.0/docs/database.rst#L129
+    "--nomigrations",
+    # Don't remove test database after each test run so it can be re-used next time.
+    # https://github.com/pytest-dev/pytest-django/blob/v4.8.0/docs/database.rst#L90
+    "--reuse-db",
+    # Detect whether to print colored output.
+    "--color=auto",
+    # Capture all output written to the STDOUT and STDERR file descriptors.
+    # https://docs.pytest.org/en/9.0.x/how-to/capture-stdout-stderr.html#default-stdout-stderr-stdin-capturing-behaviour
+    "--capture=fd",
+]
