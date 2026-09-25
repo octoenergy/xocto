@@ -19,20 +19,17 @@ from xocto.storage import s3_select, storage
 
 @pytest.fixture
 def mock_s3_bucket(mocker):
-    with moto.mock_s3():
-        bucket = boto3.resource("s3", region_name="us-east-1").create_bucket(
-            Bucket="some-bucket"
-        )
-
-        client = boto3.client("s3")
+    with (
+        moto.mock_aws(),
+        override_settings(AWS_REGION="us-east-1", AWS_S3_ENDPOINT_URL=None),
+    ):
+        client = boto3.client("s3", region_name="us-east-1")
+        client.create_bucket(Bucket="some-bucket")
         mocker.patch.object(
             storage.S3FileStore, "_get_boto_client", return_value=client, autospec=True
         )
-        mocker.patch.object(
-            storage.S3FileStore, "_get_boto_bucket", return_value=bucket, autospec=True
-        )
 
-        yield bucket
+        yield
 
 
 @pytest.fixture
@@ -555,7 +552,7 @@ class TestS3FileStore:
         last_modified = store.get_last_modified("a/b/c.pdf")
         assert get_boto_object_for_key.called
         assert last_modified == k.last_modified
-        assert type(last_modified) == datetime.datetime
+        assert type(last_modified) is datetime.datetime
 
     def test_fetch_file_contents_using_s3_select_and_expect_output_in_json_format(self):
         store = storage.S3FileStore("some-bucket")
@@ -917,7 +914,7 @@ class TestLocalFileStore:
 
             last_modified = store.get_last_modified(path)
             assert last_modified is not None
-            assert type(last_modified) == datetime.datetime
+            assert type(last_modified) is datetime.datetime
 
     @mock.patch.object(shutil, "copyfile")
     @mock.patch.object(os.path, "exists", return_value=False)
