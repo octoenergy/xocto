@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-- Support keyword-only `region_name` and `endpoint_url` connection overrides on direct construction of `S3FileStore` and `S3SubdirectoryFileStore`.
+## V10.1.0 - 2026-10-02
+
+- Support keyword-only `region_name` and `endpoint_url` connection overrides on direct construction of `S3FileStore` and `S3SubdirectoryFileStore` [#308](https://github.com/octoenergy/xocto/pull/308).
 
 ## V10.0.0 - 2026-06-15
 
