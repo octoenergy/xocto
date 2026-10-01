@@ -28,6 +28,33 @@ def download_file(bucket: str, namespace: str, filename: str) -> bytes:
     return file_store.fetch_file_contents(key_path=f"{namespace}/{filename}")
 ```
 
+## Direct construction and connection overrides
+
+When constructing `S3FileStore` or `S3SubdirectoryFileStore` directly, use the
+keyword-only `region_name` and `endpoint_url` parameters to override the default S3
+connection settings:
+
+```python
+from xocto.storage import storage
+
+store = storage.S3FileStore(
+    bucket_name="my-bucket",
+    region_name="us-west-2",
+    endpoint_url="https://s3.custom-domain.com",
+)
+
+subdirectory_store = storage.S3SubdirectoryFileStore(
+    "s3://my-bucket/subpath",
+    region_name="us-west-2",
+    endpoint_url="https://s3.custom-domain.com",
+)
+```
+
+Each parameter defaults to `None`. An omitted or `None` value independently falls back
+to `settings.AWS_REGION` or `settings.AWS_S3_ENDPOINT_URL`, respectively. This is useful
+when needing to access S3 in a region and/or URL different from the one configured via
+the Django settings.
+
 ## API Reference
 
 ```{eval-rst}
