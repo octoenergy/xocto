@@ -44,6 +44,43 @@ def test_memory_storage_used_during_tests():
 
 
 class TestS3SubdirectoryFileStore:
+    def test_init_with_explicit_region_name_and_endpoint_url(self):
+        store = storage.S3SubdirectoryFileStore(
+            "s3://some-bucket/folder",
+            region_name="ap-southeast-2",
+            endpoint_url="http://custom:4566",
+        )
+        assert store.bucket_name == "some-bucket"
+        assert store.path == "folder"
+        assert store.region_name == "ap-southeast-2"
+        assert store.endpoint_url == "http://custom:4566"
+
+    @override_settings(
+        AWS_REGION="eu-west-1",
+        AWS_S3_ENDPOINT_URL="http://s3.local:4566",
+    )
+    def test_init_falls_back_to_settings(self):
+        store = storage.S3SubdirectoryFileStore("s3://some-bucket/folder")
+        assert store.region_name == "eu-west-1"
+        assert store.endpoint_url == "http://s3.local:4566"
+
+    @override_settings(
+        AWS_REGION="eu-west-1",
+        AWS_S3_ENDPOINT_URL="http://s3.local:4566",
+    )
+    def test_init_independent_setting_fallback(self):
+        store_explicit_region = storage.S3SubdirectoryFileStore(
+            "s3://some-bucket/folder", region_name="us-east-1"
+        )
+        assert store_explicit_region.region_name == "us-east-1"
+        assert store_explicit_region.endpoint_url == "http://s3.local:4566"
+
+        store_explicit_endpoint = storage.S3SubdirectoryFileStore(
+            "s3://some-bucket/folder", endpoint_url="http://other:9000"
+        )
+        assert store_explicit_endpoint.region_name == "eu-west-1"
+        assert store_explicit_endpoint.endpoint_url == "http://other:9000"
+
     def test_make_key_path_raises_error_when_exceeds_max_length(self):
         s3_file_store = storage.S3SubdirectoryFileStore("s3://some-bucket/folder")
         with pytest.raises(RuntimeError):
@@ -217,6 +254,89 @@ class TestS3SubdirectoryFileStore:
 
 @mock.patch.object(storage, "_should_raise_error_on_existing_files", new=lambda: True)
 class TestS3FileStore:
+    def test_init_with_explicit_region_name_and_endpoint_url(self):
+        store = storage.S3FileStore(
+            "some-bucket",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+        )
+        assert store.region_name == "us-west-2"
+        assert store.endpoint_url == "http://custom:4566"
+
+    @override_settings(
+        AWS_REGION="eu-west-1",
+        AWS_S3_ENDPOINT_URL="http://s3.local:4566",
+    )
+    def test_init_falls_back_to_settings_when_none(self):
+        store = storage.S3FileStore("some-bucket")
+        assert store.region_name == "eu-west-1"
+        assert store.endpoint_url == "http://s3.local:4566"
+
+        store_explicit_none = storage.S3FileStore(
+            "some-bucket", region_name=None, endpoint_url=None
+        )
+        assert store_explicit_none.region_name == "eu-west-1"
+        assert store_explicit_none.endpoint_url == "http://s3.local:4566"
+
+    @override_settings(
+        AWS_REGION="eu-west-1",
+        AWS_S3_ENDPOINT_URL="http://s3.local:4566",
+    )
+    def test_init_independent_setting_fallback(self):
+        store_explicit_region = storage.S3FileStore(
+            "some-bucket", region_name="us-east-1"
+        )
+        assert store_explicit_region.region_name == "us-east-1"
+        assert store_explicit_region.endpoint_url == "http://s3.local:4566"
+
+        store_explicit_endpoint = storage.S3FileStore(
+            "some-bucket", endpoint_url="http://other-endpoint:9000"
+        )
+        assert store_explicit_endpoint.region_name == "eu-west-1"
+        assert store_explicit_endpoint.endpoint_url == "http://other-endpoint:9000"
+
+    def test_init_keyword_only_parameters(self):
+        with pytest.raises(TypeError):
+            storage.S3FileStore("some-bucket", True, False, "us-west-2")
+
+    @mock.patch.object(boto3, "client")
+    def test_get_boto_client_passes_instance_attributes_and_config(
+        self, mock_boto_client
+    ):
+        store = storage.S3FileStore(
+            "some-bucket",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+        )
+        mock_config = mock.Mock()
+        with mock.patch.object(store, "_get_boto_config", return_value=mock_config):
+            client = store._get_boto_client()
+
+        assert client == mock_boto_client.return_value
+        mock_boto_client.assert_called_once_with(
+            "s3",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+            config=mock_config,
+        )
+
+    @mock.patch.object(boto3, "resource")
+    def test_get_boto_bucket_passes_instance_attributes(self, mock_boto_resource):
+        store = storage.S3FileStore(
+            "some-bucket",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+        )
+        bucket = store._get_boto_bucket()
+
+        mock_boto_resource.assert_called_once_with(
+            "s3",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+        )
+        mock_boto_resource.return_value.Bucket.assert_called_once_with("some-bucket")
+        assert bucket == mock_boto_resource.return_value.Bucket.return_value
+
     @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
     @mock.patch.object(storage.S3FileStore, "_get_boto_client")
     def test_stores_file_that_does_not_exist(
@@ -706,6 +826,24 @@ class TestMemoryFileStore:
         self.store = storage.MemoryFileStore("bucket", use_date_in_key_path=False)
         self.store.clear()
 
+    def test_init_accepts_region_name_and_endpoint_url_without_aws_behavior(self):
+        store = storage.MemoryFileStore(
+            "some-bucket",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+        )
+        assert store.region_name == "us-west-2"
+        assert store.endpoint_url == "http://custom:4566"
+
+    @override_settings(
+        AWS_REGION="eu-west-1",
+        AWS_S3_ENDPOINT_URL="http://s3.local:4566",
+    )
+    def test_init_defaults_to_none_without_aws_behavior(self):
+        store = storage.MemoryFileStore("some-bucket")
+        assert store.region_name is None
+        assert store.endpoint_url is None
+
     def test_store_and_fetch(self):
         __, path = self.store.store_file(
             namespace="x", filename="test.pdf", contents=b"test_store_and_fetch"
@@ -850,6 +988,24 @@ class TestLocalFileStore:
                         Bob,30
                         Charlie,35
                        """
+
+    def test_init_accepts_region_name_and_endpoint_url_without_aws_behavior(self):
+        store = storage.LocalFileStore(
+            "some-bucket",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+        )
+        assert store.region_name == "us-west-2"
+        assert store.endpoint_url == "http://custom:4566"
+
+    @override_settings(
+        AWS_REGION="eu-west-1",
+        AWS_S3_ENDPOINT_URL="http://s3.local:4566",
+    )
+    def test_init_defaults_to_none_without_aws_behavior(self):
+        store = storage.LocalFileStore("some-bucket")
+        assert store.region_name is None
+        assert store.endpoint_url is None
 
     def test_store_and_fetch(self):
         with tempfile.TemporaryDirectory() as tdir:
@@ -1307,3 +1463,43 @@ class TestFromUri:
         store = storage.from_uri("s3://some-bucket/a-prefix/")
         assert store.bucket_name == "some-bucket"
         assert store.path == "a-prefix"
+
+
+class TestBaseS3FileStoreContract:
+    def test_base_s3_file_store_attributes_and_contract(self):
+        class DummyStore(storage.BaseS3FileStore):
+            pass
+
+        DummyStore.__abstractmethods__ = frozenset()
+
+        store = DummyStore(
+            "some-bucket",
+            region_name="eu-west-1",
+            endpoint_url="http://localhost:4566",
+        )
+        assert store.region_name == "eu-west-1"
+        assert store.endpoint_url == "http://localhost:4566"
+
+        default_store = DummyStore("some-bucket")
+        assert default_store.region_name is None
+        assert default_store.endpoint_url is None
+
+        with pytest.raises(TypeError):
+            DummyStore("some-bucket", True, False, "eu-west-1")
+
+    @pytest.mark.parametrize(
+        "store_cls",
+        [
+            storage.S3FileStore,
+            storage.LocalFileStore,
+            storage.MemoryFileStore,
+        ],
+    )
+    def test_dynamically_configured_backends_are_interchangeable(self, store_cls):
+        store = store_cls(
+            "some-bucket",
+            region_name="eu-west-1",
+            endpoint_url="http://localhost:4566",
+        )
+        assert store.region_name == "eu-west-1"
+        assert store.endpoint_url == "http://localhost:4566"

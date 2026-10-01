@@ -239,10 +239,15 @@ class BaseS3FileStore(abc.ABC):
         bucket_name: str,
         use_date_in_key_path: bool = True,
         set_acl_bucket_owner: bool = False,
+        *,
+        region_name: str | None = None,
+        endpoint_url: str | None = None,
     ) -> None:
         self.bucket_name = bucket_name
         self.date_in_key_path = use_date_in_key_path
         self.set_acl_bucket_owner = set_acl_bucket_owner
+        self.region_name = region_name
+        self.endpoint_url = endpoint_url
 
     @abc.abstractmethod
     def store_file(
@@ -484,15 +489,25 @@ class S3FileStore(BaseS3FileStore):
         bucket_name: str,
         use_date_in_key_path: bool = True,
         set_acl_bucket_owner: bool = False,
+        *,
+        region_name: str | None = None,
+        endpoint_url: str | None = None,
     ) -> None:
         if not (3 <= len(bucket_name) <= 63):
             raise ValueError(
                 f"`bucket_name` must be between 3 and 63 characters in length: {bucket_name}"
             )
+        if region_name is None:
+            region_name = settings.AWS_REGION
+        if endpoint_url is None:
+            endpoint_url = settings.AWS_S3_ENDPOINT_URL
+
         super().__init__(
             bucket_name,
             use_date_in_key_path=use_date_in_key_path,
             set_acl_bucket_owner=set_acl_bucket_owner,
+            region_name=region_name,
+            endpoint_url=endpoint_url,
         )
 
     def __str__(self) -> str:
@@ -882,16 +897,16 @@ class S3FileStore(BaseS3FileStore):
     def _get_boto_client(self) -> S3Client:
         return boto3.client(
             "s3",
-            region_name=settings.AWS_REGION,
-            endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+            region_name=self.region_name,
+            endpoint_url=self.endpoint_url,
             config=self._get_boto_config(),
         )
 
     def _get_boto_bucket(self) -> service_resource.Bucket:
         boto_resource = boto3.resource(
             "s3",
-            region_name=settings.AWS_REGION,
-            endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+            region_name=self.region_name,
+            endpoint_url=self.endpoint_url,
         )
         return boto_resource.Bucket(self.bucket_name)
 
@@ -1019,7 +1034,13 @@ class S3SubdirectoryFileStore(S3FileStore):
     A S3FileStore which can expose just a given subdirectory rather than a whole bucket.
     """
 
-    def __init__(self, uri: str) -> None:
+    def __init__(
+        self,
+        uri: str,
+        *,
+        region_name: str | None = None,
+        endpoint_url: str | None = None,
+    ) -> None:
         parsed_url = urllib.parse.urlparse(uri)
         if parsed_url.scheme != "s3":
             raise ValueError(f"Expected URL starting 's3://'. Got {uri!r}")
@@ -1035,6 +1056,8 @@ class S3SubdirectoryFileStore(S3FileStore):
             self.bucket_name,
             use_date_in_key_path=use_date_in_key_path,
             set_acl_bucket_owner=set_acl_bucket_owner,
+            region_name=region_name,
+            endpoint_url=endpoint_url,
         )
 
     def make_key_path(self, *, namespace: str = "", filepath: str) -> str:
@@ -1135,6 +1158,9 @@ class LocalFileStore(BaseS3FileStore):
         storage_root: str = "",
         use_date_in_key_path: bool = True,
         set_acl_bucket_owner: bool = False,
+        *,
+        region_name: str | None = None,
+        endpoint_url: str | None = None,
     ) -> None:
         # This is taken from https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
         if not (3 <= len(bucket_name) <= 63):
@@ -1148,6 +1174,8 @@ class LocalFileStore(BaseS3FileStore):
             bucket_name,
             use_date_in_key_path=use_date_in_key_path,
             set_acl_bucket_owner=set_acl_bucket_owner,
+            region_name=region_name,
+            endpoint_url=endpoint_url,
         )
 
     def __str__(self) -> str:
