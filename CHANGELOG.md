@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `publish_pacts()` function to publish pact files to a broker via `pact.v2.broker.Broker`
+
 ## V10.0.0 - 2026-06-15
 
 - Pin min version of `pact-python` to >=3.0.0 [#269](https://github.com/octoenergy/xocto/pull/269)
