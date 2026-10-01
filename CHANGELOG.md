@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Make broker fields optional in `PactOptions`. omit them when `publish_to_broker=False`
+
 ## V10.0.0 - 2026-06-15
 
 - Pin min version of `pact-python` to >=3.0.0 [#269](https://github.com/octoenergy/xocto/pull/269)
