@@ -17,3 +17,5 @@ USE_TZ = True
 TIME_ZONE = "Europe/London"
 STORAGE_BACKEND = "xocto.storage.storage.MemoryFileStore"
 RAISE_ERROR_ON_EXISTING_S3_KEYS = False
+AWS_REGION = "eu-west-1"
+AWS_S3_ENDPOINT_URL = None
