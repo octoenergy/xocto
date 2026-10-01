@@ -12,13 +12,13 @@ import requests
 
 @dataclasses.dataclass(frozen=True)  # Use kw_only=True once we're on Python 3.10.
 class PactOptions:
-    broker_url: str
-    broker_username: str
-    broker_password: str
     consumer_name: str
     provider_name: str
-    consumer_version: str
     log_path: str
+    broker_url: str = ""
+    broker_username: str = ""
+    broker_password: str = ""
+    consumer_version: str = ""
 
 
 class PactConsumerClient:
@@ -42,6 +42,17 @@ class PactConsumerClient:
 
 
 def pact_service(*, options: PactOptions, publish_to_broker: bool) -> pact_v2.Pact:
+    if publish_to_broker and not all(
+        [
+            options.broker_url,
+            options.broker_username,
+            options.broker_password,
+            options.consumer_version,
+        ]
+    ):
+        raise ValueError(
+            "broker_url, broker_username, broker_password, and consumer_version are required when publish_to_broker=True"
+        )
     service = pact_v2.Consumer(  # type: ignore[no-untyped-call]
         name=options.consumer_name,
         tag_with_git_branch=True,
