@@ -299,6 +299,44 @@ class TestS3FileStore:
         with pytest.raises(TypeError):
             storage.S3FileStore("some-bucket", True, False, "us-west-2")
 
+    @mock.patch.object(boto3, "client")
+    def test_get_boto_client_passes_instance_attributes_and_config(
+        self, mock_boto_client
+    ):
+        store = storage.S3FileStore(
+            "some-bucket",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+        )
+        mock_config = mock.Mock()
+        with mock.patch.object(store, "_get_boto_config", return_value=mock_config):
+            client = store._get_boto_client()
+
+        assert client == mock_boto_client.return_value
+        mock_boto_client.assert_called_once_with(
+            "s3",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+            config=mock_config,
+        )
+
+    @mock.patch.object(boto3, "resource")
+    def test_get_boto_bucket_passes_instance_attributes(self, mock_boto_resource):
+        store = storage.S3FileStore(
+            "some-bucket",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+        )
+        bucket = store._get_boto_bucket()
+
+        mock_boto_resource.assert_called_once_with(
+            "s3",
+            region_name="us-west-2",
+            endpoint_url="http://custom:4566",
+        )
+        mock_boto_resource.return_value.Bucket.assert_called_once_with("some-bucket")
+        assert bucket == mock_boto_resource.return_value.Bucket.return_value
+
     @mock.patch.object(storage.S3FileStore, "_get_boto_object_for_key")
     @mock.patch.object(storage.S3FileStore, "_get_boto_client")
     def test_stores_file_that_does_not_exist(

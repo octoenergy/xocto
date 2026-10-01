@@ -897,16 +897,16 @@ class S3FileStore(BaseS3FileStore):
     def _get_boto_client(self) -> S3Client:
         return boto3.client(
             "s3",
-            region_name=settings.AWS_REGION,
-            endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+            region_name=self.region_name,
+            endpoint_url=self.endpoint_url,
             config=self._get_boto_config(),
         )
 
     def _get_boto_bucket(self) -> service_resource.Bucket:
         boto_resource = boto3.resource(
             "s3",
-            region_name=settings.AWS_REGION,
-            endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+            region_name=self.region_name,
+            endpoint_url=self.endpoint_url,
         )
         return boto_resource.Bucket(self.bucket_name)
 
