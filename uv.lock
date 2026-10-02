@@ -3202,13 +3202,10 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "boto3-stubs", extra = ["boto3", "s3"] },
     { name = "hypothesis" },
     { name = "moto", extra = ["s3"] },
-    { name = "mypy" },
     { name = "pre-commit" },
     { name = "psycopg2" },
-    { name = "pyarrow-stubs" },
     { name = "pytest" },
     { name = "pytest-benchmark" },
     { name = "pytest-django" },
@@ -3216,10 +3213,6 @@ dev = [
     { name = "ruff" },
     { name = "time-machine" },
     { name = "twine" },
-    { name = "types-openpyxl" },
-    { name = "types-python-dateutil" },
-    { name = "types-pytz" },
-    { name = "types-requests" },
     { name = "wheel" },
 ]
 docs = [
@@ -3227,6 +3220,15 @@ docs = [
     { name = "sphinx" },
     { name = "sphinx-rtd-theme" },
     { name = "sphinxcontrib-serializinghtml" },
+]
+typing = [
+    { name = "boto3-stubs", extra = ["boto3", "s3"] },
+    { name = "mypy" },
+    { name = "pyarrow-stubs" },
+    { name = "types-openpyxl" },
+    { name = "types-python-dateutil" },
+    { name = "types-pytz" },
+    { name = "types-requests" },
 ]
 
 [package.metadata]
@@ -3252,13 +3254,10 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "boto3-stubs", extras = ["boto3", "s3"], specifier = "==1.43.95" },
     { name = "hypothesis", specifier = "==6.168.0" },
     { name = "moto", extras = ["s3"], specifier = "==5.2.3" },
-    { name = "mypy", specifier = "==2.3.1" },
     { name = "pre-commit", specifier = "~=4.6" },
     { name = "psycopg2", specifier = "~=2.9" },
-    { name = "pyarrow-stubs", specifier = "==20.0.0.20260819" },
     { name = "pytest", specifier = "==9.1.1" },
     { name = "pytest-benchmark", specifier = "==5.3.0" },
     { name = "pytest-django", specifier = "==4.14.0" },
@@ -3266,10 +3265,6 @@ dev = [
     { name = "ruff", specifier = "==0.16.10" },
     { name = "time-machine", specifier = "==3.5.1" },
     { name = "twine", specifier = "==7.0.0" },
-    { name = "types-openpyxl", specifier = "==3.1.5.20260827" },
-    { name = "types-python-dateutil", specifier = "==2.9.0.20260807" },
-    { name = "types-pytz", specifier = "==2026.3.1.20260727" },
-    { name = "types-requests", specifier = "==2.33.0.20260906" },
     { name = "wheel", specifier = "==0.48.0" },
 ]
 docs = [
@@ -3277,6 +3272,15 @@ docs = [
     { name = "sphinx", specifier = "==7.2.6" },
     { name = "sphinx-rtd-theme", specifier = "==2.0.0" },
     { name = "sphinxcontrib-serializinghtml", specifier = "==1.1.10" },
+]
+typing = [
+    { name = "boto3-stubs", extras = ["boto3", "s3"], specifier = "==1.43.95" },
+    { name = "mypy", specifier = "==2.3.1" },
+    { name = "pyarrow-stubs", specifier = "==20.0.0.20260819" },
+    { name = "types-openpyxl", specifier = "==3.1.5.20260827" },
+    { name = "types-python-dateutil", specifier = "==2.9.0.20260807" },
+    { name = "types-pytz", specifier = "==2026.3.1.20260727" },
+    { name = "types-requests", specifier = "==2.33.0.20260906" },
 ]
 
 [[package]]
