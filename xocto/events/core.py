@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 import structlog
-from django import http
 from django.conf import settings
+
+
+if TYPE_CHECKING:
+    from django import http
 
 
 logger = structlog.get_logger("events")

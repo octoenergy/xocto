@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import decimal
 import random
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
-from xocto.types import generic
+
+if TYPE_CHECKING:
+    from xocto.types import generic
 
 
 def quantise(
