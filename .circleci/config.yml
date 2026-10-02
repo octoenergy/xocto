@@ -34,12 +34,6 @@ jobs:
           name: Run tests
           command: uv run pytest --benchmark-disable
           when: always
-      - run:
-          name: Check Python type annotations
-          command: |
-            uv run mypy --version
-            uv run mypy
-          when: always
 
   lint:
     docker:
@@ -49,6 +43,7 @@ jobs:
           method: full
       - python/install-packages:
           pkg-manager: uv
+          args: --all-groups
       - run:
           name: Check uv lock file
           command: uv lock --check
@@ -59,6 +54,10 @@ jobs:
       - run:
           name: Check linting
           command: uv run ruff check
+          when: always
+      - run:
+          name: Check Python type annotations
+          command: uv run mypy
           when: always
 
 workflows:

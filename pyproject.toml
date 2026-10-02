@@ -50,13 +50,10 @@ issues = "https://github.com/octoenergy/xocto/issues"
 
 [dependency-groups]
 dev = [
-  "boto3-stubs[boto3,s3]==1.43.95",
   "hypothesis==6.168.0",
   "moto[s3]==5.2.3",
-  "mypy==2.3.1",
   "pre-commit~=4.6",
   "psycopg2~=2.9",
-  "pyarrow-stubs==20.0.0.20260819",
   "pytest==9.1.1",
   "pytest-benchmark==5.3.0",
   "pytest-django==4.14.0",
@@ -64,10 +61,6 @@ dev = [
   "ruff==0.16.10",
   "time-machine==3.5.1",
   "twine==7.0.0",
-  "types-openpyxl==3.1.5.20260827",
-  "types-python-dateutil==2.9.0.20260807",
-  "types-pytz==2026.3.1.20260727",
-  "types-requests==2.33.0.20260906",
   "wheel==0.48.0",
 ]
 docs = [
@@ -75,6 +68,16 @@ docs = [
   "sphinx==7.2.6",
   "sphinx-rtd-theme==2.0.0",
   "sphinxcontrib-serializinghtml==1.1.10",
+]
+typing = [
+  "mypy==2.3.1",
+  # Type stubs
+  "boto3-stubs[boto3,s3]==1.43.95",
+  "pyarrow-stubs==20.0.0.20260819",
+  "types-openpyxl==3.1.5.20260827",
+  "types-python-dateutil==2.9.0.20260807",
+  "types-pytz==2026.3.1.20260727",
+  "types-requests==2.33.0.20260906",
 ]
 
 [build-system]
