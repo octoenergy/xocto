@@ -30,8 +30,6 @@ from typing import (
 import boto3
 import botocore.config
 import magic
-import mypy_boto3_s3.literals as s3_literals
-import mypy_boto3_s3.type_defs as s3_types
 from botocore import exceptions as botocore_exceptions
 from botocore.response import StreamingBody
 from django.conf import settings
@@ -45,8 +43,8 @@ from . import files, s3_select
 
 
 if TYPE_CHECKING:
-    # Reduce some runtime startup costs by avoiding loading
-    # pandas unless we really need it.
+    import mypy_boto3_s3.literals as s3_literals
+    import mypy_boto3_s3.type_defs as s3_types
     import pandas as pd
     from _typeshed import WriteableBuffer
     from mypy_boto3_s3 import service_resource
@@ -149,7 +147,7 @@ def make_boto_config(
     return botocore.config.Config(
         connect_timeout=connect_timeout,
         read_timeout=read_timeout,
-        retries=cast(Any, retries),
+        retries=cast("Any", retries),
     )
 
 
@@ -550,7 +548,7 @@ class S3FileStore(BaseS3FileStore):
         # practice the only file-like method it needs is `read(size=...)`. This cast allows us to
         # use `upload_fileobj` with any Fileobj that implements the `ReadableBinaryFile` protocol
         # but not the whole of BinaryIO. This includes, importantly, Django's `UploadedFile`.
-        file_obj = cast(BinaryIO, readable)
+        file_obj = cast("BinaryIO", readable)
 
         extra_args: dict[str, Any] = {}
         if content_type:
@@ -709,11 +707,11 @@ class S3FileStore(BaseS3FileStore):
             "ExpressionType": "SQL",
             "Expression": raw_sql,
             "InputSerialization": cast(
-                s3_types.InputSerializationTypeDef,
+                "s3_types.InputSerializationTypeDef",
                 serialization["input_serialization"],
             ),
             "OutputSerialization": cast(
-                s3_types.OutputSerializationTypeDef,
+                "s3_types.OutputSerializationTypeDef",
                 serialization["output_serialization"],
             ),
         }

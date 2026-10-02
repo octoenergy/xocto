@@ -7,7 +7,7 @@ This page details how to develop `xocto`.
 Install [uv](https://docs.astral.sh/uv/), then run:
 
 ```sh
-uv sync --all-groups --python 3.10
+uv sync --python 3.10
 ```
 
 This installs the package including development and testing dependencies into
