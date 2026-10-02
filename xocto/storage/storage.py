@@ -15,7 +15,6 @@ import urllib.parse
 import uuid
 from collections import defaultdict
 from typing import (
-    IO,
     TYPE_CHECKING,
     Any,
     BinaryIO,
@@ -127,6 +126,9 @@ class Clearable(Protocol):
 
 class ReadableBinaryFile(Protocol):
     def read(self, size: int = ...) -> bytes: ...
+
+
+FileContents = s3_types.BlobTypeDef | ReadableBinaryFile
 
 
 def make_boto_config(
@@ -254,7 +256,7 @@ class BaseS3FileStore(abc.ABC):
         self,
         namespace: str,
         filename: str,
-        contents: s3_types.BlobTypeDef,
+        contents: FileContents,
         content_type: str = "",
         overwrite: bool = False,
         metadata: dict[str, str] | None = None,
@@ -267,7 +269,7 @@ class BaseS3FileStore(abc.ABC):
     def store_versioned_file(
         self,
         key_path: str,
-        contents: s3_types.BlobTypeDef,
+        contents: FileContents,
         content_type: str = "",
     ) -> tuple[str, str, str]:
         """
@@ -517,7 +519,7 @@ class S3FileStore(BaseS3FileStore):
         self,
         namespace: str,
         filename: str,
-        contents: s3_types.BlobTypeDef,
+        contents: FileContents,
         content_type: str = "",
         overwrite: bool = False,
         metadata: dict[str, str] | None = None,
@@ -573,13 +575,13 @@ class S3FileStore(BaseS3FileStore):
     def store_versioned_file(
         self,
         key_path: str,
-        contents: s3_types.BlobTypeDef,
+        contents: FileContents,
         content_type: str = "",
     ) -> tuple[str, str, str]:
         if not self._bucket_is_versioned():
             raise BucketNotVersioned()
 
-        file_obj: s3_types.BlobTypeDef = _to_stream(contents=contents)
+        file_obj = cast(s3_types.BlobTypeDef, _to_stream(contents=contents))
 
         put_object_args: s3_types.PutObjectRequestTypeDef = {
             "Bucket": self.bucket_name,
@@ -1185,7 +1187,7 @@ class LocalFileStore(BaseS3FileStore):
         self,
         namespace: str,
         filename: str,
-        contents: s3_types.BlobTypeDef,
+        contents: FileContents,
         content_type: str = "",
         overwrite: bool = False,
         metadata: dict[str, str] | None = None,
@@ -1205,7 +1207,7 @@ class LocalFileStore(BaseS3FileStore):
     def store_versioned_file(
         self,
         key_path: str,
-        contents: s3_types.BlobTypeDef,
+        contents: FileContents,
         content_type: str = "",
     ) -> tuple[str, str, str]:
         version = str(uuid.uuid4())
@@ -1676,7 +1678,7 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
         self,
         namespace: str,
         filename: str,
-        contents: s3_types.BlobTypeDef,
+        contents: FileContents,
         content_type: str = "",
         overwrite: bool = False,
         metadata: dict[str, str] | None = None,
@@ -1689,7 +1691,7 @@ class MemoryFileStore(BaseS3FileStore, Clearable):
     def store_versioned_file(
         self,
         key_path: str,
-        contents: s3_types.BlobTypeDef,
+        contents: FileContents,
         content_type: str = "",
     ) -> tuple[str, str, str]:
         version = str(uuid.uuid4())
@@ -1958,7 +1960,7 @@ def _create_parent_directories(filepath: str) -> None:
     os.makedirs(os.path.dirname(filepath), mode=0o755, exist_ok=True)
 
 
-def _to_stream(*, contents: s3_types.BlobTypeDef) -> IO[Any] | StreamingBody:
+def _to_stream(*, contents: FileContents) -> ReadableBinaryFile:
     """
     Return the given object expressed as an IO stream object.
     """
@@ -1969,7 +1971,7 @@ def _to_stream(*, contents: s3_types.BlobTypeDef) -> IO[Any] | StreamingBody:
     return contents
 
 
-def _to_bytes(*, contents: s3_types.BlobTypeDef) -> bytes:
+def _to_bytes(*, contents: FileContents) -> bytes:
     """
     Return the given object expressed as a bytes object.
     """

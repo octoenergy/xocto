@@ -30,7 +30,7 @@ def _verify_store_file_contents(store: storage.BaseS3FileStore) -> None:
     store.store_file(
         "namespace",
         "readable-binary-file.txt",
-        readable_contents,  # type: ignore[arg-type]  # Regression coverage.
+        readable_contents,
     )
 
 
