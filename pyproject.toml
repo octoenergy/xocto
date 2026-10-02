@@ -168,9 +168,13 @@ select = [
   "E",  # pycodestyle
   "F",  # pyflakes
   "I",  # isort
+  "TC",  # flake8-type-checking
 ]
 ignore = [
   "E501",  # line too long
+]
+extend-safe-fixes = [
+  "TC",  # flake8-type-checking
 ]
 
 [tool.ruff.lint.per-file-ignores]
