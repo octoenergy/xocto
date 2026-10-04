@@ -1,8 +1,10 @@
 import builtins
 import datetime
+import io
 import os
 import shutil
 import tempfile
+from typing import IO, Any
 from unittest import mock
 
 import boto3
@@ -11,6 +13,7 @@ import pandas as pd
 import pyarrow
 import pytest
 import time_machine
+from botocore.response import StreamingBody
 from django.test import override_settings
 from pyarrow import parquet
 
@@ -818,6 +821,24 @@ class TestS3FileStore:
                 )
             )
             assert len(file_contents) == 0
+
+
+class MinimalReadableBinaryFile:
+    def read(self, size: int = -1) -> bytes:
+        return b"contents"
+
+
+def test_store_file_content_types() -> None:
+    store = storage.MemoryFileStore("bucket")
+    io_contents: IO[Any] = io.BytesIO(b"contents")
+    streaming_body = StreamingBody(io.BytesIO(b"contents"), 8)
+    readable_contents: storage.ReadableBinaryFile = MinimalReadableBinaryFile()
+
+    store.store_file("namespace", "text.txt", "contents")
+    store.store_file("namespace", "bytes.txt", b"contents")
+    store.store_file("namespace", "io.txt", io_contents)
+    store.store_file("namespace", "streaming-body.txt", streaming_body)
+    store.store_file("namespace", "readable-binary-file.txt", readable_contents)
 
 
 class TestMemoryFileStore:
