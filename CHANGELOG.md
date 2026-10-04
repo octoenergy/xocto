@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V10.1.1 - 2026-10-05
+
+- Restore support for minimal readable binary file implementations in the storage API and avoid requiring Boto type stubs at runtime [#313](https://github.com/octoenergy/xocto/pull/313).
+
 ## V10.1.0 - 2026-10-02
 
 - Support keyword-only `region_name` and `endpoint_url` connection overrides on direct construction of `S3FileStore` and `S3SubdirectoryFileStore` [#308](https://github.com/octoenergy/xocto/pull/308).
