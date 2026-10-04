@@ -29,8 +29,6 @@ from typing import (
 import boto3
 import botocore.config
 import magic
-import mypy_boto3_s3.literals as s3_literals
-import mypy_boto3_s3.type_defs as s3_types
 from botocore import exceptions as botocore_exceptions
 from botocore.response import StreamingBody
 from django.conf import settings
@@ -48,7 +46,9 @@ if TYPE_CHECKING:
     # pandas unless we really need it.
     import pandas as pd
     from _typeshed import WriteableBuffer
+    from mypy_boto3_s3 import literals as s3_literals
     from mypy_boto3_s3 import service_resource
+    from mypy_boto3_s3 import type_defs as s3_types
     from mypy_boto3_s3.client import S3Client
 
 
@@ -128,7 +128,7 @@ class ReadableBinaryFile(Protocol):
     def read(self, size: int = ...) -> bytes: ...
 
 
-FileContents = s3_types.BlobTypeDef | ReadableBinaryFile
+FileContents = str | bytes | ReadableBinaryFile
 
 
 def make_boto_config(
@@ -581,7 +581,7 @@ class S3FileStore(BaseS3FileStore):
         if not self._bucket_is_versioned():
             raise BucketNotVersioned()
 
-        file_obj = cast(s3_types.BlobTypeDef, _to_stream(contents=contents))
+        file_obj = cast("s3_types.BlobTypeDef", _to_stream(contents=contents))
 
         put_object_args: s3_types.PutObjectRequestTypeDef = {
             "Bucket": self.bucket_name,
@@ -711,11 +711,11 @@ class S3FileStore(BaseS3FileStore):
             "ExpressionType": "SQL",
             "Expression": raw_sql,
             "InputSerialization": cast(
-                s3_types.InputSerializationTypeDef,
+                "s3_types.InputSerializationTypeDef",
                 serialization["input_serialization"],
             ),
             "OutputSerialization": cast(
-                s3_types.OutputSerializationTypeDef,
+                "s3_types.OutputSerializationTypeDef",
                 serialization["output_serialization"],
             ),
         }
@@ -1979,5 +1979,5 @@ def _to_bytes(*, contents: FileContents) -> bytes:
         return contents.encode()
     if isinstance(contents, bytes):
         return contents
-    data = contents.read()
+    data: str | bytes = contents.read()
     return data if isinstance(data, bytes) else data.encode()
