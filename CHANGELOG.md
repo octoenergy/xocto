@@ -2,8 +2,10 @@
 
 ## Unreleased
 
-- Make broker fields optional in `PactOptions`. omit them when `publish_to_broker=False`
-- Add `publish_pacts()` function to publish pact files to a broker via `pact.v2.broker.Broker`
+## V10.2.0 - 2026-10-05
+
+- Make broker fields optional in `PactOptions` — omit them when `publish_to_broker=False` [#309](https://github.com/octoenergy/xocto/pull/309)
+- Add `publish_pacts()` function to publish pact files to a broker via `pact.v2.broker.Broker` [#310](https://github.com/octoenergy/xocto/pull/310)
 
 ## V10.1.1 - 2026-10-05
 
