@@ -539,10 +539,22 @@ class TestHalfFiniteRange:
 
 
 class TestFiniteRange:
-    @pytest.mark.parametrize("start,end", [(None, 1), (1, None), (None, None)])
-    def test_rejects_missing_endpoints(self, start, end):
-        with pytest.raises(ValueError, match="FiniteRange endpoints cannot be None"):
-            ranges.FiniteRange(start, end)
+    @pytest.mark.parametrize(
+        "start,end",
+        [
+            (1, None),
+            (None, 1),
+            (None, None),
+        ],
+    )
+    def test_accepts_missing_endpoints_with_compatible_boundaries(self, start, end):
+        r = ranges.FiniteRange(
+            start,
+            end,
+            boundaries=ranges.RangeBoundaries.EXCLUSIVE_EXCLUSIVE,
+        )
+        assert r.start is start
+        assert r.end is end
 
     def test_endpoints_are_immutable(self):
         r = ranges.FiniteRange(0, 1)
@@ -1054,6 +1066,14 @@ class TestFiniteDateRange:
 
 
 class TestFiniteDatetimeRange:
+    def test_accepts_missing_end(self):
+        start = datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc)
+
+        range_ = ranges.FiniteDatetimeRange(start, None)
+
+        assert range_.start == start
+        assert range_.end is None
+
     @pytest.mark.parametrize(
         "r1, r2, expected",
         [

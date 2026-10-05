@@ -566,18 +566,6 @@ class FiniteRange(Range[T]):
     _start_normalised: T
     _end_normalised: T
 
-    def __init__(
-        self,
-        start: T,
-        end: T,
-        *,
-        boundaries: Union[str, RangeBoundaries] = RangeBoundaries.INCLUSIVE_EXCLUSIVE,
-    ):
-        if any(value is None for value in (start, end)):
-            raise ValueError("FiniteRange endpoints cannot be None")
-
-        super().__init__(start, end, boundaries=boundaries)
-
     @property
     def start(self) -> T:
         return self._start_original
