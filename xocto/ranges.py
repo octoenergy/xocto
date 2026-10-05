@@ -301,7 +301,7 @@ class Range(Generic[T]):
         return f"<Range: {str(self)}>"
 
     def __setattr__(self, name: str, value: Any) -> None:
-        if any(name in getattr(cls, "__slots__", ()) for cls in type(self).__mro__):
+        if name in type(self).__slots__:
             raise AttributeError("Can't set attributes")
         else:
             super().__setattr__(name, value)
@@ -622,9 +622,6 @@ class HalfFiniteRange(Range[T]):
         self._start_normalised, _ = _normalise_datetimes(value, None)
 
     def __init__(self, start: T, end: Optional[T] = None):
-        if start is None:
-            raise ValueError("HalfFiniteRange start cannot be None")
-
         super().__init__(start, end, boundaries=RangeBoundaries.INCLUSIVE_EXCLUSIVE)
 
     def intersection(self, other: Range[T]) -> Optional["HalfFiniteRange[T]"]:

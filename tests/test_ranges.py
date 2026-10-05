@@ -520,18 +520,18 @@ class TestHalfFiniteRange:
         assert 2 == r.end
 
     def test_rejects_missing_start(self):
-        with pytest.raises(ValueError, match="HalfFiniteRange start cannot be None"):
+        with pytest.raises(
+            ValueError, match="Range with unbounded start must be left-exclusive"
+        ):
             ranges.HalfFiniteRange(None)
 
-    def test_endpoints_are_immutable(self):
+    def test_endpoints_can_be_updated(self):
         r = ranges.HalfFiniteRange(0, 1)
 
-        with pytest.raises(AttributeError, match="Can't set attributes"):
-            r.start = None
-        with pytest.raises(AttributeError, match="Can't set attributes"):
-            r.end = r.start
+        r.start = 1
+        r.end = 2
 
-        assert r == ranges.HalfFiniteRange(0, 1)
+        assert r == ranges.HalfFiniteRange(1, 2)
 
     def test_does_not_have_instance_dictionary(self):
         r = ranges.HalfFiniteRange(0, 2)
@@ -556,15 +556,13 @@ class TestFiniteRange:
         assert r.start is start
         assert r.end is end
 
-    def test_endpoints_are_immutable(self):
+    def test_endpoints_can_be_updated(self):
         r = ranges.FiniteRange(0, 1)
 
-        with pytest.raises(AttributeError, match="Can't set attributes"):
-            r.start = None
-        with pytest.raises(AttributeError, match="Can't set attributes"):
-            r.end = None
+        r.start = 1
+        r.end = 2
 
-        assert r == ranges.FiniteRange(0, 1)
+        assert r == ranges.FiniteRange(1, 2)
 
 
 ONE_DAY = datetime.timedelta(days=1)
@@ -1066,6 +1064,15 @@ class TestFiniteDateRange:
 
 
 class TestFiniteDatetimeRange:
+    def test_end_can_be_updated(self):
+        start = datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc)
+        end = datetime.datetime(2020, 2, 1, tzinfo=datetime.timezone.utc)
+        range_ = ranges.FiniteDatetimeRange(start, None)
+
+        range_.end = end
+
+        assert range_ == ranges.FiniteDatetimeRange(start, end)
+
     def test_accepts_missing_end(self):
         start = datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc)
 
