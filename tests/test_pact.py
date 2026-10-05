@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+import pytest
+
 from xocto import pact_testing
 
 
@@ -24,3 +28,25 @@ def test_pact_service():
     assert pact_service.publish_to_broker is True
     assert pact_service.pact_dir == "/tmp/pact/"
     assert pact_service.log_dir == "/tmp/pact/"
+
+
+@pytest.mark.parametrize("branch", ["main", None])
+def test_publish_pacts(mocker, branch):
+    mock_publish = mocker.patch("pact.v2.broker.Broker.publish")
+
+    pact_testing.publish_pacts(
+        consumer_name="my-consumer",
+        pact_dir="/tmp/pacts",
+        consumer_version="abc123",
+        broker_url="https://broker.example.com",
+        broker_username="user",
+        broker_password="pass",
+        branch=branch,
+    )
+
+    mock_publish.assert_called_once_with(
+        consumer_name="my-consumer",
+        version="abc123",
+        pact_dir="/tmp/pacts",
+        branch=branch,
+    )

@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import os
+import pathlib
 import subprocess
 from typing import Any
 
@@ -68,6 +69,28 @@ def pact_service(*, options: PactOptions, publish_to_broker: bool) -> pact_v2.Pa
     )
 
     return service
+
+
+def publish_pacts(
+    *,
+    consumer_name: str,
+    pact_dir: str | pathlib.Path,
+    consumer_version: str,
+    broker_url: str,
+    broker_username: str,
+    broker_password: str,
+    branch: str | None = None,
+) -> None:
+    pact_v2.broker.Broker(  # type: ignore[no-untyped-call]
+        broker_base_url=broker_url,
+        broker_username=broker_username,
+        broker_password=broker_password,
+    ).publish(
+        consumer_name=consumer_name,
+        version=consumer_version,
+        pact_dir=str(pact_dir),
+        branch=branch,
+    )
 
 
 def get_unique_version_hash() -> str | None:
