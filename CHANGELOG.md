@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Make broker fields optional in `PactOptions`. omit them when `publish_to_broker=False`
+
 ## V10.1.1 - 2026-10-05
 
 - Restore support for minimal readable binary file implementations in the storage API and avoid requiring Boto type stubs at runtime [#313](https://github.com/octoenergy/xocto/pull/313).
