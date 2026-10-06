@@ -42,8 +42,6 @@ from . import files, s3_select
 
 
 if TYPE_CHECKING:
-    # Reduce some runtime startup costs by avoiding loading
-    # pandas unless we really need it.
     import pandas as pd
     from _typeshed import WriteableBuffer
     from mypy_boto3_s3 import literals as s3_literals
@@ -151,7 +149,7 @@ def make_boto_config(
     return botocore.config.Config(
         connect_timeout=connect_timeout,
         read_timeout=read_timeout,
-        retries=cast(Any, retries),
+        retries=cast("Any", retries),
     )
 
 
@@ -552,7 +550,7 @@ class S3FileStore(BaseS3FileStore):
         # practice the only file-like method it needs is `read(size=...)`. This cast allows us to
         # use `upload_fileobj` with any Fileobj that implements the `ReadableBinaryFile` protocol
         # but not the whole of BinaryIO. This includes, importantly, Django's `UploadedFile`.
-        file_obj = cast(BinaryIO, readable)
+        file_obj = cast("BinaryIO", readable)
 
         extra_args: dict[str, Any] = {}
         if content_type:
