@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V10.2.1 - 2026-10-06
+
+- Restore backwards-compatible support for open endpoints and endpoint updates on range subclasses [#318](https://github.com/octoenergy/xocto/pull/318).
+
 ## V10.2.0 - 2026-10-05
 
 - Make broker fields optional in `PactOptions` — omit them when `publish_to_broker=False` [#309](https://github.com/octoenergy/xocto/pull/309)
