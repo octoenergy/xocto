@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V10.2.2 - 2026-10-12
+
+- Avoid importing type-only dependencies at runtime and verify tests run without type stubs installed [#314](https://github.com/octoenergy/xocto/pull/314).
+
 ## V10.2.1 - 2026-10-06
 
 - Restore backwards-compatible support for open endpoints and endpoint updates on range subclasses [#318](https://github.com/octoenergy/xocto/pull/318).
