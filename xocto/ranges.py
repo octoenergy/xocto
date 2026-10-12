@@ -73,9 +73,9 @@ def _normalise_datetimes(start: _T_Start, end: _T_End) -> tuple[_T_Start, _T_End
     Convert the start and end arguments to UTC datetimes only if they are datetime objects.
     """
     if isinstance(start, datetime.datetime):
-        start = cast(_T_Start, _normalise_datetime(start))
+        start = cast("_T_Start", _normalise_datetime(start))
     if isinstance(end, datetime.datetime):
-        end = cast(_T_End, _normalise_datetime(end))
+        end = cast("_T_End", _normalise_datetime(end))
     return start, end
 
 
@@ -890,7 +890,7 @@ class HalfFiniteRangeSet(RangeSet[T], Generic[T]):
         return cast("HalfFiniteRangeSet[T]", super().intersection(other))
 
     def pop(self) -> HalfFiniteRange[T]:
-        return cast(HalfFiniteRange[T], super().pop())
+        return cast("HalfFiniteRange[T]", super().pop())
 
     def __and__(self, other: RangeSet[T]) -> "HalfFiniteRangeSet[T]":
         return self.intersection(other)
@@ -916,7 +916,7 @@ class FiniteRangeSet(RangeSet[T]):
 
         Raises KeyError if the set is empty.
         """
-        return cast(FiniteRange[T], super().pop())
+        return cast("FiniteRange[T]", super().pop())
 
     def __and__(self, other: RangeSet[T]) -> "FiniteRangeSet[T]":
         return self.intersection(other)
@@ -1024,7 +1024,7 @@ class FiniteDatetimeRange(FiniteRange[datetime.datetime]):
             # * base_union.end might be None, if other.end was None.
             # => It's safe to return a HalfFiniteDatetimeRange here.
             return HalfFiniteDatetimeRange(
-                cast(datetime.datetime, base_union.start), base_union.end
+                cast("datetime.datetime", base_union.start), base_union.end
             )
         else:
             return super().union(other)

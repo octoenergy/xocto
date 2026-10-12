@@ -1,12 +1,15 @@
 import datetime
 import decimal
 import uuid
-from typing import Generic, Tuple, TypeAlias, TypeVar, Union
+from typing import TYPE_CHECKING, Generic, Tuple, TypeAlias, TypeVar, Union
 
 from django.contrib.auth import models as auth_models
 from django.db import models
-from django.db.models.expressions import Combinable
 from django.http import HttpRequest
+
+
+if TYPE_CHECKING:
+    from django.db.models.expressions import Combinable
 
 
 # A type variable which can be used in generic types, and represents a Django model of some

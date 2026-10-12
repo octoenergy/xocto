@@ -3,12 +3,15 @@ from __future__ import annotations
 import dataclasses
 import json
 import os
-import pathlib
 import subprocess
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pact.v2 as pact_v2
 import requests
+
+
+if TYPE_CHECKING:
+    import pathlib
 
 
 @dataclasses.dataclass(frozen=True)  # Use kw_only=True once we're on Python 3.10.
