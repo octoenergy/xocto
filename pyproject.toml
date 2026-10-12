@@ -1,6 +1,6 @@
 [project]
 name = "xocto"
-version = "10.2.1"
+version = "10.2.2"
 description = "Kraken Technologies Python service utilities"
 readme = "README.md"
 requires-python = ">=3.10"
