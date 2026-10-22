@@ -1,7 +1,6 @@
 import datetime
 import typing
-
-import pytz
+import zoneinfo
 
 from . import exceptions
 
@@ -22,11 +21,9 @@ def _to_timezone(local_time: datetime.datetime, timezone_str: str) -> datetime.d
     """
     Converts an aware datetime to another time zone.
     """
-    timezone = pytz.timezone(timezone_str)
-    # Rebasing to local time zone
-    rebased_local_time = local_time.astimezone(timezone)
-    # Normalizing for daylight saving rules
-    return timezone.normalize(rebased_local_time)
+    # With zoneinfo, astimezone resolves the target offset for the new
+    # wall time, which is what pytz's localize/normalize dance worked around.
+    return local_time.astimezone(zoneinfo.ZoneInfo(timezone_str))
 
 
 def _get_first_delivery_time(
@@ -47,8 +44,8 @@ def _get_first_delivery_time(
     }
     # Time zone aware
     try:
-        return pytz.timezone(timezone_str).localize(cases[timezone_str])
-    except AttributeError:
+        return cases[timezone_str].replace(tzinfo=zoneinfo.ZoneInfo(timezone_str))
+    except (AttributeError, KeyError, zoneinfo.ZoneInfoNotFoundError):
         raise exceptions.SettlementPeriodError("Time zone not implemented")
 
 
@@ -79,9 +76,16 @@ def _get_delivery_date(
 
 def _round_local_down_to_hh(local_time: datetime.datetime) -> datetime.datetime:
     if local_time.minute < 30:
-        return local_time - datetime.timedelta(minutes=local_time.minute)
+        rounded = local_time - datetime.timedelta(minutes=local_time.minute)
     else:
-        return local_time - datetime.timedelta(minutes=local_time.minute - 30)
+        rounded = local_time - datetime.timedelta(minutes=local_time.minute - 30)
+    # The subtraction always produces a datetime with fold=0, which would
+    # reinterpret an ambiguous local time (the repeated hour on the
+    # clock-change day) as its first occurrence. Rounding stays inside the
+    # same hour, so the original fold is still the right occurrence.
+    if rounded.fold != local_time.fold:
+        rounded = rounded.replace(fold=local_time.fold)
+    return rounded
 
 
 def convert_sp_and_date_to_local(
@@ -94,10 +98,15 @@ def convert_sp_and_date_to_local(
         raise exceptions.SettlementPeriodError("Settlement period not valid")
     # First settlement period in the time zone
     first_period_start = _get_first_delivery_time(date, timezone_str, is_wholesale)
-    # Start of the settlement period in local time
-    local_time = first_period_start + datetime.timedelta(minutes=30 * (sp - 1))
-    # Normalizing for daylight saving rules
-    return pytz.timezone(timezone_str).normalize(local_time)
+    # Start of the settlement period in local time. A settlement period is
+    # half an hour of absolute time: on the clock-change days the wall clock
+    # skips or repeats an hour, so the offset is added to the instant, not to
+    # the wall time. pytz got that for free from its fixed-offset datetimes
+    # plus normalize(); with zoneinfo we go through UTC instead.
+    offset = datetime.timedelta(minutes=30 * (sp - 1))
+    return (first_period_start.astimezone(datetime.timezone.utc) + offset).astimezone(
+        first_period_start.tzinfo
+    )
 
 
 def convert_sp_and_date_to_utc(
@@ -128,8 +137,13 @@ def convert_local_to_sp_and_date(
     first_delivery_time = _get_first_delivery_time(
         delivery_date, timezone_str, is_wholesale
     )
-    # Fetch settlement period
-    delta = half_hourly_time - first_delivery_time
+    # Fetch settlement period. The two datetimes share the Europe/London
+    # ZoneInfo instance, and a subtraction between datetimes with the same
+    # tzinfo ignores that tzinfo (the wall-clock difference); a settlement
+    # period is half an hour of absolute time, so compare the instants.
+    delta = half_hourly_time.astimezone(datetime.timezone.utc) - first_delivery_time.astimezone(
+        datetime.timezone.utc
+    )
     settlement_period = ((int(delta.total_seconds()) // 60) + 30) // 30
     return settlement_period, delivery_date
 
