@@ -1147,6 +1147,25 @@ class TestLocalFileStore:
 
             assert store.exists("missing_file.pdf") is False
 
+    def test_get_size_in_bytes(self):
+        with tempfile.TemporaryDirectory() as tdir:
+            store = storage.LocalFileStore("bucket", tdir, use_date_in_key_path=False)
+
+            __, path = store.store_file(
+                namespace="x", filename="test.pdf", contents="hello"
+            )
+
+            assert store.get_size_in_bytes(s3_object=store.get_key(path)) == len(
+                "hello"
+            )
+
+    def test_get_size_in_bytes_for_missing_key(self):
+        with tempfile.TemporaryDirectory() as tdir:
+            store = storage.LocalFileStore("bucket", tdir)
+
+            with pytest.raises(storage.KeyDoesNotExist):
+                store.get_size_in_bytes(s3_object=store.get_key("missing_file.pdf"))
+
     def test_fetch_nonexistent(self):
         with tempfile.TemporaryDirectory() as tdir:
             store = storage.LocalFileStore("bucket", tdir)
