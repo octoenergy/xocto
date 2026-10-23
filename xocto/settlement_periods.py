@@ -141,9 +141,9 @@ def convert_local_to_sp_and_date(
     # ZoneInfo instance, and a subtraction between datetimes with the same
     # tzinfo ignores that tzinfo (the wall-clock difference); a settlement
     # period is half an hour of absolute time, so compare the instants.
-    delta = half_hourly_time.astimezone(datetime.timezone.utc) - first_delivery_time.astimezone(
+    delta = half_hourly_time.astimezone(
         datetime.timezone.utc
-    )
+    ) - first_delivery_time.astimezone(datetime.timezone.utc)
     settlement_period = ((int(delta.total_seconds()) // 60) + 30) // 30
     return settlement_period, delivery_date
 
