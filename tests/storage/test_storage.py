@@ -1155,8 +1155,8 @@ class TestLocalFileStore:
                 namespace="x", filename="test.pdf", contents="hello"
             )
 
-            assert (
-                store.get_size_in_bytes(s3_object=store.get_key(path)) == len("hello")
+            assert store.get_size_in_bytes(s3_object=store.get_key(path)) == len(
+                "hello"
             )
 
     def test_get_size_in_bytes_for_missing_key(self):
