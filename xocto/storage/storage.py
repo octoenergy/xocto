@@ -1540,6 +1540,8 @@ class LocalFileStore(BaseS3FileStore):
 
     def get_size_in_bytes(self, *, s3_object: S3Object) -> int:
         filepath = os.path.join(self.storage_root, s3_object.bucket_name, s3_object.key)
+        if not os.path.exists(filepath):
+            raise KeyDoesNotExist(f"Key {s3_object.key} was not found at {filepath}")
         file_stats = os.stat(filepath)
         return file_stats.st_size
 
